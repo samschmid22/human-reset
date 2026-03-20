@@ -3,12 +3,11 @@ import { useMemo, useState } from "react";
 import { ActionDetailView } from "@/components/actions/action-detail-view";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ContentStack, InlineGroup, ScreenContainer } from "@/components/ui/layout";
-import { Pill } from "@/components/ui/pill";
+import { ContentStack, ScreenContainer } from "@/components/ui/layout";
 import { SectionHeader } from "@/components/ui/section-header";
 import { getActionStatusView } from "@/features/actions/storage";
 import { ActionState, ActionStatus, ActionStatusView } from "@/features/actions/types";
-import { FindingsRoadmapResult, RoadmapItem, ROADMAP_PHASE_LABELS } from "@/features/findings/types";
+import { FindingsRoadmapResult, RoadmapItem } from "@/features/findings/types";
 import { QuizDefinition } from "@/features/quizzes/types";
 import { cn } from "@/lib/cn";
 
@@ -27,31 +26,7 @@ type ActionRow = {
 };
 
 function toFocusLabel(focusStyle: FindingsRoadmapResult["dailyPlan"]["focusStyle"]): string {
-  return focusStyle === "one_category" ? "One category / day" : "Mixed categories";
-}
-
-function toPriorityPillTone(priorityBand: "low" | "medium" | "high"): "neutral" | "accent" | "success" {
-  if (priorityBand === "high") {
-    return "accent";
-  }
-
-  if (priorityBand === "medium") {
-    return "success";
-  }
-
-  return "neutral";
-}
-
-function toStatusTone(status: ActionStatus): "neutral" | "accent" | "success" {
-  if (status === "completed") {
-    return "success";
-  }
-
-  if (status === "snoozed") {
-    return "neutral";
-  }
-
-  return "accent";
+  return focusStyle === "one_category" ? "One category/day" : "Mixed categories";
 }
 
 function toStatusLabel(status: ActionStatus): string {
@@ -66,14 +41,27 @@ function toStatusLabel(status: ActionStatus): string {
   return "Active";
 }
 
-function buildActionRows(
-  actions: RoadmapItem[],
-  actionState: ActionState,
-): ActionRow[] {
+function buildActionRows(actions: RoadmapItem[], actionState: ActionState): ActionRow[] {
   return actions.map((action) => ({
     action,
     statusView: getActionStatusView(actionState, action.id),
   }));
+}
+
+function toCalibrationLabel(completed: number, total: number): string {
+  if (total <= 0) {
+    return "Plan is waiting for quiz input";
+  }
+
+  if (completed <= 1) {
+    return "Calibrating early plan";
+  }
+
+  if (completed < total) {
+    return "Plan still refining";
+  }
+
+  return "Plan calibrated";
 }
 
 export function HomeScreen({
@@ -95,195 +83,189 @@ export function HomeScreen({
   const snoozedActions = actionRows.filter((row) => row.statusView.status === "snoozed");
   const completedActions = actionRows.filter((row) => row.statusView.status === "completed");
 
+  const topPriority = pendingActions[0] ?? actionRows[0] ?? null;
+  const additionalActions = pendingActions.slice(1);
   const nextBestQuiz = report.nextBestQuizId
     ? (quizDefinitions.find((quiz) => quiz.id === report.nextBestQuizId) ?? null)
     : null;
   const activePhases = Object.values(report.roadmapByPhase).filter((items) => items.length > 0).length;
-  const roadmapBuildPercent = report.priorities.length > 0 ? Math.round((activePhases / 5) * 100) : 0;
+  const calibrationPercent =
+    report.totalQuizCount > 0 ? Math.round((report.completedQuizCount / report.totalQuizCount) * 100) : 0;
 
   function toggleDetails(actionId: string): void {
     setExpandedActionId((current) => (current === actionId ? null : actionId));
   }
 
-  function renderActionCard(row: ActionRow) {
+  function renderActionControls(row: ActionRow, isPrimary: boolean) {
     const { action, statusView } = row;
-    const isExpanded = expandedActionId === action.id;
     const isCompleted = statusView.status === "completed";
     const isSnoozed = statusView.status === "snoozed";
+    const isExpanded = expandedActionId === action.id;
 
     return (
-      <Card
-        className={cn(
-          "hr-home-action-card hr-action-card",
-          isCompleted && "is-completed",
-          isSnoozed && "is-snoozed",
-        )}
-        key={action.id}
-      >
-        <div className="hr-card-row">
-          <div>
-            <InlineGroup>
-              <Pill>{action.category}</Pill>
-              <Pill tone="accent">{ROADMAP_PHASE_LABELS[action.phase]}</Pill>
-            </InlineGroup>
-            <h3 className="hr-item-title">{action.title}</h3>
-            <p className="hr-item-description">{action.minimumStep}</p>
-          </div>
-          <div className="hr-action-pill-stack">
-            <Pill tone={toStatusTone(statusView.status)}>{toStatusLabel(statusView.status)}</Pill>
-            <Pill tone={toPriorityPillTone(action.priorityBand)}>{action.priorityBand}</Pill>
-          </div>
-        </div>
+      <div className={cn("hr-action-controls", isPrimary && "is-primary")}>
+        <Button
+          disabled={isCompleted}
+          onClick={() => onActionDone(action.id)}
+          size="sm"
+          variant="secondary"
+        >
+          {isCompleted ? "Completed" : "Done"}
+        </Button>
+        <Button
+          disabled={isCompleted || isSnoozed}
+          onClick={() => onActionSnooze(action.id)}
+          size="sm"
+          variant="quiet"
+        >
+          {isSnoozed ? "Snoozed" : "Snooze"}
+        </Button>
+        <Button onClick={() => toggleDetails(action.id)} size="sm" variant="quiet">
+          {isExpanded ? "Hide Details" : "Details"}
+        </Button>
+      </div>
+    );
+  }
 
-        <InlineGroup>
-          <Button
-            disabled={isCompleted}
-            onClick={() => onActionDone(action.id)}
-            size="sm"
-            variant="secondary"
-          >
-            {isCompleted ? "Completed" : "Done"}
-          </Button>
-          <Button
-            disabled={isCompleted || isSnoozed}
-            onClick={() => onActionSnooze(action.id)}
-            size="sm"
-            variant="quiet"
-          >
-            {isSnoozed ? "Snoozed" : "Snooze"}
-          </Button>
-          <Button onClick={() => toggleDetails(action.id)} size="sm" variant="quiet">
-            {isExpanded ? "Hide Details" : "Details"}
-          </Button>
-        </InlineGroup>
+  function renderActionListRow(row: ActionRow) {
+    const { action, statusView } = row;
+    const isExpanded = expandedActionId === action.id;
 
-        {isSnoozed && statusView.snoozedUntil ? (
-          <p className="hr-item-description hr-action-status-note">
-            Snoozed until {statusView.snoozedUntil}.
+    return (
+      <div className="hr-action-list-row" key={action.id}>
+        <div className="hr-action-list-content">
+          <p className="hr-action-list-meta">{action.category}</p>
+          <h3 className="hr-item-title">{action.title}</h3>
+          <p className="hr-item-description">{action.minimumStep}</p>
+          <p className="hr-action-list-status">
+            {toStatusLabel(statusView.status)}
+            {statusView.snoozedUntil ? ` until ${statusView.snoozedUntil}` : ""}
           </p>
-        ) : null}
-
+        </div>
+        {renderActionControls(row, false)}
         {isExpanded ? <ActionDetailView action={action} /> : null}
-      </Card>
+      </div>
     );
   }
 
   return (
-    <ScreenContainer>
-      <Card tone="accent">
-        <ContentStack>
-          <InlineGroup>
-            <Pill tone="accent">Today&apos;s Focus</Pill>
-            <Pill>{toFocusLabel(report.dailyPlan.focusStyle)}</Pill>
-            <Pill>Up to {report.dailyPlan.maxActions}/day</Pill>
-          </InlineGroup>
-
+    <ScreenContainer className="hr-home-screen">
+      <section className="hr-home-dashboard-grid">
+        <Card className="hr-home-hero" tone="accent">
+          <p className="hr-overline">Today</p>
           <h2 className="hr-feature-title">
-            {actionRows.length > 0
-              ? "Your Daily Plan Is Ready"
-              : "Complete a quiz to generate your first daily plan"}
+            {topPriority ? "Start with your top priority action" : "Take your next quiz to generate today’s plan"}
           </h2>
-
           <p className="hr-copy">
-            {actionRows.length > 0
-              ? "Actions are derived from your onboarding settings and quiz findings, with local Done and Snooze state saved on this device."
-              : "Onboarding is complete. Your Home, Roadmap, and Profile views will populate as quiz findings are added."}
+            {topPriority
+              ? `${toFocusLabel(report.dailyPlan.focusStyle)} • up to ${report.dailyPlan.maxActions} actions today`
+              : "Your dashboard will populate as quiz input is completed."}
           </p>
-        </ContentStack>
-      </Card>
+          {topPriority ? (
+            <div className="hr-home-primary-action">
+              <div>
+                <p className="hr-action-list-meta">{topPriority.action.category}</p>
+                <h3 className="hr-item-title">{topPriority.action.title}</h3>
+                <p className="hr-item-description">{topPriority.action.minimumStep}</p>
+              </div>
+              {renderActionControls(topPriority, true)}
+              {expandedActionId === topPriority.action.id ? <ActionDetailView action={topPriority.action} /> : null}
+            </div>
+          ) : (
+            <Button onClick={onOpenQuizzes} size="sm" variant="secondary">
+              Go to Quizzes
+            </Button>
+          )}
+        </Card>
 
-      <SectionHeader
-        subtitle="Structured actions selected from your highest-priority roadmap items."
-        title="Today&apos;s Actions"
-      />
+        <Card className="hr-home-stats" tone="surface">
+          <div className="hr-kpi-grid">
+            <div className="hr-kpi">
+              <span className="hr-kpi-label">Plan Calibration</span>
+              <strong>{calibrationPercent}%</strong>
+              <span className="hr-kpi-note">
+                {report.completedQuizCount}/{report.totalQuizCount} quizzes
+              </span>
+            </div>
+            <div className="hr-kpi">
+              <span className="hr-kpi-label">Top Category</span>
+              <strong>{report.highestPriorityCategory ?? "Pending"}</strong>
+              <span className="hr-kpi-note">Current emphasis</span>
+            </div>
+            <div className="hr-kpi">
+              <span className="hr-kpi-label">Actions Today</span>
+              <strong>{pendingActions.length}</strong>
+              <span className="hr-kpi-note">{report.dailyPlan.maxActions} max/day</span>
+            </div>
+            <div className="hr-kpi">
+              <span className="hr-kpi-label">Roadmap Depth</span>
+              <strong>{report.priorities.length}</strong>
+              <span className="hr-kpi-note">{activePhases} active phases</span>
+            </div>
+          </div>
+        </Card>
+      </section>
+
+      {report.completedQuizCount < report.totalQuizCount ? (
+        <Card className="hr-calibration-banner" tone="soft">
+          <p className="hr-overline">{toCalibrationLabel(report.completedQuizCount, report.totalQuizCount)}</p>
+          <p className="hr-copy">
+            Plan confidence is still building. Complete more category quizzes to sharpen action ranking.
+          </p>
+        </Card>
+      ) : null}
+
+      <SectionHeader title="Today’s Action Queue" />
 
       {actionRows.length > 0 ? (
-        <ContentStack>
-          {pendingActions.length > 0 ? pendingActions.map((row) => renderActionCard(row)) : null}
-
-          {pendingActions.length === 0 ? (
-            <Card className="hr-empty-state" tone="soft">
-              <p className="hr-empty-title">No active actions right now</p>
-              <p className="hr-empty-copy">
-                You have completed or snoozed all currently scheduled actions.
-              </p>
-            </Card>
-          ) : null}
-        </ContentStack>
+        <Card className="hr-action-list-card">
+          {additionalActions.length > 0 ? (
+            <ContentStack>
+              {additionalActions.map((row) => renderActionListRow(row))}
+            </ContentStack>
+          ) : (
+            <p className="hr-item-description">No additional active actions after your top priority.</p>
+          )}
+        </Card>
       ) : (
         <Card className="hr-empty-state" tone="soft">
           <p className="hr-empty-title">No actions scheduled yet</p>
-          <p className="hr-empty-copy">
-            Start with a category quiz to generate structured findings and prioritized roadmap actions.
-          </p>
-          <Button onClick={onOpenQuizzes} size="sm" variant="secondary">
-            Go to Quizzes
-          </Button>
+          <p className="hr-empty-copy">Complete a quiz to generate your first prioritized action queue.</p>
         </Card>
       )}
 
-      {snoozedActions.length > 0 ? (
-        <>
-          <SectionHeader
-            subtitle="Snoozed actions are deferred temporarily and remain in your roadmap."
-            title="Snoozed"
-          />
-          <ContentStack>{snoozedActions.map((row) => renderActionCard(row))}</ContentStack>
-        </>
-      ) : null}
-
-      {completedActions.length > 0 ? (
-        <>
-          <SectionHeader
-            subtitle="Completed actions stay visible for progress continuity."
-            title="Completed"
-          />
-          <ContentStack>{completedActions.map((row) => renderActionCard(row))}</ContentStack>
-        </>
-      ) : null}
-
       {nextBestQuiz ? (
-        <Card tone="soft">
-          <InlineGroup>
-            <Pill tone="accent">Next Best Quiz</Pill>
-            <Pill>
-              {report.completedQuizCount} of {report.totalQuizCount} complete
-            </Pill>
-          </InlineGroup>
-          <h3 className="hr-item-title">{nextBestQuiz.title}</h3>
-          <p className="hr-item-description">{nextBestQuiz.description}</p>
-          <Button onClick={onOpenQuizzes} size="sm" variant="secondary">
-            Continue Quiz Work
-          </Button>
+        <Card className="hr-home-next-card" tone="soft">
+          <div className="hr-card-row">
+            <div>
+              <p className="hr-overline">What to do next</p>
+              <h3 className="hr-item-title">{nextBestQuiz.title}</h3>
+              <p className="hr-item-description">{nextBestQuiz.description}</p>
+            </div>
+            <Button onClick={onOpenQuizzes} size="sm" variant="secondary">
+              Continue Quiz
+            </Button>
+          </div>
         </Card>
       ) : null}
 
-      <SectionHeader
-        subtitle="Progress reflects roadmap structure and execution planning, never quiz score visuals."
-        title="Roadmap Progress"
-      />
+      {(snoozedActions.length > 0 || completedActions.length > 0) ? (
+        <section className="hr-home-secondary-grid">
+          {snoozedActions.length > 0 ? (
+            <Card>
+              <SectionHeader className="hr-subsection-header" title="Snoozed" />
+              <ContentStack>{snoozedActions.map((row) => renderActionListRow(row))}</ContentStack>
+            </Card>
+          ) : null}
 
-      <Card>
-        <div className="hr-progress-row">
-          <div className="hr-progress-ring">
-            <strong>{roadmapBuildPercent}%</strong>
-            <span>Plan Built</span>
-          </div>
-          <div className="hr-progress-copy">
-            <p className="hr-item-description">
-              {report.priorities.length > 0
-                ? `${report.priorities.length} prioritized actions across ${activePhases} active phases.`
-                : "No findings ranked yet. Complete a quiz to generate priorities."}
-            </p>
-            <InlineGroup>
-              <Pill>{report.findings.length} findings</Pill>
-              <Pill>
-                {completedActions.length} marked done
-              </Pill>
-            </InlineGroup>
-          </div>
-        </div>
-      </Card>
+          {completedActions.length > 0 ? (
+            <Card>
+              <SectionHeader className="hr-subsection-header" title="Completed" />
+              <ContentStack>{completedActions.map((row) => renderActionListRow(row))}</ContentStack>
+            </Card>
+          ) : null}
+        </section>
+      ) : null}
     </ScreenContainer>
   );
 }

@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ContentStack, InlineGroup, ScreenContainer } from "@/components/ui/layout";
-import { Pill } from "@/components/ui/pill";
+import { ContentStack, ScreenContainer } from "@/components/ui/layout";
 import { SectionHeader } from "@/components/ui/section-header";
 import { FindingsRoadmapResult } from "@/features/findings/types";
 import { OnboardingState } from "@/features/onboarding/types";
@@ -20,89 +19,95 @@ function formatList(values: string[]): string {
   return values.join(", ");
 }
 
+type SettingRowProps = {
+  label: string;
+  value: string;
+};
+
+function SettingRow({ label, value }: SettingRowProps) {
+  return (
+    <div className="hr-setting-row">
+      <span className="hr-setting-label">{label}</span>
+      <span className="hr-setting-value">{value}</span>
+    </div>
+  );
+}
+
 export function ProfileScreen({ onboardingState, onRecalculateRoadmap, report }: ProfileScreenProps) {
   const responses = onboardingState.responses;
+  const planReady = report.priorities.length > 0;
 
   return (
-    <ScreenContainer>
-      {report.findings.length === 0 ? (
-        <Card className="hr-empty-state" tone="soft">
-          <p className="hr-empty-title">Profile is saved locally</p>
-          <p className="hr-empty-copy">
-            Complete quizzes to generate findings and roadmap priorities using your saved settings.
-          </p>
-        </Card>
-      ) : (
-        <Card className="hr-empty-state" tone="soft">
-          <p className="hr-empty-title">Profile-guided roadmap is active</p>
-          <p className="hr-empty-copy">
-            Your pace, focus style, and sensitivities are currently shaping priority ranking.
-          </p>
-          <InlineGroup>
-            <Pill tone="accent">{report.findings.length} findings</Pill>
-            <Pill>{report.priorities.length} actions</Pill>
-          </InlineGroup>
-        </Card>
-      )}
-
-      <SectionHeader subtitle="Local-only settings in v1 (no login required)." title="Profile" />
-
-      <ContentStack>
-        <Card>
-          <p className="hr-field-label">Name</p>
-          <p className="hr-field-value">Optional (not captured in current onboarding flow)</p>
-        </Card>
-
-        <Card>
-          <p className="hr-field-label">Concerns</p>
-          <p className="hr-field-value">{formatList(responses.concerns)}</p>
-        </Card>
-
-        <Card>
-          <p className="hr-field-label">Custom Concern</p>
-          <p className="hr-field-value">
-            {responses.customConcern.trim().length > 0 ? responses.customConcern : "Not set"}
-          </p>
-        </Card>
-
-        <Card>
-          <p className="hr-field-label">Pace</p>
-          <p className="hr-field-value">
-            {responses.actionsPerDay} actions/day ({responses.pacePreset})
-          </p>
-        </Card>
-
-        <Card>
-          <p className="hr-field-label">Focus Style</p>
-          <p className="hr-field-value">
-            {responses.focusStyle === "one_category" ? "One category/day" : "Mixed categories"}
-          </p>
-        </Card>
-
-        <Card>
-          <p className="hr-field-label">Sensitivities</p>
-          <p className="hr-field-value">{formatList(responses.sensitivities)}</p>
-        </Card>
-
-        <Card>
-          <p className="hr-field-label">Notifications</p>
-          <p className="hr-field-value">{responses.notificationsEnabled ? "On" : "Off"}</p>
-        </Card>
-      </ContentStack>
-
-      <Card tone="soft">
-        <InlineGroup>
-          <Pill>
-            Daily plan: {report.dailyPlan.actions.length}/{report.dailyPlan.maxActions}
-          </Pill>
-          <Pill>
-            Top category: {report.highestPriorityCategory ?? "Not available yet"}
-          </Pill>
-        </InlineGroup>
-        <Button onClick={onRecalculateRoadmap} variant="secondary">
-          Recalculate Roadmap
-        </Button>
+    <ScreenContainer className="hr-profile-screen">
+      <Card className="hr-profile-hero" tone="soft">
+        <div className="hr-card-row">
+          <div>
+            <p className="hr-overline">Profile</p>
+            <h2 className="hr-feature-title">{planReady ? "Your roadmap preferences are active" : "Profile saved locally"}</h2>
+            <p className="hr-copy">
+              {planReady
+                ? "Your onboarding settings are shaping ranking and daily plan selection."
+                : "Complete quizzes to apply these settings to ranking and roadmap generation."}
+            </p>
+          </div>
+          <div className="hr-profile-hero-stats">
+            <span>{report.findings.length} findings</span>
+            <span>{report.priorities.length} actions</span>
+          </div>
+        </div>
       </Card>
+
+      <SectionHeader title="Settings Overview" />
+
+      <div className="hr-profile-grid">
+        <Card>
+          <h3 className="hr-item-title">Reset Goals</h3>
+          <ContentStack className="hr-setting-stack">
+            <SettingRow label="Concerns" value={formatList(responses.concerns)} />
+            <SettingRow
+              label="Specific goal"
+              value={responses.customConcern.trim().length > 0 ? responses.customConcern : "Not set"}
+            />
+          </ContentStack>
+        </Card>
+
+        <Card>
+          <h3 className="hr-item-title">Plan Preferences</h3>
+          <ContentStack className="hr-setting-stack">
+            <SettingRow label="Pace" value={`${responses.actionsPerDay} actions/day (${responses.pacePreset})`} />
+            <SettingRow
+              label="Focus style"
+              value={responses.focusStyle === "one_category" ? "One category/day" : "Mixed categories"}
+            />
+            <SettingRow label="Notifications" value={responses.notificationsEnabled ? "Enabled" : "Off"} />
+          </ContentStack>
+        </Card>
+
+        <Card>
+          <h3 className="hr-item-title">Sensitivity Context</h3>
+          <ContentStack className="hr-setting-stack">
+            <SettingRow label="Sensitivities" value={formatList(responses.sensitivities)} />
+            <SettingRow label="Additional" value={formatList(responses.additionalSensitivities)} />
+          </ContentStack>
+        </Card>
+
+        <Card>
+          <h3 className="hr-item-title">System Controls</h3>
+          <ContentStack className="hr-setting-stack">
+            <SettingRow
+              label="Daily plan"
+              value={`${report.dailyPlan.actions.length}/${report.dailyPlan.maxActions} scheduled`}
+            />
+            <SettingRow
+              label="Top category"
+              value={report.highestPriorityCategory ?? "Not available yet"}
+            />
+            <Button onClick={onRecalculateRoadmap} variant="secondary">
+              Recalculate Roadmap
+            </Button>
+          </ContentStack>
+        </Card>
+      </div>
     </ScreenContainer>
   );
 }

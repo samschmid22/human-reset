@@ -4,7 +4,6 @@ import { ActionDetailView } from "@/components/actions/action-detail-view";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ContentStack, InlineGroup, ScreenContainer } from "@/components/ui/layout";
-import { Pill } from "@/components/ui/pill";
 import { SectionHeader } from "@/components/ui/section-header";
 import { getActionStatusView } from "@/features/actions/storage";
 import { ActionState, ActionStatus } from "@/features/actions/types";
@@ -19,29 +18,15 @@ type RoadmapScreenProps = {
   report: FindingsRoadmapResult;
 };
 
-function toPriorityTone(priorityBand: "low" | "medium" | "high"): "neutral" | "accent" | "success" {
-  if (priorityBand === "high") {
-    return "accent";
-  }
+type PhaseProgress = {
+  completed: number;
+  count: number;
+  pending: number;
+  phase: keyof FindingsRoadmapResult["roadmapByPhase"];
+  snoozed: number;
+};
 
-  if (priorityBand === "medium") {
-    return "success";
-  }
-
-  return "neutral";
-}
-
-function toStatusTone(status: ActionStatus): "neutral" | "accent" | "success" {
-  if (status === "completed") {
-    return "success";
-  }
-
-  if (status === "snoozed") {
-    return "neutral";
-  }
-
-  return "accent";
-}
+type PhaseVisualState = "current" | "next" | "complete" | "later" | "empty";
 
 function toStatusLabel(status: ActionStatus): string {
   if (status === "completed") {
@@ -63,7 +48,47 @@ export function RoadmapScreen({
 }: RoadmapScreenProps) {
   const [expandedActionId, setExpandedActionId] = useState<string | null>(null);
 
-  const phaseCounts = getRoadmapPhaseCount(report.roadmapByPhase);
+  const phaseProgress = useMemo<PhaseProgress[]>(() => {
+    return getRoadmapPhaseCount(report.roadmapByPhase).map((entry) => {
+      const items = report.roadmapByPhase[entry.phase];
+      const summary = items.reduce(
+        (accumulator, item) => {
+          const status = getActionStatusView(actionState, item.id).status;
+          accumulator[status] += 1;
+          return accumulator;
+        },
+        { pending: 0, completed: 0, snoozed: 0 } as Record<ActionStatus, number>,
+      );
+
+      return {
+        phase: entry.phase,
+        count: entry.count,
+        pending: summary.pending,
+        completed: summary.completed,
+        snoozed: summary.snoozed,
+      };
+    });
+  }, [actionState, report.roadmapByPhase]);
+
+  const currentPhaseIndex = useMemo(() => {
+    const withPending = phaseProgress.findIndex((entry) => entry.pending > 0);
+
+    if (withPending >= 0) {
+      return withPending;
+    }
+
+    const withAnyItems = phaseProgress.findIndex((entry) => entry.count > 0);
+    return withAnyItems >= 0 ? withAnyItems : 0;
+  }, [phaseProgress]);
+
+  const nextPhaseIndex = useMemo(() => {
+    const next = phaseProgress.findIndex(
+      (entry, index) => index > currentPhaseIndex && entry.count > 0,
+    );
+
+    return next >= 0 ? next : null;
+  }, [currentPhaseIndex, phaseProgress]);
+
   const statusSummary = useMemo(() => {
     return report.priorities.reduce(
       (accumulator, item) => {
@@ -75,43 +100,56 @@ export function RoadmapScreen({
     );
   }, [actionState, report.priorities]);
 
+  function getPhaseVisualState(index: number, count: number): PhaseVisualState {
+    if (count === 0) {
+      return "empty";
+    }
+
+    if (index === currentPhaseIndex) {
+      return "current";
+    }
+
+    if (nextPhaseIndex !== null && index === nextPhaseIndex) {
+      return "next";
+    }
+
+    if (index < currentPhaseIndex) {
+      return "complete";
+    }
+
+    return "later";
+  }
+
   function toggleDetails(actionId: string): void {
     setExpandedActionId((current) => (current === actionId ? null : actionId));
   }
 
-  function renderPriorityCard(item: RoadmapItem) {
+  function renderActionRow(item: RoadmapItem) {
     const statusView = getActionStatusView(actionState, item.id);
     const isCompleted = statusView.status === "completed";
     const isSnoozed = statusView.status === "snoozed";
     const isExpanded = expandedActionId === item.id;
 
     return (
-      <Card
+      <div
         className={cn(
-          "hr-action-card",
+          "hr-roadmap-action-row",
           isCompleted && "is-completed",
           isSnoozed && "is-snoozed",
         )}
         key={item.id}
       >
-        <div className="hr-card-row">
-          <div>
-            <InlineGroup>
-              <Pill tone="accent">{item.category}</Pill>
-              <Pill>{ROADMAP_PHASE_LABELS[item.phase]}</Pill>
-            </InlineGroup>
-            <h3 className="hr-item-title">{item.title}</h3>
-            <p className="hr-item-description">{item.whyItMatters}</p>
-          </div>
-          <div className="hr-action-pill-stack">
-            <Pill tone={toStatusTone(statusView.status)}>{toStatusLabel(statusView.status)}</Pill>
-            <Pill tone={toPriorityTone(item.priorityBand)}>{item.priorityBand}</Pill>
-          </div>
+        <div className="hr-roadmap-action-main">
+          <p className="hr-action-list-meta">{item.category}</p>
+          <h3 className="hr-item-title">{item.title}</h3>
+          <p className="hr-item-description">{item.minimumStep}</p>
+          <p className="hr-action-list-status">
+            {toStatusLabel(statusView.status)}
+            {statusView.snoozedUntil ? ` until ${statusView.snoozedUntil}` : ""}
+          </p>
         </div>
 
-        <p className="hr-item-description">Minimum step: {item.minimumStep}</p>
-
-        <InlineGroup>
+        <div className="hr-action-controls">
           <Button
             disabled={isCompleted}
             onClick={() => onActionDone(item.id)}
@@ -131,71 +169,100 @@ export function RoadmapScreen({
           <Button onClick={() => toggleDetails(item.id)} size="sm" variant="quiet">
             {isExpanded ? "Hide Details" : "Details"}
           </Button>
-        </InlineGroup>
-
-        {isSnoozed && statusView.snoozedUntil ? (
-          <p className="hr-item-description hr-action-status-note">
-            Snoozed until {statusView.snoozedUntil}.
-          </p>
-        ) : null}
+        </div>
 
         {isExpanded ? <ActionDetailView action={item} /> : null}
-      </Card>
+      </div>
     );
   }
 
   return (
-    <ScreenContainer>
+    <ScreenContainer className="hr-roadmap-screen">
       {report.priorities.length === 0 ? (
         <Card className="hr-empty-state" tone="soft">
           <p className="hr-empty-title">Roadmap is waiting for quiz findings</p>
           <p className="hr-empty-copy">
-            As quiz answers are added, findings are ranked into priorities and organized into phases.
+            Complete a category quiz to generate your first phase journey and action queue.
           </p>
         </Card>
       ) : (
-        <Card className="hr-empty-state" tone="soft">
-          <p className="hr-empty-title">{report.priorities.length} roadmap actions generated</p>
-          <p className="hr-empty-copy">
-            Ranking uses deterministic severity, frequency, sensitivity, and feasibility factors.
-          </p>
-          <InlineGroup>
-            <Pill tone="accent">{statusSummary.pending} active</Pill>
-            <Pill tone="success">{statusSummary.completed} completed</Pill>
-            <Pill>{statusSummary.snoozed} snoozed</Pill>
+        <Card className="hr-roadmap-summary-card" tone="soft">
+          <InlineGroup className="hr-roadmap-summary-inline">
+            <div className="hr-roadmap-summary-item">
+              <span className="hr-kpi-label">Active</span>
+              <strong>{statusSummary.pending}</strong>
+            </div>
+            <div className="hr-roadmap-summary-item">
+              <span className="hr-kpi-label">Completed</span>
+              <strong>{statusSummary.completed}</strong>
+            </div>
+            <div className="hr-roadmap-summary-item">
+              <span className="hr-kpi-label">Snoozed</span>
+              <strong>{statusSummary.snoozed}</strong>
+            </div>
+            <div className="hr-roadmap-summary-item">
+              <span className="hr-kpi-label">Total Actions</span>
+              <strong>{report.priorities.length}</strong>
+            </div>
           </InlineGroup>
         </Card>
       )}
 
-      <SectionHeader
-        subtitle="Sorted by deterministic priority score (no user-facing quiz scores)."
-        title="By Priority"
-      />
+      <SectionHeader title="Roadmap Journey" />
 
-      {report.priorities.length > 0 ? (
-        <ContentStack>{report.priorities.map((item) => renderPriorityCard(item))}</ContentStack>
-      ) : null}
+      <Card className="hr-roadmap-journey-card">
+        <ol className="hr-roadmap-journey-list">
+          {phaseProgress.map((entry, index) => {
+            const state = getPhaseVisualState(index, entry.count);
+            const topItem = report.roadmapByPhase[entry.phase][0];
 
-      <SectionHeader
-        subtitle="Adaptive phase buckets generated from the ranked priorities."
-        title="By Phase"
-      />
+            return (
+              <li className={cn("hr-roadmap-journey-item", `is-${state}`)} key={entry.phase}>
+                <div className="hr-roadmap-journey-dot" />
+                <div className="hr-roadmap-journey-content">
+                  <div className="hr-roadmap-journey-header">
+                    <h3 className="hr-item-title">{ROADMAP_PHASE_LABELS[entry.phase]}</h3>
+                    <span className="hr-roadmap-phase-count">{entry.count}</span>
+                  </div>
+                  <p className="hr-item-description">
+                    {topItem ? topItem.title : "No actions in this phase yet."}
+                  </p>
+                  {entry.count > 0 ? (
+                    <p className="hr-roadmap-phase-meta">
+                      {entry.pending} active • {entry.completed} completed • {entry.snoozed} snoozed
+                    </p>
+                  ) : null}
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      </Card>
 
-      <ContentStack>
-        {phaseCounts.map((entry) => {
-          const firstItem = report.roadmapByPhase[entry.phase][0];
+      <SectionHeader title="Actions by Phase" />
+
+      <ContentStack className="hr-roadmap-phase-stack">
+        {phaseProgress.map((entry, index) => {
+          const items = report.roadmapByPhase[entry.phase];
+          const state = getPhaseVisualState(index, entry.count);
+
+          if (items.length === 0) {
+            return null;
+          }
 
           return (
-            <Card key={entry.phase} tone="soft">
+            <Card className={cn("hr-roadmap-phase-card", `is-${state}`)} key={entry.phase}>
               <div className="hr-card-row">
-                <h3 className="hr-item-title">{ROADMAP_PHASE_LABELS[entry.phase]}</h3>
-                <Pill tone={entry.count > 0 ? "accent" : "neutral"}>{entry.count} items</Pill>
+                <div>
+                  <p className="hr-overline">Phase</p>
+                  <h3 className="hr-item-title">{ROADMAP_PHASE_LABELS[entry.phase]}</h3>
+                </div>
+                <span className="hr-roadmap-phase-count">{items.length}</span>
               </div>
-              <p className="hr-item-description">
-                {firstItem
-                  ? `Highest item in this phase: ${firstItem.title}`
-                  : "No items in this phase yet."}
-              </p>
+
+              <ContentStack>
+                {items.map((item) => renderActionRow(item))}
+              </ContentStack>
             </Card>
           );
         })}

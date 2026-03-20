@@ -62,6 +62,9 @@ export function PhaseOneAppShell() {
   const activeTabLabel = onboardingIncomplete
     ? "Onboarding"
     : (TABS.find((tab) => tab.id === activeTab)?.label ?? "Home");
+  const completionLabel = onboardingIncomplete
+    ? "Setup in progress"
+    : `${findingsRoadmap.completedQuizCount}/${findingsRoadmap.totalQuizCount} quizzes`;
 
   function handleOnboardingStateChange(next: OnboardingState): void {
     setOnboardingState(next);
@@ -161,32 +164,30 @@ export function PhaseOneAppShell() {
     <div className="hr-app-root">
       <main aria-label="The Human Reset" className="hr-shell" role="application">
         <header className="hr-shell-header">
-          <button aria-label="Open menu" className="hr-icon-button" type="button">
-            <svg aria-hidden="true" className="hr-shell-icon" fill="none" viewBox="0 0 24 24">
-              <path d="M5 7h14" />
-              <path d="M5 12h14" />
-              <path d="M5 17h10" />
-            </svg>
-          </button>
+          <div aria-hidden="true" className="hr-shell-mark">
+            HR
+          </div>
 
           <div className="hr-shell-title-wrap">
-            <p className="hr-shell-eyebrow">Guided Environmental Reset</p>
             <h1 className="hr-shell-title">The Human Reset</h1>
             <p className="hr-shell-context">{activeTabLabel}</p>
           </div>
 
-          <button
-            aria-disabled={!searchEnabled}
-            aria-label={searchEnabled ? "Search" : "Search unavailable on this tab"}
-            className="hr-icon-button"
-            disabled={!searchEnabled}
-            type="button"
-          >
-            <svg aria-hidden="true" className="hr-shell-icon" fill="none" viewBox="0 0 24 24">
-              <circle cx="10" cy="10" r="5" />
-              <path d="m14 14 5 5" />
-            </svg>
-          </button>
+          <div className="hr-shell-header-side">
+            <p className="hr-shell-meta">{completionLabel}</p>
+            <button
+              aria-disabled={!searchEnabled}
+              aria-label={searchEnabled ? "Search" : "Search unavailable on this tab"}
+              className="hr-icon-button"
+              disabled={!searchEnabled}
+              type="button"
+            >
+              <svg aria-hidden="true" className="hr-shell-icon" fill="none" viewBox="0 0 24 24">
+                <circle cx="10" cy="10" r="5" />
+                <path d="m14 14 5 5" />
+              </svg>
+            </button>
+          </div>
         </header>
 
         <div className="hr-shell-body">

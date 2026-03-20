@@ -1,6 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { ContentStack, InlineGroup } from "@/components/ui/layout";
-import { Pill } from "@/components/ui/pill";
+import { ContentStack } from "@/components/ui/layout";
 import { RoadmapItem, ROADMAP_PHASE_LABELS } from "@/features/findings/types";
 
 type ActionDetailViewProps = {
@@ -11,11 +10,9 @@ export function ActionDetailView({ action }: ActionDetailViewProps) {
   return (
     <Card className="hr-action-detail-card" tone="soft">
       <ContentStack className="hr-action-detail-stack">
-        <InlineGroup>
-          <Pill tone="accent">{action.category}</Pill>
-          <Pill>{ROADMAP_PHASE_LABELS[action.phase]}</Pill>
-        </InlineGroup>
-
+        <p className="hr-action-detail-meta">
+          {action.category} • {ROADMAP_PHASE_LABELS[action.phase]}
+        </p>
         <h4 className="hr-item-title">{action.title}</h4>
 
         <div className="hr-action-detail-block">
