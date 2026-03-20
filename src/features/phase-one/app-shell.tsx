@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { BottomTabs } from "@/components/navigation/bottom-tabs";
+import { Button } from "@/components/ui/button";
 import {
   clearActionStatus,
   createInitialActionState,
@@ -34,9 +35,28 @@ import {
 import { QuizState } from "@/features/quizzes/types";
 
 const searchableTabs: TabId[] = ["home", "roadmap", "vault"];
+const vaultSearchTopics = [
+  "Swaps library",
+  "Home protocols",
+  "Ingredient notes",
+  "DIY and low-cost",
+  "Air and fragrance baseline",
+  "Kitchen contact reset",
+  "Sleep environment reset",
+  "Cleaning system simplification",
+];
+
+type SearchEntry = {
+  id: string;
+  label: string;
+  meta: string;
+  tab: TabId;
+};
 
 export function PhaseOneAppShell() {
   const [activeTab, setActiveTab] = useState<TabId>("home");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [onboardingState, setOnboardingState] = useState<OnboardingState>(
     () =>
       typeof window === "undefined" ? createDefaultOnboardingState() : loadOnboardingState(),
@@ -62,9 +82,6 @@ export function PhaseOneAppShell() {
 
   const onboardingIncomplete = !onboardingState.completed;
   const searchEnabled = !onboardingIncomplete && searchableTabs.includes(activeTab);
-  const activeTabLabel = onboardingIncomplete
-    ? "Onboarding"
-    : (TABS.find((tab) => tab.id === activeTab)?.label ?? "Home");
   const maturity = getPlanMaturity(
     findingsRoadmap.completedQuizCount,
     findingsRoadmap.totalQuizCount,
@@ -74,6 +91,79 @@ export function PhaseOneAppShell() {
     : `${findingsRoadmap.completedQuizCount}/${findingsRoadmap.totalQuizCount} categories`;
   const maturityBadge = onboardingIncomplete ? "Setup in progress" : maturity.badge;
 
+  const searchEntries = useMemo<SearchEntry[]>(() => {
+    if (onboardingIncomplete) {
+      return [];
+    }
+
+    const entries: SearchEntry[] = [];
+    const seenIds = new Set<string>();
+
+    function push(entry: SearchEntry): void {
+      if (seenIds.has(entry.id)) {
+        return;
+      }
+
+      seenIds.add(entry.id);
+      entries.push(entry);
+    }
+
+    findingsRoadmap.priorities.forEach((item) => {
+      push({
+        id: `action-${item.id}`,
+        label: item.title,
+        meta: `Roadmap action • ${item.category}`,
+        tab: "roadmap",
+      });
+    });
+
+    findingsRoadmap.dailyPlan.actions.forEach((item) => {
+      push({
+        id: `daily-${item.id}`,
+        label: item.title,
+        meta: `Today • ${item.category}`,
+        tab: "home",
+      });
+    });
+
+    QUIZ_DEFINITIONS.forEach((quiz) => {
+      push({
+        id: `quiz-${quiz.id}`,
+        label: quiz.title,
+        meta: "Quiz category",
+        tab: "quizzes",
+      });
+    });
+
+    vaultSearchTopics.forEach((topic) => {
+      push({
+        id: `vault-${topic}`,
+        label: topic,
+        meta: "Vault topic",
+        tab: "vault",
+      });
+    });
+
+    return entries;
+  }, [findingsRoadmap.dailyPlan.actions, findingsRoadmap.priorities, onboardingIncomplete]);
+
+  const filteredSearchEntries = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+
+    if (query.length === 0) {
+      return searchEntries.slice(0, 10);
+    }
+
+    return searchEntries
+      .filter((entry) => {
+        return (
+          entry.label.toLowerCase().includes(query) ||
+          entry.meta.toLowerCase().includes(query)
+        );
+      })
+      .slice(0, 12);
+  }, [searchEntries, searchQuery]);
+
   useEffect(() => {
     if (onboardingIncomplete) {
       return;
@@ -81,6 +171,13 @@ export function PhaseOneAppShell() {
 
     shellBodyRef.current?.scrollTo({ top: 0 });
   }, [activeTab, onboardingIncomplete]);
+
+  useEffect(() => {
+    if (!searchEnabled) {
+      setSearchOpen(false);
+      setSearchQuery("");
+    }
+  }, [searchEnabled]);
 
   function handleOnboardingStateChange(next: OnboardingState): void {
     setOnboardingState(next);
@@ -97,14 +194,6 @@ export function PhaseOneAppShell() {
     const normalized = normalizeQuizState(next, QUIZ_DEFINITIONS);
     setQuizState(normalized);
     saveQuizState(normalized);
-  }
-
-  function handleRecalculateRoadmap(): void {
-    const latestOnboarding = loadOnboardingState();
-    const latestQuizState = loadQuizState();
-
-    setOnboardingState(latestOnboarding);
-    setQuizState(latestQuizState);
   }
 
   function handleActionDone(actionId: string): void {
@@ -133,6 +222,22 @@ export function PhaseOneAppShell() {
 
   function handleTabChange(nextTab: TabId): void {
     setActiveTab(nextTab);
+    setSearchOpen(false);
+    setSearchQuery("");
+  }
+
+  function handleSearchToggle(): void {
+    if (!searchEnabled) {
+      return;
+    }
+
+    setSearchOpen((current) => !current);
+  }
+
+  function handleSearchResultSelect(tab: TabId): void {
+    setActiveTab(tab);
+    setSearchOpen(false);
+    setSearchQuery("");
   }
 
   function renderActiveScreen() {
@@ -171,7 +276,7 @@ export function PhaseOneAppShell() {
         return (
           <ProfileScreen
             onboardingState={onboardingState}
-            onRecalculateRoadmap={handleRecalculateRoadmap}
+            onOnboardingStateChange={handleOnboardingStateChange}
             report={findingsRoadmap}
           />
         );
@@ -195,23 +300,28 @@ export function PhaseOneAppShell() {
     <div className="hr-app-root">
       <main aria-label="The Human Reset" className="hr-shell" role="application">
         <header className="hr-shell-header">
-          <div aria-hidden="true" className="hr-shell-mark">
-            HR
+          <div className="hr-shell-header-left">
+            <div aria-hidden="true" className="hr-shell-mark">
+              <span className="hr-shell-mark-dot" />
+            </div>
           </div>
 
           <div className="hr-shell-title-wrap">
             <h1 className="hr-shell-title">The Human Reset</h1>
-            <p className="hr-shell-context">{activeTabLabel}</p>
+            <div className="hr-shell-plan-line">
+              <p className="hr-shell-badge">{maturityBadge}</p>
+              <p className="hr-shell-meta">{completionLabel}</p>
+            </div>
           </div>
 
-          <div className="hr-shell-header-side">
-            <p className="hr-shell-badge">{maturityBadge}</p>
-            <p className="hr-shell-meta">{completionLabel}</p>
+          <div className="hr-shell-header-right">
             <button
               aria-disabled={!searchEnabled}
+              aria-expanded={searchOpen}
               aria-label={searchEnabled ? "Search" : "Search unavailable on this tab"}
               className="hr-icon-button"
               disabled={!searchEnabled}
+              onClick={handleSearchToggle}
               type="button"
             >
               <svg aria-hidden="true" className="hr-shell-icon" fill="none" viewBox="0 0 24 24">
@@ -222,8 +332,49 @@ export function PhaseOneAppShell() {
           </div>
         </header>
 
+        {searchOpen ? (
+          <section aria-label="Search panel" className="hr-search-panel">
+            <div className="hr-search-panel-row">
+              <input
+                autoFocus
+                className="hr-input hr-search-input"
+                onChange={(event) => setSearchQuery(event.currentTarget.value)}
+                placeholder="Search actions, quizzes, and vault topics"
+                type="search"
+                value={searchQuery}
+              />
+              <Button onClick={() => setSearchOpen(false)} size="sm" variant="quiet">
+                Close
+              </Button>
+            </div>
+
+            <div className="hr-search-results" role="list">
+              {filteredSearchEntries.length > 0 ? (
+                filteredSearchEntries.map((entry) => (
+                  <button
+                    className="hr-search-result"
+                    key={entry.id}
+                    onClick={() => handleSearchResultSelect(entry.tab)}
+                    role="listitem"
+                    type="button"
+                  >
+                    <span className="hr-search-result-title">{entry.label}</span>
+                    <span className="hr-search-result-meta">{entry.meta}</span>
+                  </button>
+                ))
+              ) : (
+                <p className="hr-search-empty">
+                  No matches yet. Try a category, action, or vault topic.
+                </p>
+              )}
+            </div>
+          </section>
+        ) : null}
+
         <div className="hr-shell-main">
-          {!onboardingIncomplete ? <BottomTabs activeTab={activeTab} onTabChange={handleTabChange} /> : null}
+          {!onboardingIncomplete ? (
+            <BottomTabs activeTab={activeTab} onTabChange={handleTabChange} />
+          ) : null}
 
           <div className="hr-shell-body" ref={shellBodyRef}>
             {onboardingIncomplete ? (

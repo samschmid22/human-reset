@@ -50,19 +50,20 @@ export function TabIcon({ tab }: TabIconProps) {
     case "roadmap":
       return (
         <IconFrame>
-          <path d="M4.5 18c3.5-8 11.5-8 15-1" />
-          <path d="M6 15.5c3.5-5.8 8.9-5.5 12-.8" />
-          <circle cx="7" cy="14.5" r="1.2" />
-          <circle cx="13" cy="11.2" r="1.2" />
-          <circle cx="18" cy="14.2" r="1.2" />
+          <path d="M5 20V6.5" />
+          <path d="M5 7h14l-2.8 3.6L19 14H5" />
+          <circle cx="5" cy="19" r="1.4" />
         </IconFrame>
       );
 
     case "vault":
       return (
         <IconFrame>
-          <path d="M5 10.5 12 4l7 6.5V19a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z" />
-          <rect height="7" rx="1" width="6" x="9" y="13" />
+          <path d="M5 6.6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v11.2a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z" />
+          <path d="M9 4.6v15" />
+          <path d="M12 8h4.5" />
+          <path d="M12 11h3.5" />
+          <path d="M12 14h4" />
         </IconFrame>
       );
 
