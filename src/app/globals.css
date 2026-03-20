@@ -427,6 +427,138 @@ select {
   padding: var(--hr-space-3);
 }
 
+.hr-input {
+  background: var(--hr-surface-1);
+  border: 1px solid var(--hr-border);
+  border-radius: var(--hr-radius-sm);
+  color: var(--hr-text-primary);
+  font-size: 0.9rem;
+  line-height: 1.4;
+  padding: 10px 12px;
+  width: 100%;
+}
+
+.hr-input:focus {
+  border-color: var(--hr-accent);
+  box-shadow: 0 0 0 2px rgba(47, 106, 69, 0.14);
+  outline: none;
+}
+
+.hr-textarea {
+  min-height: 92px;
+  resize: vertical;
+}
+
+.hr-chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hr-space-2);
+}
+
+.hr-toggle-chip {
+  background: var(--hr-surface-2);
+  border: 1px solid var(--hr-border);
+  border-radius: 999px;
+  color: var(--hr-text-secondary);
+  cursor: pointer;
+  font-size: 0.77rem;
+  font-weight: 600;
+  line-height: 1;
+  padding: 9px 12px;
+  text-align: left;
+}
+
+.hr-toggle-chip.is-selected {
+  background: var(--hr-accent-soft);
+  border-color: #b8c8bb;
+  color: var(--hr-accent-deep);
+}
+
+.hr-option-grid {
+  display: grid;
+  gap: var(--hr-space-2);
+}
+
+.hr-option-grid--compact {
+  grid-template-columns: 1fr;
+}
+
+.hr-option-card {
+  background: var(--hr-surface-1);
+  border: 1px solid var(--hr-border);
+  border-radius: var(--hr-radius-sm);
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: var(--hr-space-2);
+  padding: var(--hr-space-3);
+  text-align: left;
+}
+
+.hr-option-card.is-selected {
+  background: var(--hr-accent-soft);
+  border-color: #b8c8bb;
+}
+
+.hr-option-header {
+  align-items: center;
+  display: flex;
+  gap: var(--hr-space-2);
+  justify-content: space-between;
+}
+
+.hr-range-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hr-space-2);
+}
+
+.hr-range {
+  accent-color: var(--hr-accent);
+  flex: 1;
+  min-width: 180px;
+}
+
+.hr-inline-input-row {
+  align-items: center;
+  display: flex;
+  gap: var(--hr-space-2);
+}
+
+.hr-removable-chip {
+  background: var(--hr-surface-3);
+  border: 1px solid var(--hr-border);
+  border-radius: 999px;
+  color: var(--hr-text-secondary);
+  cursor: pointer;
+  font-size: 0.74rem;
+  font-weight: 600;
+  line-height: 1;
+  padding: 6px 10px;
+}
+
+.hr-step-track {
+  display: grid;
+  gap: var(--hr-space-2);
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.hr-step-dot {
+  background: #d6ddd5;
+  border-radius: 999px;
+  height: 6px;
+}
+
+.hr-step-dot.is-active {
+  background: var(--hr-accent);
+}
+
+.hr-onboarding-nav {
+  justify-content: space-between;
+}
+
 .hr-tabs {
   background: rgba(246, 248, 244, 0.98);
   border-top: 1px solid var(--hr-border);

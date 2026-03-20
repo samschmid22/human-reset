@@ -3,6 +3,10 @@
 import { useMemo, useState } from "react";
 
 import { BottomTabs } from "@/components/navigation/bottom-tabs";
+import { OnboardingFlow } from "@/features/onboarding/onboarding-flow";
+import { createDefaultOnboardingState } from "@/features/onboarding/constants";
+import { loadOnboardingState, saveOnboardingState } from "@/features/onboarding/storage";
+import { OnboardingState } from "@/features/onboarding/types";
 import { HomeScreen } from "@/features/phase-one/screens/home-screen";
 import { ProfileScreen } from "@/features/phase-one/screens/profile-screen";
 import { QuizzesScreen } from "@/features/phase-one/screens/quizzes-screen";
@@ -14,6 +18,10 @@ const searchableTabs: TabId[] = ["home", "roadmap", "vault"];
 
 export function PhaseOneAppShell() {
   const [activeTab, setActiveTab] = useState<TabId>("home");
+  const [onboardingState, setOnboardingState] = useState<OnboardingState>(
+    () =>
+      typeof window === "undefined" ? createDefaultOnboardingState() : loadOnboardingState(),
+  );
 
   const ActiveScreen = useMemo(() => {
     switch (activeTab) {
@@ -32,8 +40,22 @@ export function PhaseOneAppShell() {
     }
   }, [activeTab]);
 
-  const searchEnabled = searchableTabs.includes(activeTab);
-  const activeTabLabel = TABS.find((tab) => tab.id === activeTab)?.label ?? "Home";
+  const onboardingIncomplete = !onboardingState.completed;
+  const searchEnabled = !onboardingIncomplete && searchableTabs.includes(activeTab);
+  const activeTabLabel = onboardingIncomplete
+    ? "Onboarding"
+    : (TABS.find((tab) => tab.id === activeTab)?.label ?? "Home");
+
+  function handleOnboardingStateChange(next: OnboardingState): void {
+    setOnboardingState(next);
+    saveOnboardingState(next);
+  }
+
+  function handleOnboardingComplete(next: OnboardingState): void {
+    setOnboardingState(next);
+    saveOnboardingState(next);
+    setActiveTab("home");
+  }
 
   return (
     <div className="hr-app-root">
@@ -68,10 +90,18 @@ export function PhaseOneAppShell() {
         </header>
 
         <div className="hr-shell-body">
-          <ActiveScreen />
+          {onboardingIncomplete ? (
+            <OnboardingFlow
+              initialState={onboardingState}
+              onComplete={handleOnboardingComplete}
+              onStateChange={handleOnboardingStateChange}
+            />
+          ) : (
+            <ActiveScreen />
+          )}
         </div>
 
-        <BottomTabs activeTab={activeTab} onTabChange={setActiveTab} />
+        {!onboardingIncomplete ? <BottomTabs activeTab={activeTab} onTabChange={setActiveTab} /> : null}
       </main>
     </div>
   );
