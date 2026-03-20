@@ -58,12 +58,12 @@ export function PreferencesStep({
   }
 
   return (
-    <ContentStack>
-      <Card tone="soft">
+    <ContentStack className="hr-onboarding-step-stack">
+      <Card className="hr-onboarding-search-card" tone="soft">
         <p className="hr-field-label">Search Sensitivities</p>
         <input
           aria-label="Search sensitivities"
-          className="hr-input"
+          className="hr-input hr-onboarding-search-input"
           onChange={(event) => setSearchQuery(event.target.value)}
           placeholder="Search and select sensitivity inputs..."
           type="search"
@@ -71,7 +71,7 @@ export function PreferencesStep({
         />
       </Card>
 
-      <Card>
+      <Card className="hr-onboarding-chip-card">
         <InlineGroup>
           <Pill tone="accent">{selectedSensitivities.length} selected</Pill>
           <Pill>Editable later</Pill>
@@ -95,7 +95,7 @@ export function PreferencesStep({
         </div>
       </Card>
 
-      <Card tone="soft">
+      <Card className="hr-onboarding-search-card" tone="soft">
         <p className="hr-field-label">Add Another Sensitivity</p>
         <div className="hr-inline-input-row">
           <input
@@ -127,7 +127,7 @@ export function PreferencesStep({
         ) : null}
       </Card>
 
-      <Card>
+      <Card className="hr-onboarding-chip-card">
         <p className="hr-field-label">Preference</p>
         <div className="hr-option-grid hr-option-grid--compact">
           <button

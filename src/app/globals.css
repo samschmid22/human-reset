@@ -452,7 +452,7 @@ select {
 .hr-chip-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--hr-space-2);
+  gap: 6px;
 }
 
 .hr-toggle-chip {
@@ -461,10 +461,11 @@ select {
   border-radius: 999px;
   color: var(--hr-text-secondary);
   cursor: pointer;
-  font-size: 0.77rem;
+  font-size: 0.74rem;
   font-weight: 600;
   line-height: 1;
-  padding: 9px 12px;
+  min-height: 34px;
+  padding: 8px 10px;
   text-align: left;
 }
 
@@ -556,7 +557,62 @@ select {
 }
 
 .hr-onboarding-nav {
+  align-items: center;
+  gap: var(--hr-space-2);
   justify-content: space-between;
+}
+
+.hr-onboarding-screen {
+  gap: var(--hr-space-4);
+}
+
+.hr-onboarding-header-card {
+  gap: 10px;
+  padding: 14px;
+}
+
+.hr-onboarding-header-card .hr-feature-title {
+  font-size: 1.36rem;
+}
+
+.hr-onboarding-header-copy {
+  font-size: 0.86rem;
+  line-height: 1.42;
+}
+
+.hr-onboarding-step-track {
+  gap: 6px;
+}
+
+.hr-onboarding-step-stack {
+  gap: 10px;
+}
+
+.hr-onboarding-search-card,
+.hr-onboarding-chip-card,
+.hr-onboarding-textarea-card {
+  gap: 10px;
+  padding: 14px;
+}
+
+.hr-onboarding-search-input {
+  font-size: 0.86rem;
+  padding: 8px 10px;
+}
+
+.hr-onboarding-textarea {
+  min-height: 74px;
+}
+
+.hr-onboarding-cta-card {
+  bottom: calc(var(--hr-space-2) + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -10px 24px rgba(21, 34, 26, 0.08);
+  position: sticky;
+  z-index: 3;
+}
+
+.hr-onboarding-nav .hr-button {
+  flex: 1;
 }
 
 .hr-linear-progress {
@@ -752,12 +808,72 @@ select {
 }
 
 @media (max-width: 420px) {
+  .hr-shell-header {
+    grid-template-columns: 32px minmax(0, 1fr) 32px;
+    padding: 10px 12px;
+  }
+
+  .hr-icon-button {
+    border-radius: 10px;
+    height: 32px;
+    width: 32px;
+  }
+
   .hr-shell-title {
-    font-size: 1.62rem;
+    font-size: 1.54rem;
   }
 
   .hr-shell-body {
-    padding: var(--hr-space-4);
+    padding: 14px 12px;
+  }
+
+  .hr-screen-container {
+    gap: var(--hr-space-4);
+  }
+
+  .hr-card {
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .hr-onboarding-screen {
+    gap: 12px;
+  }
+
+  .hr-onboarding-header-card {
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .hr-onboarding-header-card .hr-feature-title {
+    font-size: 1.24rem;
+  }
+
+  .hr-onboarding-header-copy {
+    font-size: 0.82rem;
+  }
+
+  .hr-onboarding-search-card,
+  .hr-onboarding-chip-card,
+  .hr-onboarding-textarea-card,
+  .hr-onboarding-cta-card {
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .hr-onboarding-search-input {
+    font-size: 0.85rem;
+    padding: 7px 10px;
+  }
+
+  .hr-onboarding-textarea {
+    min-height: 68px;
+  }
+
+  .hr-toggle-chip {
+    font-size: 0.72rem;
+    min-height: 32px;
+    padding: 7px 10px;
   }
 }
 

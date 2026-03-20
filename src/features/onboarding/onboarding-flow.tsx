@@ -231,8 +231,8 @@ export function OnboardingFlow({ initialState, onComplete, onStateChange }: Onbo
   }
 
   return (
-    <ScreenContainer>
-      <Card>
+    <ScreenContainer className="hr-onboarding-screen">
+      <Card className="hr-onboarding-header-card">
         <InlineGroup>
           <Pill tone="accent">
             Step {currentStepIndex + 1} of {ONBOARDING_STEPS.length}
@@ -240,8 +240,8 @@ export function OnboardingFlow({ initialState, onComplete, onStateChange }: Onbo
           <Pill>Onboarding</Pill>
         </InlineGroup>
         <h2 className="hr-feature-title">{metadata.title}</h2>
-        <p className="hr-copy">{metadata.subtitle}</p>
-        <div className="hr-step-track">
+        <p className="hr-copy hr-onboarding-header-copy">{metadata.subtitle}</p>
+        <div className="hr-step-track hr-onboarding-step-track">
           {ONBOARDING_STEPS.map((step, index) => (
             <div
               className={cn("hr-step-dot", index <= currentStepIndex && "is-active")}
@@ -253,7 +253,7 @@ export function OnboardingFlow({ initialState, onComplete, onStateChange }: Onbo
 
       {renderStep()}
 
-      <Card tone="soft">
+      <Card className="hr-onboarding-cta-card" tone="soft">
         <InlineGroup className="hr-onboarding-nav">
           <Button
             disabled={currentStepIndex === 0}

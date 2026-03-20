@@ -33,12 +33,12 @@ export function ConcernsStep({
   }, [options, searchQuery]);
 
   return (
-    <ContentStack>
-      <Card tone="soft">
+    <ContentStack className="hr-onboarding-step-stack">
+      <Card className="hr-onboarding-search-card" tone="soft">
         <p className="hr-field-label">Search Concerns</p>
         <input
           aria-label="Search concerns"
-          className="hr-input"
+          className="hr-input hr-onboarding-search-input"
           onChange={(event) => setSearchQuery(event.target.value)}
           placeholder="Search outcomes (sleep, energy, skin, stress...)"
           type="search"
@@ -46,7 +46,7 @@ export function ConcernsStep({
         />
       </Card>
 
-      <Card>
+      <Card className="hr-onboarding-chip-card">
         <InlineGroup>
           <Pill tone="accent">{concerns.length} selected</Pill>
           <Pill>Multi-select</Pill>
@@ -74,10 +74,10 @@ export function ConcernsStep({
         ) : null}
       </Card>
 
-      <Card tone="soft">
+      <Card className="hr-onboarding-textarea-card" tone="soft">
         <p className="hr-field-label">I&apos;m Here For Something Specific</p>
         <textarea
-          className="hr-input hr-textarea"
+          className="hr-input hr-textarea hr-onboarding-textarea"
           maxLength={180}
           onChange={(event) => onCustomConcernChange(event.target.value)}
           placeholder="Optional: add your specific concern in your own words."
