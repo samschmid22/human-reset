@@ -63,26 +63,6 @@ function toPhaseStateLabel(state: PhaseVisualState): string {
   return "Waiting";
 }
 
-function toPhaseStateCopy(state: PhaseVisualState): string {
-  if (state === "current") {
-    return "Primary focus right now.";
-  }
-
-  if (state === "next") {
-    return "Next in your journey.";
-  }
-
-  if (state === "complete") {
-    return "This phase is largely finished.";
-  }
-
-  if (state === "later") {
-    return "Planned after current phases settle.";
-  }
-
-  return "No actions assigned yet.";
-}
-
 export function RoadmapScreen({
   actionState,
   onActionDone,
@@ -260,15 +240,16 @@ export function RoadmapScreen({
       )}
 
       <SectionHeader
-        subtitle="Move from biggest friction points to stable home defaults."
-        title="Reset Journey"
+        subtitle="Progress through a phased timeline from immediate wins to stable defaults."
+        title="Roadmap Timeline"
       />
 
       <Card className="hr-roadmap-journey-card">
         <ol className="hr-roadmap-journey-list">
           {phaseProgress.map((entry, index) => {
             const state = getPhaseVisualState(index, entry.count);
-            const topItem = report.roadmapByPhase[entry.phase][0];
+            const items = report.roadmapByPhase[entry.phase];
+            const topItem = items[0];
 
             return (
               <li className={cn("hr-roadmap-journey-item", `is-${state}`)} key={entry.phase}>
@@ -291,50 +272,18 @@ export function RoadmapScreen({
                       {entry.pending} active • {entry.completed} completed • {entry.snoozed} snoozed
                     </p>
                   ) : null}
+
+                  {items.length > 0 ? (
+                    <ContentStack className="hr-roadmap-journey-actions">
+                      {items.map((item) => renderActionRow(item))}
+                    </ContentStack>
+                  ) : null}
                 </div>
               </li>
             );
           })}
         </ol>
       </Card>
-
-      <SectionHeader
-        subtitle="Practical actions grouped by phase, status, and current sequence."
-        title="Phase Details"
-      />
-
-      <ContentStack className="hr-roadmap-phase-stack">
-        {phaseProgress.map((entry, index) => {
-          const items = report.roadmapByPhase[entry.phase];
-          const state = getPhaseVisualState(index, entry.count);
-
-          if (items.length === 0) {
-            return null;
-          }
-
-          return (
-            <Card className={cn("hr-roadmap-phase-card", `is-${state}`)} key={entry.phase}>
-              <div className="hr-card-row">
-                <div>
-                  <p className="hr-overline">Phase</p>
-                  <h3 className="hr-item-title">{ROADMAP_PHASE_LABELS[entry.phase]}</h3>
-                  <p className="hr-item-description">{toPhaseStateCopy(state)}</p>
-                </div>
-                <div className="hr-roadmap-phase-header-right">
-                  <span className={cn("hr-roadmap-phase-state", `is-${state}`)}>
-                    {toPhaseStateLabel(state)}
-                  </span>
-                  <span className="hr-roadmap-phase-count">{items.length}</span>
-                </div>
-              </div>
-
-              <ContentStack>
-                {items.map((item) => renderActionRow(item))}
-              </ContentStack>
-            </Card>
-          );
-        })}
-      </ContentStack>
     </ScreenContainer>
   );
 }

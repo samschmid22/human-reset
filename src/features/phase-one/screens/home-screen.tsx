@@ -99,6 +99,8 @@ export function HomeScreen({
   const calibrationPercent =
     report.totalQuizCount > 0 ? Math.round((report.completedQuizCount / report.totalQuizCount) * 100) : 0;
   const maturity = getPlanMaturity(report.completedQuizCount, report.totalQuizCount);
+  const hasSideColumn =
+    Boolean(nextBestQuiz) || snoozedActions.length > 0 || completedActions.length > 0;
 
   function toggleDetails(actionId: string): void {
     setExpandedActionId((current) => (current === actionId ? null : actionId));
@@ -172,7 +174,7 @@ export function HomeScreen({
 
   return (
     <ScreenContainer className="hr-home-screen">
-      <section className="hr-home-dashboard-grid">
+      <section className="hr-home-intro-stack">
         <Card className="hr-home-hero" tone="accent">
           <div className="hr-home-hero-head">
             <p className="hr-overline">Dashboard</p>
@@ -217,74 +219,91 @@ export function HomeScreen({
           </div>
           <div className="hr-kpi-grid">
             <div className="hr-kpi">
-              <span className="hr-kpi-label">Plan Maturity</span>
-              <strong>{calibrationPercent}%</strong>
+              <div className="hr-kpi-main">
+                <span className="hr-kpi-label">Plan Maturity</span>
+                <strong>{calibrationPercent}%</strong>
+              </div>
               <span className="hr-kpi-note">{toMaturityStageLabel(maturity.stage)}</span>
             </div>
             <div className="hr-kpi">
-              <span className="hr-kpi-label">Top Category</span>
-              <strong>{report.highestPriorityCategory ?? "Pending"}</strong>
+              <div className="hr-kpi-main">
+                <span className="hr-kpi-label">Top Category</span>
+                <strong>{report.highestPriorityCategory ?? "Pending"}</strong>
+              </div>
               <span className="hr-kpi-note">Current emphasis</span>
             </div>
             <div className="hr-kpi">
-              <span className="hr-kpi-label">Actions Today</span>
-              <strong>{pendingActions.length}</strong>
+              <div className="hr-kpi-main">
+                <span className="hr-kpi-label">Actions Today</span>
+                <strong>{pendingActions.length}</strong>
+              </div>
               <span className="hr-kpi-note">{report.dailyPlan.maxActions} max/day</span>
             </div>
             <div className="hr-kpi">
-              <span className="hr-kpi-label">Reset Depth</span>
-              <strong>{report.priorities.length}</strong>
+              <div className="hr-kpi-main">
+                <span className="hr-kpi-label">Reset Depth</span>
+                <strong>{report.priorities.length}</strong>
+              </div>
               <span className="hr-kpi-note">{activePhases} active phases</span>
             </div>
           </div>
         </Card>
       </section>
 
-      <div className="hr-home-flow">
-        {maturity.stage !== "calibrated" ? (
-          <Card className="hr-calibration-banner" tone="soft">
-            <p className="hr-overline">Plan Maturity</p>
-            <h3 className="hr-item-title">{maturity.title}</h3>
-            <p className="hr-copy">{maturity.summary}</p>
-          </Card>
-        ) : null}
+      <section className="hr-home-content-grid">
+        <div className="hr-home-main-column">
+          {maturity.stage !== "calibrated" ? (
+            <Card className="hr-calibration-banner" tone="soft">
+              <p className="hr-overline">Plan Maturity</p>
+              <h3 className="hr-item-title">{maturity.title}</h3>
+              <p className="hr-copy">{maturity.summary}</p>
+            </Card>
+          ) : null}
 
-        <SectionHeader subtitle="Do the top step first, then continue if capacity allows." title="Today’s Steps" />
+          <SectionHeader
+            subtitle="Do the top step first, then continue if capacity allows."
+            title="Today’s Steps"
+          />
 
-        {actionRows.length > 0 ? (
-          <Card className="hr-action-list-card">
-            {additionalActions.length > 0 ? (
-              <ContentStack>
-                {additionalActions.map((row) => renderActionListRow(row))}
-              </ContentStack>
-            ) : (
-              <p className="hr-item-description">Today is focused on your primary action.</p>
-            )}
-          </Card>
-        ) : (
-          <Card className="hr-empty-state" tone="soft">
-            <p className="hr-empty-title">No actions scheduled yet</p>
-            <p className="hr-empty-copy">Complete a quiz to generate your first guided reset actions.</p>
-          </Card>
-        )}
+          {actionRows.length > 0 ? (
+            <Card className="hr-action-list-card">
+              {additionalActions.length > 0 ? (
+                <ContentStack>
+                  {additionalActions.map((row) => renderActionListRow(row))}
+                </ContentStack>
+              ) : (
+                <p className="hr-item-description">Today is focused on your primary action.</p>
+              )}
+            </Card>
+          ) : (
+            <Card className="hr-empty-state" tone="soft">
+              <p className="hr-empty-title">No actions scheduled yet</p>
+              <p className="hr-empty-copy">
+                Complete a quiz to generate your first guided reset actions.
+              </p>
+            </Card>
+          )}
+        </div>
 
-        {nextBestQuiz ? (
-          <Card className="hr-home-next-card" tone="soft">
-            <div className="hr-card-row">
-              <div>
-                <p className="hr-overline">Next Category</p>
-                <h3 className="hr-item-title">{nextBestQuiz.title}</h3>
-                <p className="hr-item-description">Complete this quiz to sharpen ranking and phase order.</p>
-              </div>
-              <Button onClick={onOpenQuizzes} size="sm" variant="secondary">
-                Continue Quiz
-              </Button>
-            </div>
-          </Card>
-        ) : null}
+        {hasSideColumn ? (
+          <aside className="hr-home-side-column">
+            {nextBestQuiz ? (
+              <Card className="hr-home-next-card" tone="soft">
+                <div className="hr-card-row">
+                  <div>
+                    <p className="hr-overline">Next Category</p>
+                    <h3 className="hr-item-title">{nextBestQuiz.title}</h3>
+                    <p className="hr-item-description">
+                      Complete this quiz to sharpen ranking and phase order.
+                    </p>
+                  </div>
+                  <Button onClick={onOpenQuizzes} size="sm" variant="secondary">
+                    Continue Quiz
+                  </Button>
+                </div>
+              </Card>
+            ) : null}
 
-        {(snoozedActions.length > 0 || completedActions.length > 0) ? (
-          <section className="hr-home-secondary-grid">
             {snoozedActions.length > 0 ? (
               <Card>
                 <SectionHeader className="hr-subsection-header" title="Snoozed for Later" />
@@ -298,9 +317,9 @@ export function HomeScreen({
                 <ContentStack>{completedActions.map((row) => renderActionListRow(row))}</ContentStack>
               </Card>
             ) : null}
-          </section>
+          </aside>
         ) : null}
-      </div>
+      </section>
     </ScreenContainer>
   );
 }

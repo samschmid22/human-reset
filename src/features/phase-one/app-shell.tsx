@@ -24,7 +24,7 @@ import { ProfileScreen } from "@/features/phase-one/screens/profile-screen";
 import { QuizzesScreen } from "@/features/phase-one/screens/quizzes-screen";
 import { RoadmapScreen } from "@/features/phase-one/screens/roadmap-screen";
 import { VaultScreen } from "@/features/phase-one/screens/vault-screen";
-import { TABS, TabId } from "@/features/phase-one/tabs";
+import { TabId } from "@/features/phase-one/tabs";
 import { QUIZ_DEFINITIONS } from "@/features/quizzes/registry";
 import {
   createInitialQuizState,
@@ -171,13 +171,6 @@ export function PhaseOneAppShell() {
 
     shellBodyRef.current?.scrollTo({ top: 0 });
   }, [activeTab, onboardingIncomplete]);
-
-  useEffect(() => {
-    if (!searchEnabled) {
-      setSearchOpen(false);
-      setSearchQuery("");
-    }
-  }, [searchEnabled]);
 
   function handleOnboardingStateChange(next: OnboardingState): void {
     setOnboardingState(next);
