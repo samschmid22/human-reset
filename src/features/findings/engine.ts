@@ -22,9 +22,14 @@ const OPTION_WEIGHT: Record<QuizOptionId, number> = {
 const CATEGORY_CONCERN_MAP: Record<string, string[]> = {
   "air + fragrance": [
     "sleep",
+    "energy",
+    "hormones",
+    "fertility/pregnancy/baby safety",
+    "skin",
     "focus",
     "mood stability",
     "stress/overwhelm",
+    "inflammation",
     "migraines/headaches",
     "allergies/asthma",
     "pet safety",
@@ -32,16 +37,158 @@ const CATEGORY_CONCERN_MAP: Record<string, string[]> = {
     "detox my home fast",
   ],
   water: [
+    "sleep",
+    "energy",
     "skin",
     "gut",
     "hormones",
     "fertility/pregnancy/baby safety",
+    "weight/body composition",
+    "focus",
+    "mood stability",
+    "stress/overwhelm",
     "inflammation",
     "migraines/headaches",
     "allergies/asthma",
     "pet safety",
     "detox my home fast",
   ],
+  "cleaning sprays": [
+    "sleep",
+    "energy",
+    "hormones",
+    "fertility/pregnancy/baby safety",
+    "skin",
+    "focus",
+    "mood stability",
+    "stress/overwhelm",
+    "inflammation",
+    "migraines/headaches",
+    "allergies/asthma",
+    "pet safety",
+    "moving into a new place",
+    "detox my home fast",
+  ],
+  "cookware + food storage": [
+    "energy",
+    "hormones",
+    "fertility/pregnancy/baby safety",
+    "skin",
+    "gut",
+    "weight/body composition",
+    "focus",
+    "mood stability",
+    "inflammation",
+    "migraines/headaches",
+    "allergies/asthma",
+    "detox my home fast",
+  ],
+  "food reset": [
+    "sleep",
+    "energy",
+    "hormones",
+    "fertility/pregnancy/baby safety",
+    "skin",
+    "gut",
+    "weight/body composition",
+    "focus",
+    "mood stability",
+    "stress/overwhelm",
+    "inflammation",
+    "migraines/headaches",
+    "allergies/asthma",
+    "detox my home fast",
+  ],
+  laundry: [
+    "sleep",
+    "energy",
+    "hormones",
+    "fertility/pregnancy/baby safety",
+    "skin",
+    "focus",
+    "mood stability",
+    "stress/overwhelm",
+    "inflammation",
+    "migraines/headaches",
+    "allergies/asthma",
+    "pet safety",
+    "moving into a new place",
+    "detox my home fast",
+  ],
+  "mind + stress": [
+    "sleep",
+    "energy",
+    "hormones",
+    "skin",
+    "gut",
+    "weight/body composition",
+    "focus",
+    "mood stability",
+    "stress/overwhelm",
+    "inflammation",
+    "migraines/headaches",
+    "allergies/asthma",
+    "detox my home fast",
+  ],
+  "personal care": [
+    "sleep",
+    "energy",
+    "hormones",
+    "fertility/pregnancy/baby safety",
+    "skin",
+    "focus",
+    "mood stability",
+    "stress/overwhelm",
+    "inflammation",
+    "migraines/headaches",
+    "allergies/asthma",
+    "pet safety",
+    "detox my home fast",
+  ],
+  "pest control": [
+    "sleep",
+    "energy",
+    "hormones",
+    "fertility/pregnancy/baby safety",
+    "skin",
+    "focus",
+    "mood stability",
+    "stress/overwhelm",
+    "inflammation",
+    "migraines/headaches",
+    "allergies/asthma",
+    "pet safety",
+    "moving into a new place",
+    "detox my home fast",
+  ],
+  "sleep environment": [
+    "sleep",
+    "energy",
+    "hormones",
+    "skin",
+    "gut",
+    "weight/body composition",
+    "focus",
+    "mood stability",
+    "stress/overwhelm",
+    "inflammation",
+    "migraines/headaches",
+    "allergies/asthma",
+    "detox my home fast",
+  ],
+};
+
+const CATEGORY_TRIGGER_QUESTIONS: Record<string, string[]> = {
+  "air-fragrance": ["q1", "q2", "q3", "q4", "q5", "q6", "q7", "q9"],
+  water: ["q1", "q3", "q4", "q6", "q7", "q10"],
+  "cleaning-sprays": ["q1", "q2", "q4", "q5", "q9", "q10"],
+  "cookware-food-storage": ["q2", "q3", "q6", "q8", "q10"],
+  "food-reset": ["q1", "q3", "q4", "q5", "q6", "q9", "q10"],
+  laundry: ["q1", "q2", "q3", "q4", "q6", "q10"],
+  "mind-stress": ["q1", "q2", "q3", "q5", "q6", "q7", "q10"],
+  "personal-care": ["q1", "q2", "q3", "q4", "q5", "q8", "q10"],
+  "pest-control": ["q1", "q2", "q3", "q4", "q5", "q10"],
+  "sleep-environment": ["q1", "q2", "q3", "q4", "q6", "q8", "q9", "q10"],
 };
 
 function round(value: number): number {
@@ -199,6 +346,24 @@ function buildSensitivityMultiplier(
     flags: [...new Set(flags)],
     multiplier: round(multiplier),
   };
+}
+
+function isCategoryTrigger(
+  quizId: string,
+  questionId: string,
+  optionId: QuizOptionId,
+): boolean {
+  if (optionId !== "C" && optionId !== "D") {
+    return false;
+  }
+
+  const triggerQuestions = CATEGORY_TRIGGER_QUESTIONS[quizId];
+
+  if (!triggerQuestions) {
+    return false;
+  }
+
+  return triggerQuestions.includes(questionId);
 }
 
 function sortPriorities(items: RoadmapItem[]): RoadmapItem[] {
@@ -381,7 +546,9 @@ export function generateFindingsRoadmap(input: GenerateFindingsInput): FindingsR
       }
 
       const template = getActionTemplate(quiz, question);
-      const trigger = template.triggerOnHighAnswer && weight >= 2;
+      const trigger =
+        (template.triggerOnHighAnswer && weight >= 2) ||
+        isCategoryTrigger(quiz.id, question.id, optionId);
       const sensitivity = buildSensitivityMultiplier(
         input.onboarding,
         quiz.category,
