@@ -15,6 +15,14 @@ const vaultTopics = [
 export function VaultScreen() {
   return (
     <ScreenContainer>
+      <Card className="hr-empty-state" tone="soft">
+        <p className="hr-empty-title">No saved vault topics yet</p>
+        <p className="hr-empty-copy">
+          This space will hold structured educational content by category with clean, searchable
+          entries.
+        </p>
+      </Card>
+
       <SectionHeader subtitle="Structured knowledge base with searchable topic pages." title="Vault" />
 
       <Card tone="soft">

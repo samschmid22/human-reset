@@ -30,6 +30,14 @@ const roadmapPhases = [
 export function RoadmapScreen() {
   return (
     <ScreenContainer>
+      <Card className="hr-empty-state" tone="soft">
+        <p className="hr-empty-title">Roadmap is waiting for your first quiz</p>
+        <p className="hr-empty-copy">
+          As quizzes are completed, this view will rank actions by priority and keep phase progress
+          organized.
+        </p>
+      </Card>
+
       <SectionHeader
         subtitle="Generated from findings after quiz completion (placeholder list in Phase 1)."
         title="By Priority"

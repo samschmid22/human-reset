@@ -20,6 +20,13 @@ const quizCategories = [
 export function QuizzesScreen() {
   return (
     <ScreenContainer>
+      <Card className="hr-empty-state" tone="soft">
+        <p className="hr-empty-title">No quizzes started yet</p>
+        <p className="hr-empty-copy">
+          Start with any category. Responses will feed findings and roadmap ranking in later phases.
+        </p>
+      </Card>
+
       <SectionHeader
         subtitle="Structured inputs only. No user-facing score visuals in v1."
         title="Category Quizzes"

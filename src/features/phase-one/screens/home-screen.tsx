@@ -6,16 +6,19 @@ import { SectionHeader } from "@/components/ui/section-header";
 
 const todaysActions = [
   {
+    category: "Air + Fragrance",
     description: "Evaluate your indoor air and identify common pollutant sources.",
     duration: "15 min",
     title: "Assess Home Air Quality",
   },
   {
+    category: "Water",
     description: "Use your filtered water baseline for all drinking and hot beverages.",
     duration: "10 min",
     title: "Water Filter Baseline",
   },
   {
+    category: "Personal Care",
     description: "Switch one high-use product to a fragrance-free option from your lineup.",
     duration: "12 min",
     title: "Personal Care Swap",
@@ -33,22 +36,25 @@ export function HomeScreen() {
           </InlineGroup>
           <h2 className="hr-feature-title">Reduce Environmental Toxins</h2>
           <p className="hr-copy">
-            Begin with immediate surroundings. Small, practical changes create a more stable
-            baseline for the rest of the roadmap.
+            Begin with your immediate surroundings first. This shell keeps the experience calm,
+            structured, and ready for your roadmap logic in the next phase.
           </p>
         </ContentStack>
       </Card>
 
       <SectionHeader
-        subtitle="Placeholder action cards for Phase 1 shell wiring."
+        subtitle="Daily actions are placeholders for the phase-one shell and visual rhythm."
         title="Today&apos;s Actions"
       />
 
       <ContentStack>
         {todaysActions.map((action) => (
-          <Card key={action.title}>
+          <Card className="hr-home-action-card" key={action.title}>
             <div className="hr-card-row">
               <div>
+                <InlineGroup>
+                  <Pill>{action.category}</Pill>
+                </InlineGroup>
                 <h3 className="hr-item-title">{action.title}</h3>
                 <p className="hr-item-description">{action.description}</p>
               </div>
@@ -70,7 +76,7 @@ export function HomeScreen() {
       </ContentStack>
 
       <SectionHeader
-        subtitle="Progress reflects roadmap completion, not quiz scores."
+        subtitle="Progress reflects roadmap completion, never quiz score visuals."
         title="Your Progress"
       />
 
@@ -81,7 +87,9 @@ export function HomeScreen() {
             <span>Complete</span>
           </div>
           <div className="hr-progress-copy">
-            <p className="hr-item-description">Roadmap completion placeholder</p>
+            <p className="hr-item-description">
+              Placeholder roadmap completion against your selected pace and category focus.
+            </p>
             <InlineGroup>
               <Pill>4 days active</Pill>
               <Pill>3 categories started</Pill>

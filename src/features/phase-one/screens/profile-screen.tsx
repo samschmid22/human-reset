@@ -16,6 +16,13 @@ const profileFields = [
 export function ProfileScreen() {
   return (
     <ScreenContainer>
+      <Card className="hr-empty-state" tone="soft">
+        <p className="hr-empty-title">Profile preferences are not set yet</p>
+        <p className="hr-empty-copy">
+          These local-only settings will personalize pace, focus style, and sensitivity context.
+        </p>
+      </Card>
+
       <SectionHeader subtitle="Local-only settings in v1 (no login required)." title="Profile" />
 
       <ContentStack>

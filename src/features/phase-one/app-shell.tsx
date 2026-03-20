@@ -8,7 +8,7 @@ import { ProfileScreen } from "@/features/phase-one/screens/profile-screen";
 import { QuizzesScreen } from "@/features/phase-one/screens/quizzes-screen";
 import { RoadmapScreen } from "@/features/phase-one/screens/roadmap-screen";
 import { VaultScreen } from "@/features/phase-one/screens/vault-screen";
-import { TabId } from "@/features/phase-one/tabs";
+import { TABS, TabId } from "@/features/phase-one/tabs";
 
 const searchableTabs: TabId[] = ["home", "roadmap", "vault"];
 
@@ -33,6 +33,7 @@ export function PhaseOneAppShell() {
   }, [activeTab]);
 
   const searchEnabled = searchableTabs.includes(activeTab);
+  const activeTabLabel = TABS.find((tab) => tab.id === activeTab)?.label ?? "Home";
 
   return (
     <div className="hr-app-root">
@@ -49,6 +50,7 @@ export function PhaseOneAppShell() {
           <div className="hr-shell-title-wrap">
             <p className="hr-shell-eyebrow">Guided Environmental Reset</p>
             <h1 className="hr-shell-title">The Human Reset</h1>
+            <p className="hr-shell-context">{activeTabLabel}</p>
           </div>
 
           <button
