@@ -689,6 +689,41 @@ select {
   gap: var(--hr-space-4);
 }
 
+.hr-action-card.is-completed {
+  background: #f3f7f2;
+  border-color: #c8d8c6;
+}
+
+.hr-action-card.is-snoozed {
+  background: #f5f7f4;
+  border-color: #d8dfd6;
+}
+
+.hr-action-pill-stack {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  gap: var(--hr-space-2);
+}
+
+.hr-action-status-note {
+  margin-top: 0;
+}
+
+.hr-action-detail-card {
+  margin-top: var(--hr-space-1);
+}
+
+.hr-action-detail-stack {
+  gap: var(--hr-space-2);
+}
+
+.hr-action-detail-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hr-space-1);
+}
+
 .hr-home-action-footer {
   align-items: center;
   display: flex;

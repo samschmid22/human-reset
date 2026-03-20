@@ -7,20 +7,16 @@ import { ScreenContainer } from "@/components/ui/layout";
 import { QuizHub } from "@/features/quizzes/components/quiz-hub";
 import { QuizPlayer } from "@/features/quizzes/components/quiz-player";
 import { getQuizDefinition, QUIZ_DEFINITIONS } from "@/features/quizzes/registry";
-import {
-  createEmptyQuizProgress,
-  createInitialQuizState,
-  loadQuizState,
-  normalizeQuizState,
-  saveQuizState,
-} from "@/features/quizzes/storage";
+import { createEmptyQuizProgress } from "@/features/quizzes/storage";
 import { QuizProgress, QuizState } from "@/features/quizzes/types";
 
-export function QuizzesScreen() {
+type QuizzesScreenProps = {
+  onQuizStateChange: (next: QuizState) => void;
+  quizState: QuizState;
+};
+
+export function QuizzesScreen({ onQuizStateChange, quizState }: QuizzesScreenProps) {
   const [selectedQuizId, setSelectedQuizId] = useState<string | null>(null);
-  const [quizState, setQuizState] = useState<QuizState>(() =>
-    typeof window === "undefined" ? createInitialQuizState() : loadQuizState(),
-  );
 
   const selectedQuiz = selectedQuizId ? getQuizDefinition(selectedQuizId) : null;
   const selectedProgress = selectedQuiz
@@ -28,11 +24,7 @@ export function QuizzesScreen() {
     : null;
 
   function commit(mutator: (current: QuizState) => QuizState): void {
-    setQuizState((current) => {
-      const normalized = normalizeQuizState(mutator(current), QUIZ_DEFINITIONS);
-      saveQuizState(normalized);
-      return normalized;
-    });
+    onQuizStateChange(mutator(quizState));
   }
 
   function handleProgressChange(nextProgress: QuizProgress): void {
