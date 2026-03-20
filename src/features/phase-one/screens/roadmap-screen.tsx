@@ -8,6 +8,7 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { getActionStatusView } from "@/features/actions/storage";
 import { ActionState, ActionStatus } from "@/features/actions/types";
 import { getRoadmapPhaseCount } from "@/features/findings/engine";
+import { getPlanMaturity } from "@/features/findings/plan-maturity";
 import { FindingsRoadmapResult, RoadmapItem, ROADMAP_PHASE_LABELS } from "@/features/findings/types";
 import { cn } from "@/lib/cn";
 
@@ -99,6 +100,7 @@ export function RoadmapScreen({
       { pending: 0, completed: 0, snoozed: 0 } as Record<ActionStatus, number>,
     );
   }, [actionState, report.priorities]);
+  const maturity = getPlanMaturity(report.completedQuizCount, report.totalQuizCount);
 
   function getPhaseVisualState(index: number, count: number): PhaseVisualState {
     if (count === 0) {
@@ -182,11 +184,14 @@ export function RoadmapScreen({
         <Card className="hr-empty-state" tone="soft">
           <p className="hr-empty-title">Roadmap is waiting for quiz findings</p>
           <p className="hr-empty-copy">
-            Complete a category quiz to generate your first phase journey and action queue.
+            Complete a category quiz to generate your first phased reset journey.
           </p>
         </Card>
       ) : (
         <Card className="hr-roadmap-summary-card" tone="soft">
+          <p className="hr-overline">{maturity.badge}</p>
+          <h2 className="hr-item-title">{maturity.title}</h2>
+          <p className="hr-item-description">{maturity.summary}</p>
           <InlineGroup className="hr-roadmap-summary-inline">
             <div className="hr-roadmap-summary-item">
               <span className="hr-kpi-label">Active</span>
@@ -201,14 +206,15 @@ export function RoadmapScreen({
               <strong>{statusSummary.snoozed}</strong>
             </div>
             <div className="hr-roadmap-summary-item">
-              <span className="hr-kpi-label">Total Actions</span>
-              <strong>{report.priorities.length}</strong>
+              <span className="hr-kpi-label">Coverage</span>
+              <strong>{report.completedQuizCount}/{report.totalQuizCount}</strong>
+              <span className="hr-kpi-note">{maturity.progressLabel}</span>
             </div>
           </InlineGroup>
         </Card>
       )}
 
-      <SectionHeader title="Roadmap Journey" />
+      <SectionHeader title="Reset Journey" />
 
       <Card className="hr-roadmap-journey-card">
         <ol className="hr-roadmap-journey-list">
@@ -239,7 +245,7 @@ export function RoadmapScreen({
         </ol>
       </Card>
 
-      <SectionHeader title="Actions by Phase" />
+      <SectionHeader title="Guided Steps by Phase" />
 
       <ContentStack className="hr-roadmap-phase-stack">
         {phaseProgress.map((entry, index) => {

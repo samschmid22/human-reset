@@ -7,6 +7,7 @@ import { ContentStack, ScreenContainer } from "@/components/ui/layout";
 import { SectionHeader } from "@/components/ui/section-header";
 import { getActionStatusView } from "@/features/actions/storage";
 import { ActionState, ActionStatus, ActionStatusView } from "@/features/actions/types";
+import { getPlanMaturity } from "@/features/findings/plan-maturity";
 import { FindingsRoadmapResult, RoadmapItem } from "@/features/findings/types";
 import { QuizDefinition } from "@/features/quizzes/types";
 import { cn } from "@/lib/cn";
@@ -48,22 +49,6 @@ function buildActionRows(actions: RoadmapItem[], actionState: ActionState): Acti
   }));
 }
 
-function toCalibrationLabel(completed: number, total: number): string {
-  if (total <= 0) {
-    return "Plan is waiting for quiz input";
-  }
-
-  if (completed <= 1) {
-    return "Calibrating early plan";
-  }
-
-  if (completed < total) {
-    return "Plan still refining";
-  }
-
-  return "Plan calibrated";
-}
-
 export function HomeScreen({
   actionState,
   onActionDone,
@@ -91,6 +76,7 @@ export function HomeScreen({
   const activePhases = Object.values(report.roadmapByPhase).filter((items) => items.length > 0).length;
   const calibrationPercent =
     report.totalQuizCount > 0 ? Math.round((report.completedQuizCount / report.totalQuizCount) * 100) : 0;
+  const maturity = getPlanMaturity(report.completedQuizCount, report.totalQuizCount);
 
   function toggleDetails(actionId: string): void {
     setExpandedActionId((current) => (current === actionId ? null : actionId));
@@ -152,14 +138,14 @@ export function HomeScreen({
     <ScreenContainer className="hr-home-screen">
       <section className="hr-home-dashboard-grid">
         <Card className="hr-home-hero" tone="accent">
-          <p className="hr-overline">Today</p>
+          <p className="hr-overline">Daily Reset</p>
           <h2 className="hr-feature-title">
-            {topPriority ? "Start with your top priority action" : "Take your next quiz to generate today’s plan"}
+            {topPriority ? "Your next clear reset step" : "Start your personal reset plan"}
           </h2>
           <p className="hr-copy">
             {topPriority
-              ? `${toFocusLabel(report.dailyPlan.focusStyle)} • up to ${report.dailyPlan.maxActions} actions today`
-              : "Your dashboard will populate as quiz input is completed."}
+              ? `${toFocusLabel(report.dailyPlan.focusStyle)} • up to ${report.dailyPlan.maxActions} guided actions today`
+              : "Complete a quiz to turn hidden patterns into a practical daily plan."}
           </p>
           {topPriority ? (
             <div className="hr-home-primary-action">
@@ -181,11 +167,9 @@ export function HomeScreen({
         <Card className="hr-home-stats" tone="surface">
           <div className="hr-kpi-grid">
             <div className="hr-kpi">
-              <span className="hr-kpi-label">Plan Calibration</span>
+              <span className="hr-kpi-label">Plan Maturity</span>
               <strong>{calibrationPercent}%</strong>
-              <span className="hr-kpi-note">
-                {report.completedQuizCount}/{report.totalQuizCount} quizzes
-              </span>
+              <span className="hr-kpi-note">{maturity.progressLabel}</span>
             </div>
             <div className="hr-kpi">
               <span className="hr-kpi-label">Top Category</span>
@@ -198,7 +182,7 @@ export function HomeScreen({
               <span className="hr-kpi-note">{report.dailyPlan.maxActions} max/day</span>
             </div>
             <div className="hr-kpi">
-              <span className="hr-kpi-label">Roadmap Depth</span>
+              <span className="hr-kpi-label">Reset Depth</span>
               <strong>{report.priorities.length}</strong>
               <span className="hr-kpi-note">{activePhases} active phases</span>
             </div>
@@ -206,16 +190,15 @@ export function HomeScreen({
         </Card>
       </section>
 
-      {report.completedQuizCount < report.totalQuizCount ? (
+      {maturity.stage !== "calibrated" ? (
         <Card className="hr-calibration-banner" tone="soft">
-          <p className="hr-overline">{toCalibrationLabel(report.completedQuizCount, report.totalQuizCount)}</p>
-          <p className="hr-copy">
-            Plan confidence is still building. Complete more category quizzes to sharpen action ranking.
-          </p>
+          <p className="hr-overline">{maturity.badge}</p>
+          <h3 className="hr-item-title">{maturity.title}</h3>
+          <p className="hr-copy">{maturity.summary}</p>
         </Card>
       ) : null}
 
-      <SectionHeader title="Today’s Action Queue" />
+      <SectionHeader title="Today’s Guided Steps" />
 
       {actionRows.length > 0 ? (
         <Card className="hr-action-list-card">
@@ -230,7 +213,7 @@ export function HomeScreen({
       ) : (
         <Card className="hr-empty-state" tone="soft">
           <p className="hr-empty-title">No actions scheduled yet</p>
-          <p className="hr-empty-copy">Complete a quiz to generate your first prioritized action queue.</p>
+          <p className="hr-empty-copy">Complete a quiz to generate your first guided reset actions.</p>
         </Card>
       )}
 
@@ -238,7 +221,7 @@ export function HomeScreen({
         <Card className="hr-home-next-card" tone="soft">
           <div className="hr-card-row">
             <div>
-              <p className="hr-overline">What to do next</p>
+              <p className="hr-overline">Sharpen your plan</p>
               <h3 className="hr-item-title">{nextBestQuiz.title}</h3>
               <p className="hr-item-description">{nextBestQuiz.description}</p>
             </div>

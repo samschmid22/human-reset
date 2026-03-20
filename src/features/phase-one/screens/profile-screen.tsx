@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ContentStack, ScreenContainer } from "@/components/ui/layout";
 import { SectionHeader } from "@/components/ui/section-header";
+import { getPlanMaturity } from "@/features/findings/plan-maturity";
 import { FindingsRoadmapResult } from "@/features/findings/types";
 import { OnboardingState } from "@/features/onboarding/types";
 
@@ -36,6 +37,7 @@ function SettingRow({ label, value }: SettingRowProps) {
 export function ProfileScreen({ onboardingState, onRecalculateRoadmap, report }: ProfileScreenProps) {
   const responses = onboardingState.responses;
   const planReady = report.priorities.length > 0;
+  const maturity = getPlanMaturity(report.completedQuizCount, report.totalQuizCount);
 
   return (
     <ScreenContainer className="hr-profile-screen">
@@ -43,12 +45,8 @@ export function ProfileScreen({ onboardingState, onRecalculateRoadmap, report }:
         <div className="hr-card-row">
           <div>
             <p className="hr-overline">Profile</p>
-            <h2 className="hr-feature-title">{planReady ? "Your roadmap preferences are active" : "Profile saved locally"}</h2>
-            <p className="hr-copy">
-              {planReady
-                ? "Your onboarding settings are shaping ranking and daily plan selection."
-                : "Complete quizzes to apply these settings to ranking and roadmap generation."}
-            </p>
+            <h2 className="hr-feature-title">{planReady ? "Your reset preferences are guiding the system" : "Your reset profile is saved locally"}</h2>
+            <p className="hr-copy">{maturity.summary}</p>
           </div>
           <div className="hr-profile-hero-stats">
             <span>{report.findings.length} findings</span>

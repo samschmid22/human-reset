@@ -39,9 +39,9 @@ export function VaultScreen() {
         <div className="hr-card-row">
           <div>
             <p className="hr-overline">Vault</p>
-            <h2 className="hr-feature-title">Your reset knowledge library</h2>
+            <h2 className="hr-feature-title">Calm guidance for confident home decisions</h2>
             <p className="hr-copy">
-              Structured guidance linked to roadmap actions, organized by category and practical use case.
+              Turn insight into practical action with clear protocols, safer swaps, and grounded explanations.
             </p>
           </div>
           <div className="hr-vault-hero-stats">
@@ -51,7 +51,7 @@ export function VaultScreen() {
         </div>
 
         <div className="hr-vault-search-shell" role="status">
-          Search vault topics, protocols, swaps, and ingredient notes
+          Search guidance, protocols, swaps, and ingredient notes
         </div>
       </Card>
 

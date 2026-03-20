@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { BottomTabs } from "@/components/navigation/bottom-tabs";
 import {
@@ -12,6 +12,7 @@ import {
 } from "@/features/actions/storage";
 import { ActionState } from "@/features/actions/types";
 import { generateFindingsRoadmap } from "@/features/findings/engine";
+import { getPlanMaturity } from "@/features/findings/plan-maturity";
 import { OnboardingFlow } from "@/features/onboarding/onboarding-flow";
 import { createDefaultOnboardingState } from "@/features/onboarding/constants";
 import { loadOnboardingState, saveOnboardingState } from "@/features/onboarding/storage";
@@ -45,6 +46,7 @@ export function PhaseOneAppShell() {
   const [actionState, setActionState] = useState<ActionState>(() =>
     typeof window === "undefined" ? createInitialActionState() : loadActionState(),
   );
+  const shellBodyRef = useRef<HTMLDivElement | null>(null);
 
   const findingsRoadmap = useMemo(
     () =>
@@ -62,9 +64,19 @@ export function PhaseOneAppShell() {
   const activeTabLabel = onboardingIncomplete
     ? "Onboarding"
     : (TABS.find((tab) => tab.id === activeTab)?.label ?? "Home");
-  const completionLabel = onboardingIncomplete
-    ? "Setup in progress"
-    : `${findingsRoadmap.completedQuizCount}/${findingsRoadmap.totalQuizCount} quizzes`;
+  const maturity = getPlanMaturity(
+    findingsRoadmap.completedQuizCount,
+    findingsRoadmap.totalQuizCount,
+  );
+  const completionLabel = onboardingIncomplete ? "Setup in progress" : maturity.progressLabel;
+
+  useEffect(() => {
+    if (onboardingIncomplete) {
+      return;
+    }
+
+    shellBodyRef.current?.scrollTo({ top: 0 });
+  }, [activeTab, onboardingIncomplete]);
 
   function handleOnboardingStateChange(next: OnboardingState): void {
     setOnboardingState(next);
@@ -107,6 +119,10 @@ export function PhaseOneAppShell() {
     });
   }
 
+  function handleTabChange(nextTab: TabId): void {
+    setActiveTab(nextTab);
+  }
+
   function renderActiveScreen() {
     switch (activeTab) {
       case "home":
@@ -115,7 +131,7 @@ export function PhaseOneAppShell() {
             actionState={actionState}
             onActionDone={handleActionDone}
             onActionSnooze={handleActionSnooze}
-            onOpenQuizzes={() => setActiveTab("quizzes")}
+            onOpenQuizzes={() => handleTabChange("quizzes")}
             quizDefinitions={QUIZ_DEFINITIONS}
             report={findingsRoadmap}
           />
@@ -152,7 +168,7 @@ export function PhaseOneAppShell() {
             actionState={actionState}
             onActionDone={handleActionDone}
             onActionSnooze={handleActionSnooze}
-            onOpenQuizzes={() => setActiveTab("quizzes")}
+            onOpenQuizzes={() => handleTabChange("quizzes")}
             quizDefinitions={QUIZ_DEFINITIONS}
             report={findingsRoadmap}
           />
@@ -190,7 +206,7 @@ export function PhaseOneAppShell() {
           </div>
         </header>
 
-        <div className="hr-shell-body">
+        <div className="hr-shell-body" ref={shellBodyRef}>
           {onboardingIncomplete ? (
             <OnboardingFlow
               initialState={onboardingState}
@@ -202,7 +218,7 @@ export function PhaseOneAppShell() {
           )}
         </div>
 
-        {!onboardingIncomplete ? <BottomTabs activeTab={activeTab} onTabChange={setActiveTab} /> : null}
+        {!onboardingIncomplete ? <BottomTabs activeTab={activeTab} onTabChange={handleTabChange} /> : null}
       </main>
     </div>
   );

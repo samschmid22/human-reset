@@ -95,9 +95,9 @@ export function QuizPlayer({ onBackToHub, onProgressChange, progress, quiz }: Qu
     return (
       <ScreenContainer>
         <Card className="hr-empty-state" tone="soft">
-          <p className="hr-empty-title">Quiz Completed</p>
+          <p className="hr-empty-title">Category Input Saved</p>
           <p className="hr-empty-copy">
-            {quiz.title} is complete. Your answers are saved on this device.
+            {quiz.title} is complete. This category now shapes your reset roadmap.
           </p>
           <InlineGroup>
             <Pill tone="success">{quiz.questions.length} answered</Pill>
@@ -123,14 +123,14 @@ export function QuizPlayer({ onBackToHub, onProgressChange, progress, quiz }: Qu
     <ScreenContainer>
       <SectionHeader
         action={<Pill tone="accent">Question {questionIndex + 1} of {quiz.questions.length}</Pill>}
-        subtitle="One question per screen. Progress is saved automatically."
+        subtitle="One question per screen. Responses save automatically."
         title={quiz.title}
       />
 
       <Card tone="soft">
         <InlineGroup>
           <Pill>{answeredCount} answered</Pill>
-          <Pill>{progressPercent}% through quiz</Pill>
+          <Pill>{progressPercent}% complete</Pill>
         </InlineGroup>
         <div className="hr-linear-progress" role="presentation">
           <div className="hr-linear-progress-bar" style={{ width: `${progressPercent}%` }} />
@@ -178,7 +178,7 @@ export function QuizPlayer({ onBackToHub, onProgressChange, progress, quiz }: Qu
       </Card>
 
       <Button onClick={onBackToHub} size="sm" variant="quiet">
-        Back to Quiz List
+        Back to Categories
       </Button>
     </ScreenContainer>
   );

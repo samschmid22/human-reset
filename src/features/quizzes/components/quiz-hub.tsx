@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ContentStack, ScreenContainer } from "@/components/ui/layout";
 import { SectionHeader } from "@/components/ui/section-header";
+import { getPlanMaturity } from "@/features/findings/plan-maturity";
 import { getAnsweredCount, getQuizStatus } from "@/features/quizzes/storage";
 import { QuizDefinition, QuizState, QuizStatus } from "@/features/quizzes/types";
 import { cn } from "@/lib/cn";
@@ -47,19 +48,20 @@ export function QuizHub({ onOpenQuiz, quizzes, quizState }: QuizHubProps) {
     quizMeta.find((entry) => entry.status === "in_progress") ??
     quizMeta.find((entry) => entry.status === "not_started") ??
     null;
+  const maturity = getPlanMaturity(completedCount, quizzes.length);
 
   return (
     <ScreenContainer className="hr-quizzes-screen">
       <Card className="hr-quiz-overview-card" tone="soft">
         <div className="hr-card-row">
           <div>
-            <p className="hr-overline">Quiz Hub</p>
-            <h2 className="hr-feature-title">Build your plan with category input</h2>
-            <p className="hr-copy">No scores shown. Each quiz improves roadmap calibration.</p>
+            <p className="hr-overline">Plan Intake</p>
+            <h2 className="hr-feature-title">Reveal patterns shaping how you feel</h2>
+            <p className="hr-copy">{maturity.summary}</p>
           </div>
           {nextQuiz ? (
             <Button onClick={() => onOpenQuiz(nextQuiz.quiz.id)} size="sm" variant="secondary">
-              {nextQuiz.status === "in_progress" ? "Continue next" : "Take next"}
+              {nextQuiz.status === "in_progress" ? "Continue" : "Start next"}
             </Button>
           ) : null}
         </div>
@@ -84,7 +86,7 @@ export function QuizHub({ onOpenQuiz, quizzes, quizState }: QuizHubProps) {
         </div>
       </Card>
 
-      <SectionHeader title="Available Quizzes" />
+      <SectionHeader title="Category Inputs" />
 
       <Card className="hr-quiz-list-card">
         <ContentStack className="hr-quiz-list-stack">
