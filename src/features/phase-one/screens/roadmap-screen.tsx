@@ -3,8 +3,9 @@ import { useMemo, useState } from "react";
 import { ActionDetailView } from "@/components/actions/action-detail-view";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ContentStack, InlineGroup, ScreenContainer } from "@/components/ui/layout";
+import { ContentStack, ScreenContainer } from "@/components/ui/layout";
 import { SectionHeader } from "@/components/ui/section-header";
+import { SharedTopCard } from "@/components/ui/shared-top-card";
 import { getActionStatusView } from "@/features/actions/storage";
 import { ActionState, ActionStatus } from "@/features/actions/types";
 import { getRoadmapPhaseCount } from "@/features/findings/engine";
@@ -240,30 +241,22 @@ export function RoadmapScreen({
           </p>
         </Card>
       ) : (
-        <Card className="hr-roadmap-summary-card" tone="soft">
-          <p className="hr-overline">{maturity.badge}</p>
-          <h2 className="hr-item-title">{maturity.title}</h2>
-          <p className="hr-item-description">{maturity.summary}</p>
-          <InlineGroup className="hr-roadmap-summary-inline">
-            <div className="hr-roadmap-summary-item">
-              <span className="hr-kpi-label">Active</span>
-              <strong>{statusSummary.pending}</strong>
-            </div>
-            <div className="hr-roadmap-summary-item">
-              <span className="hr-kpi-label">Completed</span>
-              <strong>{statusSummary.completed}</strong>
-            </div>
-            <div className="hr-roadmap-summary-item">
-              <span className="hr-kpi-label">Snoozed</span>
-              <strong>{statusSummary.snoozed}</strong>
-            </div>
-            <div className="hr-roadmap-summary-item">
-              <span className="hr-kpi-label">Coverage</span>
-              <strong>{report.completedQuizCount}/{report.totalQuizCount}</strong>
-              <span className="hr-kpi-note">{maturity.progressLabel}</span>
-            </div>
-          </InlineGroup>
-        </Card>
+        <SharedTopCard
+          className="hr-roadmap-summary-card"
+          metrics={[
+            { label: "Active", value: statusSummary.pending },
+            { label: "Completed", value: statusSummary.completed },
+            { label: "Snoozed", value: statusSummary.snoozed },
+            {
+              label: "Coverage",
+              note: maturity.progressLabel,
+              value: `${report.completedQuizCount}/${report.totalQuizCount}`,
+            },
+          ]}
+          overline={maturity.badge}
+          summary={maturity.summary}
+          title={maturity.title}
+        />
       )}
 
       <SectionHeader

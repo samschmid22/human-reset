@@ -240,65 +240,67 @@ export function HomeScreen({
         </Card>
       </section>
 
-      {maturity.stage !== "calibrated" ? (
-        <Card className="hr-calibration-banner" tone="soft">
-          <p className="hr-overline">Plan Maturity</p>
-          <h3 className="hr-item-title">{maturity.title}</h3>
-          <p className="hr-copy">{maturity.summary}</p>
-        </Card>
-      ) : null}
+      <div className="hr-home-flow">
+        {maturity.stage !== "calibrated" ? (
+          <Card className="hr-calibration-banner" tone="soft">
+            <p className="hr-overline">Plan Maturity</p>
+            <h3 className="hr-item-title">{maturity.title}</h3>
+            <p className="hr-copy">{maturity.summary}</p>
+          </Card>
+        ) : null}
 
-      <SectionHeader subtitle="Do the top step first, then continue if capacity allows." title="Today’s Steps" />
+        <SectionHeader subtitle="Do the top step first, then continue if capacity allows." title="Today’s Steps" />
 
-      {actionRows.length > 0 ? (
-        <Card className="hr-action-list-card">
-          {additionalActions.length > 0 ? (
-            <ContentStack>
-              {additionalActions.map((row) => renderActionListRow(row))}
-            </ContentStack>
-          ) : (
-            <p className="hr-item-description">Today is focused on your primary action.</p>
-          )}
-        </Card>
-      ) : (
-        <Card className="hr-empty-state" tone="soft">
-          <p className="hr-empty-title">No actions scheduled yet</p>
-          <p className="hr-empty-copy">Complete a quiz to generate your first guided reset actions.</p>
-        </Card>
-      )}
+        {actionRows.length > 0 ? (
+          <Card className="hr-action-list-card">
+            {additionalActions.length > 0 ? (
+              <ContentStack>
+                {additionalActions.map((row) => renderActionListRow(row))}
+              </ContentStack>
+            ) : (
+              <p className="hr-item-description">Today is focused on your primary action.</p>
+            )}
+          </Card>
+        ) : (
+          <Card className="hr-empty-state" tone="soft">
+            <p className="hr-empty-title">No actions scheduled yet</p>
+            <p className="hr-empty-copy">Complete a quiz to generate your first guided reset actions.</p>
+          </Card>
+        )}
 
-      {nextBestQuiz ? (
-        <Card className="hr-home-next-card" tone="soft">
-          <div className="hr-card-row">
-            <div>
-              <p className="hr-overline">Next Category</p>
-              <h3 className="hr-item-title">{nextBestQuiz.title}</h3>
-              <p className="hr-item-description">Complete this quiz to sharpen ranking and phase order.</p>
+        {nextBestQuiz ? (
+          <Card className="hr-home-next-card" tone="soft">
+            <div className="hr-card-row">
+              <div>
+                <p className="hr-overline">Next Category</p>
+                <h3 className="hr-item-title">{nextBestQuiz.title}</h3>
+                <p className="hr-item-description">Complete this quiz to sharpen ranking and phase order.</p>
+              </div>
+              <Button onClick={onOpenQuizzes} size="sm" variant="secondary">
+                Continue Quiz
+              </Button>
             </div>
-            <Button onClick={onOpenQuizzes} size="sm" variant="secondary">
-              Continue Quiz
-            </Button>
-          </div>
-        </Card>
-      ) : null}
+          </Card>
+        ) : null}
 
-      {(snoozedActions.length > 0 || completedActions.length > 0) ? (
-        <section className="hr-home-secondary-grid">
-          {snoozedActions.length > 0 ? (
-            <Card>
-              <SectionHeader className="hr-subsection-header" title="Snoozed for Later" />
-              <ContentStack>{snoozedActions.map((row) => renderActionListRow(row))}</ContentStack>
-            </Card>
-          ) : null}
+        {(snoozedActions.length > 0 || completedActions.length > 0) ? (
+          <section className="hr-home-secondary-grid">
+            {snoozedActions.length > 0 ? (
+              <Card>
+                <SectionHeader className="hr-subsection-header" title="Snoozed for Later" />
+                <ContentStack>{snoozedActions.map((row) => renderActionListRow(row))}</ContentStack>
+              </Card>
+            ) : null}
 
-          {completedActions.length > 0 ? (
-            <Card>
-              <SectionHeader className="hr-subsection-header" title="Completed Steps" />
-              <ContentStack>{completedActions.map((row) => renderActionListRow(row))}</ContentStack>
-            </Card>
-          ) : null}
-        </section>
-      ) : null}
+            {completedActions.length > 0 ? (
+              <Card>
+                <SectionHeader className="hr-subsection-header" title="Completed Steps" />
+                <ContentStack>{completedActions.map((row) => renderActionListRow(row))}</ContentStack>
+              </Card>
+            ) : null}
+          </section>
+        ) : null}
+      </div>
     </ScreenContainer>
   );
 }

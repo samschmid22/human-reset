@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ContentStack, ScreenContainer } from "@/components/ui/layout";
 import { SectionHeader } from "@/components/ui/section-header";
+import { SharedTopCard } from "@/components/ui/shared-top-card";
 import { getPlanMaturity } from "@/features/findings/plan-maturity";
 import { getAnsweredCount, getQuizStatus } from "@/features/quizzes/storage";
 import { QuizDefinition, QuizState, QuizStatus } from "@/features/quizzes/types";
@@ -99,39 +100,25 @@ export function QuizHub({ onOpenQuiz, quizzes, quizState }: QuizHubProps) {
 
   return (
     <ScreenContainer className="hr-quizzes-screen">
-      <Card className="hr-quiz-overview-card" tone="soft">
-        <div className="hr-card-row">
-          <div>
-            <p className="hr-overline">Quiz Intake</p>
-            <h2 className="hr-feature-title">Calibrate your reset plan</h2>
-            <p className="hr-copy">{maturity.summary}</p>
-          </div>
-          {nextQuiz ? (
+      <SharedTopCard
+        action={
+          nextQuiz ? (
             <Button onClick={() => onOpenQuiz(nextQuiz.quiz.id)} size="sm" variant="secondary">
               {nextQuiz.status === "in_progress" ? "Continue" : "Start next"}
             </Button>
-          ) : null}
-        </div>
-
-        <div className="hr-quiz-stat-grid">
-          <div className="hr-quiz-stat">
-            <span className="hr-kpi-label">Complete</span>
-            <strong>{completedCount}</strong>
-          </div>
-          <div className="hr-quiz-stat">
-            <span className="hr-kpi-label">In progress</span>
-            <strong>{inProgressCount}</strong>
-          </div>
-          <div className="hr-quiz-stat">
-            <span className="hr-kpi-label">Not started</span>
-            <strong>{notStartedCount}</strong>
-          </div>
-          <div className="hr-quiz-stat">
-            <span className="hr-kpi-label">Plan calibration</span>
-            <strong>{overallPercent}%</strong>
-          </div>
-        </div>
-      </Card>
+          ) : null
+        }
+        className="hr-quiz-overview-card"
+        metrics={[
+          { label: "Completed", value: completedCount },
+          { label: "In progress", value: inProgressCount },
+          { label: "Not started", value: notStartedCount },
+          { label: "Plan calibration", note: maturity.progressLabel, value: `${overallPercent}%` },
+        ]}
+        overline="Quiz Intake"
+        summary={maturity.summary}
+        title="Calibrate your reset plan"
+      />
 
       <SectionHeader subtitle="Complete categories progressively to sharpen roadmap quality." title="Category Inputs" />
 
