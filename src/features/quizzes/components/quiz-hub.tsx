@@ -63,6 +63,39 @@ export function QuizHub({ onOpenQuiz, quizzes, quizState }: QuizHubProps) {
     quizMeta.find((entry) => entry.status === "not_started") ??
     null;
   const maturity = getPlanMaturity(completedCount, quizzes.length);
+  const inProgressQuizzes = orderedQuizMeta.filter((entry) => entry.status === "in_progress");
+  const notStartedQuizzes = orderedQuizMeta.filter((entry) => entry.status === "not_started");
+  const completedQuizzes = orderedQuizMeta.filter((entry) => entry.status === "completed");
+
+  function renderQuizRows(entries: typeof orderedQuizMeta) {
+    return entries.map((entry) => {
+      const isNext = nextQuiz?.quiz.id === entry.quiz.id;
+
+      return (
+        <div className={cn("hr-quiz-row", isNext && "is-next")} key={entry.quiz.id}>
+          <div className="hr-quiz-row-main">
+            <div className="hr-quiz-row-title">
+              <h3 className="hr-item-title">{entry.quiz.title}</h3>
+              <span className={cn("hr-quiz-status-badge", `is-${entry.status}`)}>
+                {statusLabelMap[entry.status]}
+              </span>
+            </div>
+            <p className="hr-item-description">{entry.quiz.description}</p>
+            <div className="hr-quiz-row-progress">
+              <span>{entry.answeredCount} of {entry.quiz.questions.length}</span>
+              <div className="hr-linear-progress" role="presentation">
+                <div className="hr-linear-progress-bar" style={{ width: `${entry.percent}%` }} />
+              </div>
+            </div>
+          </div>
+
+          <Button onClick={() => onOpenQuiz(entry.quiz.id)} size="sm" variant="secondary">
+            {buttonLabelMap[entry.status]}
+          </Button>
+        </div>
+      );
+    });
+  }
 
   return (
     <ScreenContainer className="hr-quizzes-screen">
@@ -102,37 +135,35 @@ export function QuizHub({ onOpenQuiz, quizzes, quizState }: QuizHubProps) {
 
       <SectionHeader subtitle="Complete categories progressively to sharpen roadmap quality." title="Category Inputs" />
 
-      <Card className="hr-quiz-list-card">
-        <ContentStack className="hr-quiz-list-stack">
-          {orderedQuizMeta.map((entry) => {
-            const isNext = nextQuiz?.quiz.id === entry.quiz.id;
+      {inProgressQuizzes.length > 0 ? (
+        <Card className="hr-quiz-list-card">
+          <div className="hr-quiz-group-head">
+            <p className="hr-overline">Continue Now</p>
+            <span className="hr-roadmap-phase-count">{inProgressQuizzes.length}</span>
+          </div>
+          <ContentStack className="hr-quiz-list-stack">{renderQuizRows(inProgressQuizzes)}</ContentStack>
+        </Card>
+      ) : null}
 
-            return (
-              <div className={cn("hr-quiz-row", isNext && "is-next")} key={entry.quiz.id}>
-                <div className="hr-quiz-row-main">
-                  <div className="hr-quiz-row-title">
-                    <h3 className="hr-item-title">{entry.quiz.title}</h3>
-                    <span className={cn("hr-quiz-status-badge", `is-${entry.status}`)}>
-                      {statusLabelMap[entry.status]}
-                    </span>
-                  </div>
-                  <p className="hr-item-description">{entry.quiz.description}</p>
-                  <div className="hr-quiz-row-progress">
-                    <span>{entry.answeredCount} of {entry.quiz.questions.length}</span>
-                    <div className="hr-linear-progress" role="presentation">
-                      <div className="hr-linear-progress-bar" style={{ width: `${entry.percent}%` }} />
-                    </div>
-                  </div>
-                </div>
+      {notStartedQuizzes.length > 0 ? (
+        <Card className="hr-quiz-list-card">
+          <div className="hr-quiz-group-head">
+            <p className="hr-overline">Start Next</p>
+            <span className="hr-roadmap-phase-count">{notStartedQuizzes.length}</span>
+          </div>
+          <ContentStack className="hr-quiz-list-stack">{renderQuizRows(notStartedQuizzes)}</ContentStack>
+        </Card>
+      ) : null}
 
-                <Button onClick={() => onOpenQuiz(entry.quiz.id)} size="sm" variant="secondary">
-                  {buttonLabelMap[entry.status]}
-                </Button>
-              </div>
-            );
-          })}
-        </ContentStack>
-      </Card>
+      {completedQuizzes.length > 0 ? (
+        <Card className="hr-quiz-list-card">
+          <div className="hr-quiz-group-head">
+            <p className="hr-overline">Completed Inputs</p>
+            <span className="hr-roadmap-phase-count">{completedQuizzes.length}</span>
+          </div>
+          <ContentStack className="hr-quiz-list-stack">{renderQuizRows(completedQuizzes)}</ContentStack>
+        </Card>
+      ) : null}
     </ScreenContainer>
   );
 }

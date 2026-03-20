@@ -68,7 +68,9 @@ export function PhaseOneAppShell() {
     findingsRoadmap.completedQuizCount,
     findingsRoadmap.totalQuizCount,
   );
-  const completionLabel = onboardingIncomplete ? "Collecting setup inputs" : maturity.progressLabel;
+  const completionLabel = onboardingIncomplete
+    ? "Collecting setup inputs"
+    : `${findingsRoadmap.completedQuizCount}/${findingsRoadmap.totalQuizCount} categories`;
   const maturityBadge = onboardingIncomplete ? "Setup in progress" : maturity.badge;
 
   useEffect(() => {

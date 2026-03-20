@@ -243,7 +243,7 @@ export function HomeScreen({
               {additionalActions.map((row) => renderActionListRow(row))}
             </ContentStack>
           ) : (
-            <p className="hr-item-description">No additional active actions after your top priority.</p>
+            <p className="hr-item-description">Today is focused on your primary action.</p>
           )}
         </Card>
       ) : (

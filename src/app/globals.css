@@ -288,8 +288,8 @@ select {
 
 .hr-copy {
   color: var(--hr-text-secondary);
-  font-size: 0.9rem;
-  line-height: 1.46;
+  font-size: 0.94rem;
+  line-height: 1.5;
   margin: 0;
 }
 
@@ -303,8 +303,8 @@ select {
 
 .hr-item-description {
   color: var(--hr-text-secondary);
-  font-size: 0.85rem;
-  line-height: 1.44;
+  font-size: 0.9rem;
+  line-height: 1.48;
   margin: var(--hr-space-1) 0 0;
 }
 
@@ -583,6 +583,18 @@ select {
   background: linear-gradient(160deg, #dfece0 0%, #ecf4eb 58%, #f6faf5 100%);
   border-color: #abc2ab;
   gap: var(--hr-space-4);
+  overflow: hidden;
+  position: relative;
+}
+
+.hr-home-hero::before {
+  background: linear-gradient(90deg, #0f4a30 0%, #1f6a46 100%);
+  content: "";
+  height: 3px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
 }
 
 .hr-home-hero-head {
@@ -622,6 +634,7 @@ select {
   background: linear-gradient(180deg, #f8fbf7 0%, #f2f7f0 100%);
   border-color: #b9cbb9;
   justify-content: center;
+  position: relative;
 }
 
 .hr-home-stats-head {
@@ -699,6 +712,18 @@ select {
 .hr-roadmap-summary-card {
   background: linear-gradient(150deg, #e3eee4 0%, #f4f8f2 100%);
   border-color: #b5c9b6;
+  overflow: hidden;
+  position: relative;
+}
+
+.hr-roadmap-summary-card::before {
+  background: linear-gradient(90deg, #0f4a30 0%, #1f6a46 100%);
+  content: "";
+  height: 3px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
 }
 
 .hr-roadmap-summary-inline {
@@ -750,6 +775,24 @@ select {
   border-top: 1px solid var(--hr-border);
 }
 
+.hr-roadmap-journey-item::before {
+  background: #c6d3c4;
+  content: "";
+  left: 5px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+}
+
+.hr-roadmap-journey-item:first-child::before {
+  top: 50%;
+}
+
+.hr-roadmap-journey-item:last-child::before {
+  bottom: 50%;
+}
+
 .hr-roadmap-journey-dot {
   background: #b4c5b3;
   border-radius: 999px;
@@ -760,6 +803,7 @@ select {
 
 .hr-roadmap-journey-item.is-current .hr-roadmap-journey-dot {
   background: var(--hr-accent);
+  box-shadow: 0 0 0 3px rgba(23, 97, 64, 0.14);
 }
 
 .hr-roadmap-journey-item.is-next .hr-roadmap-journey-dot {
@@ -893,6 +937,18 @@ select {
   background: linear-gradient(155deg, #e2ede3 0%, #f4f8f2 100%);
   border-color: #afc3b0;
   gap: var(--hr-space-4);
+  overflow: hidden;
+  position: relative;
+}
+
+.hr-quiz-overview-card::before {
+  background: linear-gradient(90deg, #0f4a30 0%, #1f6a46 100%);
+  content: "";
+  height: 3px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
 }
 
 .hr-quiz-stat-grid {
@@ -917,11 +973,18 @@ select {
 }
 
 .hr-quiz-list-card {
-  padding: 0;
+  padding: var(--hr-space-3);
 }
 
 .hr-quiz-list-stack {
   gap: 0;
+}
+
+.hr-quiz-group-head {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--hr-space-2);
 }
 
 .hr-quiz-row {
@@ -1011,6 +1074,18 @@ select {
   background: linear-gradient(155deg, #e3ede4 0%, #f4f8f2 100%);
   border-color: #b0c4b1;
   gap: var(--hr-space-4);
+  overflow: hidden;
+  position: relative;
+}
+
+.hr-vault-hero::before {
+  background: linear-gradient(90deg, #0f4a30 0%, #1f6a46 100%);
+  content: "";
+  height: 3px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
 }
 
 .hr-vault-hero-stats {
@@ -1088,6 +1163,18 @@ select {
   background: linear-gradient(155deg, #e2ece3 0%, #f5f8f3 100%);
   border-color: #b0c3b0;
   gap: var(--hr-space-4);
+  overflow: hidden;
+  position: relative;
+}
+
+.hr-profile-hero::before {
+  background: linear-gradient(90deg, #0f4a30 0%, #1f6a46 100%);
+  content: "";
+  height: 3px;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
 }
 
 .hr-profile-hero-stats {
@@ -1133,7 +1220,7 @@ select {
 
 .hr-setting-value {
   color: var(--hr-text-primary);
-  font-size: 0.86rem;
+  font-size: 0.9rem;
   line-height: 1.46;
 }
 
@@ -1391,6 +1478,8 @@ select {
   border-top: 1px solid #afc1af;
   box-shadow: 0 -10px 26px rgba(15, 35, 23, 0.12);
   order: 2;
+  position: sticky;
+  bottom: 0;
   padding: 8px 10px calc(12px + env(safe-area-inset-bottom, 0px));
   z-index: 10;
 }
@@ -1459,7 +1548,7 @@ select {
 }
 
 .hr-tab-label {
-  font-size: 0.68rem;
+  font-size: 0.71rem;
   font-weight: 700;
   line-height: 1;
 }
@@ -1528,7 +1617,7 @@ select {
   }
 
   .hr-tab-label {
-    font-size: 0.65rem;
+    font-size: 0.67rem;
   }
 }
 
@@ -1586,6 +1675,7 @@ select {
     box-shadow: inset -1px 0 0 rgba(16, 36, 24, 0.04);
     min-width: 236px;
     order: 1;
+    position: static;
     padding: 24px 14px;
     width: 236px;
   }
@@ -1637,7 +1727,7 @@ select {
 
 @media (min-width: 1220px) {
   .hr-vault-category-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .hr-kpi-grid {
@@ -1645,6 +1735,6 @@ select {
   }
 
   .hr-profile-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

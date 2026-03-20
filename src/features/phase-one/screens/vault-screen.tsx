@@ -68,7 +68,7 @@ export function VaultScreen() {
             <p className="hr-overline">Vault Library</p>
             <h2 className="hr-feature-title">Curated guidance for your reset system</h2>
             <p className="hr-copy">
-              Move from uncertainty to clear decisions with structured education, practical swap logic, and protocols.
+              Structured education for clear decisions, practical swaps, and stable routines.
             </p>
           </div>
           <div className="hr-vault-hero-stats">

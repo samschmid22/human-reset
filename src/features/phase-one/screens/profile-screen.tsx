@@ -62,19 +62,13 @@ export function ProfileScreen({ onboardingState, onRecalculateRoadmap, report }:
 
       <div className="hr-profile-grid">
         <Card>
-          <h3 className="hr-item-title">Goals + Concerns</h3>
+          <h3 className="hr-item-title">Goals + Plan Style</h3>
           <ContentStack className="hr-setting-stack">
             <SettingRow label="Concerns" value={formatList(responses.concerns)} />
             <SettingRow
               label="Specific goal"
               value={responses.customConcern.trim().length > 0 ? responses.customConcern : "Not set"}
             />
-          </ContentStack>
-        </Card>
-
-        <Card>
-          <h3 className="hr-item-title">Plan Style</h3>
-          <ContentStack className="hr-setting-stack">
             <SettingRow label="Pace" value={`${responses.actionsPerDay} actions/day (${responses.pacePreset})`} />
             <SettingRow
               label="Focus style"
