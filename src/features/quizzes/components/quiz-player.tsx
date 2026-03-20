@@ -101,7 +101,7 @@ export function QuizPlayer({ onBackToHub, onProgressChange, progress, quiz }: Qu
           </p>
           <InlineGroup>
             <Pill tone="success">{quiz.questions.length} answered</Pill>
-            <Pill>No score shown</Pill>
+            <p className="hr-action-detail-meta">No score shown</p>
           </InlineGroup>
         </Card>
 
@@ -130,7 +130,7 @@ export function QuizPlayer({ onBackToHub, onProgressChange, progress, quiz }: Qu
       <Card tone="soft">
         <InlineGroup>
           <Pill>{answeredCount} answered</Pill>
-          <Pill>{progressPercent}% complete</Pill>
+          <p className="hr-action-detail-meta">{progressPercent}% complete</p>
         </InlineGroup>
         <div className="hr-linear-progress" role="presentation">
           <div className="hr-linear-progress-bar" style={{ width: `${progressPercent}%` }} />

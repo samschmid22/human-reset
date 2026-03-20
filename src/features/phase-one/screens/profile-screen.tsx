@@ -45,21 +45,24 @@ export function ProfileScreen({ onboardingState, onRecalculateRoadmap, report }:
         <div className="hr-card-row">
           <div>
             <p className="hr-overline">Profile</p>
-            <h2 className="hr-feature-title">{planReady ? "Your reset preferences are guiding the system" : "Your reset profile is saved locally"}</h2>
+            <h2 className="hr-feature-title">
+              {planReady ? "Your reset profile is actively guiding the plan" : "Your reset profile is saved locally"}
+            </h2>
             <p className="hr-copy">{maturity.summary}</p>
           </div>
           <div className="hr-profile-hero-stats">
-            <span>{report.findings.length} findings</span>
+            <span>{maturity.badge}</span>
+            <span>{report.completedQuizCount}/{report.totalQuizCount} categories</span>
             <span>{report.priorities.length} actions</span>
           </div>
         </div>
       </Card>
 
-      <SectionHeader title="Settings Overview" />
+      <SectionHeader subtitle="Adjust preferences, pace, and context that shape roadmap generation." title="Profile + Plan Settings" />
 
       <div className="hr-profile-grid">
         <Card>
-          <h3 className="hr-item-title">Reset Goals</h3>
+          <h3 className="hr-item-title">Goals + Concerns</h3>
           <ContentStack className="hr-setting-stack">
             <SettingRow label="Concerns" value={formatList(responses.concerns)} />
             <SettingRow
@@ -70,7 +73,7 @@ export function ProfileScreen({ onboardingState, onRecalculateRoadmap, report }:
         </Card>
 
         <Card>
-          <h3 className="hr-item-title">Plan Preferences</h3>
+          <h3 className="hr-item-title">Plan Style</h3>
           <ContentStack className="hr-setting-stack">
             <SettingRow label="Pace" value={`${responses.actionsPerDay} actions/day (${responses.pacePreset})`} />
             <SettingRow
@@ -90,7 +93,7 @@ export function ProfileScreen({ onboardingState, onRecalculateRoadmap, report }:
         </Card>
 
         <Card>
-          <h3 className="hr-item-title">System Controls</h3>
+          <h3 className="hr-item-title">System Snapshot</h3>
           <ContentStack className="hr-setting-stack">
             <SettingRow
               label="Daily plan"

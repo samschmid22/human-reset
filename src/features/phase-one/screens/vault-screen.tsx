@@ -2,6 +2,21 @@ import { Card } from "@/components/ui/card";
 import { ContentStack, ScreenContainer } from "@/components/ui/layout";
 import { SectionHeader } from "@/components/ui/section-header";
 
+const entryPoints = [
+  {
+    summary: "Room-by-room guidance for kitchen, laundry, bedroom, and air routines.",
+    title: "Browse by Room",
+  },
+  {
+    summary: "Start from outcomes like sleep, stress load, or sensitivity support.",
+    title: "Browse by Concern",
+  },
+  {
+    summary: "Find minimum step, low-cost, and premium pathways in one place.",
+    title: "Browse by Budget",
+  },
+];
+
 const categoryEntries = [
   {
     summary: "Ingredient and product decisions by room and routine.",
@@ -26,10 +41,22 @@ const categoryEntries = [
 ];
 
 const featuredTracks = [
-  "Air + Fragrance baseline",
-  "Kitchen contact reset",
-  "Sleep environment reset",
-  "Cleaning system simplification",
+  {
+    summary: "Build quick boundaries around sprays, candles, and fragrance-heavy inputs.",
+    title: "Air + Fragrance baseline",
+  },
+  {
+    summary: "Prioritize cookware and storage swaps that reduce repeat contact.",
+    title: "Kitchen contact reset",
+  },
+  {
+    summary: "Calm nightly exposures and set consistent low-friction sleep defaults.",
+    title: "Sleep environment reset",
+  },
+  {
+    summary: "Simplify product stacks and routines to reduce hidden repeat triggers.",
+    title: "Cleaning system simplification",
+  },
 ];
 
 export function VaultScreen() {
@@ -38,24 +65,36 @@ export function VaultScreen() {
       <Card className="hr-vault-hero" tone="soft">
         <div className="hr-card-row">
           <div>
-            <p className="hr-overline">Vault</p>
-            <h2 className="hr-feature-title">Calm guidance for confident home decisions</h2>
+            <p className="hr-overline">Vault Library</p>
+            <h2 className="hr-feature-title">Curated guidance for your reset system</h2>
             <p className="hr-copy">
-              Turn insight into practical action with clear protocols, safer swaps, and grounded explanations.
+              Move from uncertainty to clear decisions with structured education, practical swap logic, and protocols.
             </p>
           </div>
           <div className="hr-vault-hero-stats">
             <span>Categories: {categoryEntries.length}</span>
             <span>Tracks: {featuredTracks.length}</span>
+            <span>Paths: {entryPoints.length}</span>
           </div>
         </div>
 
         <div className="hr-vault-search-shell" role="status">
-          Search guidance, protocols, swaps, and ingredient notes
+          Search topics, protocols, swaps, and ingredient notes
         </div>
       </Card>
 
-      <SectionHeader title="Library Categories" />
+      <SectionHeader subtitle="Choose the navigation style that fits how you make decisions." title="Browse Paths" />
+
+      <div className="hr-vault-entry-grid">
+        {entryPoints.map((entry) => (
+          <Card className="hr-vault-entry-card" key={entry.title}>
+            <h3 className="hr-item-title">{entry.title}</h3>
+            <p className="hr-item-description">{entry.summary}</p>
+          </Card>
+        ))}
+      </div>
+
+      <SectionHeader subtitle="Core knowledge architecture for product and routine decisions." title="Library Categories" />
 
       <div className="hr-vault-category-grid">
         {categoryEntries.map((entry) => (
@@ -67,15 +106,15 @@ export function VaultScreen() {
         ))}
       </div>
 
-      <SectionHeader title="Featured Tracks" />
+      <SectionHeader subtitle="Curated sets of related guidance pages and action contexts." title="Featured Track Collections" />
 
       <Card className="hr-vault-track-card">
         <ContentStack className="hr-vault-track-list">
           {featuredTracks.map((track) => (
-            <div className="hr-vault-track-row" key={track}>
+            <div className="hr-vault-track-row" key={track.title}>
               <div>
-                <h3 className="hr-item-title">{track}</h3>
-                <p className="hr-item-description">Curated set of topic pages and related action guidance.</p>
+                <h3 className="hr-item-title">{track.title}</h3>
+                <p className="hr-item-description">{track.summary}</p>
               </div>
               <span className="hr-vault-row-link">Open</span>
             </div>

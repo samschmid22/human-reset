@@ -68,7 +68,8 @@ export function PhaseOneAppShell() {
     findingsRoadmap.completedQuizCount,
     findingsRoadmap.totalQuizCount,
   );
-  const completionLabel = onboardingIncomplete ? "Setup in progress" : maturity.progressLabel;
+  const completionLabel = onboardingIncomplete ? "Collecting setup inputs" : maturity.progressLabel;
+  const maturityBadge = onboardingIncomplete ? "Setup in progress" : maturity.badge;
 
   useEffect(() => {
     if (onboardingIncomplete) {
@@ -190,6 +191,7 @@ export function PhaseOneAppShell() {
           </div>
 
           <div className="hr-shell-header-side">
+            <p className="hr-shell-badge">{maturityBadge}</p>
             <p className="hr-shell-meta">{completionLabel}</p>
             <button
               aria-disabled={!searchEnabled}
@@ -206,19 +208,21 @@ export function PhaseOneAppShell() {
           </div>
         </header>
 
-        <div className="hr-shell-body" ref={shellBodyRef}>
-          {onboardingIncomplete ? (
-            <OnboardingFlow
-              initialState={onboardingState}
-              onComplete={handleOnboardingComplete}
-              onStateChange={handleOnboardingStateChange}
-            />
-          ) : (
-            renderActiveScreen()
-          )}
-        </div>
+        <div className="hr-shell-main">
+          {!onboardingIncomplete ? <BottomTabs activeTab={activeTab} onTabChange={handleTabChange} /> : null}
 
-        {!onboardingIncomplete ? <BottomTabs activeTab={activeTab} onTabChange={handleTabChange} /> : null}
+          <div className="hr-shell-body" ref={shellBodyRef}>
+            {onboardingIncomplete ? (
+              <OnboardingFlow
+                initialState={onboardingState}
+                onComplete={handleOnboardingComplete}
+                onStateChange={handleOnboardingStateChange}
+              />
+            ) : (
+              renderActiveScreen()
+            )}
+          </div>
+        </div>
       </main>
     </div>
   );

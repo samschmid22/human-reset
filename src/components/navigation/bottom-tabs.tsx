@@ -12,12 +12,13 @@ type BottomTabsProps = {
 export function BottomTabs({ activeTab, onTabChange }: BottomTabsProps) {
   return (
     <nav aria-label="Primary" className="hr-tabs">
+      <p className="hr-tabs-heading">Navigation</p>
       <ul className="hr-tab-list">
         {TABS.map((tab) => {
           const isActive = tab.id === activeTab;
 
           return (
-            <li key={tab.id}>
+            <li className="hr-tab-item" key={tab.id}>
               <button
                 aria-current={isActive ? "page" : undefined}
                 aria-label={tab.label}

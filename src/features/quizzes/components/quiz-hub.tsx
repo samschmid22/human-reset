@@ -39,6 +39,20 @@ export function QuizHub({ onOpenQuiz, quizzes, quizState }: QuizHubProps) {
       status,
     };
   });
+  const statusOrder: Record<QuizStatus, number> = {
+    in_progress: 0,
+    not_started: 1,
+    completed: 2,
+  };
+  const orderedQuizMeta = [...quizMeta].sort((a, b) => {
+    const statusDiff = statusOrder[a.status] - statusOrder[b.status];
+
+    if (statusDiff !== 0) {
+      return statusDiff;
+    }
+
+    return a.quiz.title.localeCompare(b.quiz.title);
+  });
 
   const completedCount = quizMeta.filter((entry) => entry.status === "completed").length;
   const inProgressCount = quizMeta.filter((entry) => entry.status === "in_progress").length;
@@ -55,8 +69,8 @@ export function QuizHub({ onOpenQuiz, quizzes, quizState }: QuizHubProps) {
       <Card className="hr-quiz-overview-card" tone="soft">
         <div className="hr-card-row">
           <div>
-            <p className="hr-overline">Plan Intake</p>
-            <h2 className="hr-feature-title">Reveal patterns shaping how you feel</h2>
+            <p className="hr-overline">Quiz Intake</p>
+            <h2 className="hr-feature-title">Calibrate your reset plan</h2>
             <p className="hr-copy">{maturity.summary}</p>
           </div>
           {nextQuiz ? (
@@ -86,11 +100,11 @@ export function QuizHub({ onOpenQuiz, quizzes, quizState }: QuizHubProps) {
         </div>
       </Card>
 
-      <SectionHeader title="Category Inputs" />
+      <SectionHeader subtitle="Complete categories progressively to sharpen roadmap quality." title="Category Inputs" />
 
       <Card className="hr-quiz-list-card">
         <ContentStack className="hr-quiz-list-stack">
-          {quizMeta.map((entry) => {
+          {orderedQuizMeta.map((entry) => {
             const isNext = nextQuiz?.quiz.id === entry.quiz.id;
 
             return (
@@ -104,7 +118,7 @@ export function QuizHub({ onOpenQuiz, quizzes, quizState }: QuizHubProps) {
                   </div>
                   <p className="hr-item-description">{entry.quiz.description}</p>
                   <div className="hr-quiz-row-progress">
-                    <span>{entry.answeredCount} / {entry.quiz.questions.length}</span>
+                    <span>{entry.answeredCount} of {entry.quiz.questions.length}</span>
                     <div className="hr-linear-progress" role="presentation">
                       <div className="hr-linear-progress-bar" style={{ width: `${entry.percent}%` }} />
                     </div>

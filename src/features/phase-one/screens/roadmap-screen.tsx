@@ -41,6 +41,46 @@ function toStatusLabel(status: ActionStatus): string {
   return "Active";
 }
 
+function toPhaseStateLabel(state: PhaseVisualState): string {
+  if (state === "current") {
+    return "Current";
+  }
+
+  if (state === "next") {
+    return "Next";
+  }
+
+  if (state === "complete") {
+    return "Completed";
+  }
+
+  if (state === "later") {
+    return "Later";
+  }
+
+  return "Waiting";
+}
+
+function toPhaseStateCopy(state: PhaseVisualState): string {
+  if (state === "current") {
+    return "Primary focus right now.";
+  }
+
+  if (state === "next") {
+    return "Next in your journey.";
+  }
+
+  if (state === "complete") {
+    return "This phase is largely finished.";
+  }
+
+  if (state === "later") {
+    return "Planned after current phases settle.";
+  }
+
+  return "No actions assigned yet.";
+}
+
 export function RoadmapScreen({
   actionState,
   onActionDone,
@@ -184,7 +224,7 @@ export function RoadmapScreen({
         <Card className="hr-empty-state" tone="soft">
           <p className="hr-empty-title">Roadmap is waiting for quiz findings</p>
           <p className="hr-empty-copy">
-            Complete a category quiz to generate your first phased reset journey.
+            Complete a category input to generate your first phased journey.
           </p>
         </Card>
       ) : (
@@ -214,7 +254,10 @@ export function RoadmapScreen({
         </Card>
       )}
 
-      <SectionHeader title="Reset Journey" />
+      <SectionHeader
+        subtitle="Move from biggest friction points to stable home defaults."
+        title="Reset Journey"
+      />
 
       <Card className="hr-roadmap-journey-card">
         <ol className="hr-roadmap-journey-list">
@@ -228,7 +271,12 @@ export function RoadmapScreen({
                 <div className="hr-roadmap-journey-content">
                   <div className="hr-roadmap-journey-header">
                     <h3 className="hr-item-title">{ROADMAP_PHASE_LABELS[entry.phase]}</h3>
-                    <span className="hr-roadmap-phase-count">{entry.count}</span>
+                    <div className="hr-roadmap-journey-header-right">
+                      <span className={cn("hr-roadmap-phase-state", `is-${state}`)}>
+                        {toPhaseStateLabel(state)}
+                      </span>
+                      <span className="hr-roadmap-phase-count">{entry.count}</span>
+                    </div>
                   </div>
                   <p className="hr-item-description">
                     {topItem ? topItem.title : "No actions in this phase yet."}
@@ -245,7 +293,10 @@ export function RoadmapScreen({
         </ol>
       </Card>
 
-      <SectionHeader title="Guided Steps by Phase" />
+      <SectionHeader
+        subtitle="Practical actions grouped by phase, status, and current sequence."
+        title="Phase Details"
+      />
 
       <ContentStack className="hr-roadmap-phase-stack">
         {phaseProgress.map((entry, index) => {
@@ -262,8 +313,14 @@ export function RoadmapScreen({
                 <div>
                   <p className="hr-overline">Phase</p>
                   <h3 className="hr-item-title">{ROADMAP_PHASE_LABELS[entry.phase]}</h3>
+                  <p className="hr-item-description">{toPhaseStateCopy(state)}</p>
                 </div>
-                <span className="hr-roadmap-phase-count">{items.length}</span>
+                <div className="hr-roadmap-phase-header-right">
+                  <span className={cn("hr-roadmap-phase-state", `is-${state}`)}>
+                    {toPhaseStateLabel(state)}
+                  </span>
+                  <span className="hr-roadmap-phase-count">{items.length}</span>
+                </div>
               </div>
 
               <ContentStack>
