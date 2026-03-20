@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { BottomTabs } from "@/components/navigation/bottom-tabs";
 import {
+  clearActionStatus,
   createInitialActionState,
   loadActionState,
   saveActionState,
@@ -122,6 +123,14 @@ export function PhaseOneAppShell() {
     });
   }
 
+  function handleActionReset(actionId: string): void {
+    setActionState((current) => {
+      const next = clearActionStatus(current, actionId);
+      saveActionState(next);
+      return next;
+    });
+  }
+
   function handleTabChange(nextTab: TabId): void {
     setActiveTab(nextTab);
   }
@@ -133,6 +142,7 @@ export function PhaseOneAppShell() {
           <HomeScreen
             actionState={actionState}
             onActionDone={handleActionDone}
+            onActionReset={handleActionReset}
             onActionSnooze={handleActionSnooze}
             onOpenQuizzes={() => handleTabChange("quizzes")}
             quizDefinitions={QUIZ_DEFINITIONS}
@@ -148,6 +158,7 @@ export function PhaseOneAppShell() {
           <RoadmapScreen
             actionState={actionState}
             onActionDone={handleActionDone}
+            onActionReset={handleActionReset}
             onActionSnooze={handleActionSnooze}
             report={findingsRoadmap}
           />
@@ -170,6 +181,7 @@ export function PhaseOneAppShell() {
           <HomeScreen
             actionState={actionState}
             onActionDone={handleActionDone}
+            onActionReset={handleActionReset}
             onActionSnooze={handleActionSnooze}
             onOpenQuizzes={() => handleTabChange("quizzes")}
             quizDefinitions={QUIZ_DEFINITIONS}

@@ -15,6 +15,7 @@ import { cn } from "@/lib/cn";
 type HomeScreenProps = {
   actionState: ActionState;
   onActionDone: (actionId: string) => void;
+  onActionReset: (actionId: string) => void;
   onActionSnooze: (actionId: string) => void;
   onOpenQuizzes: () => void;
   quizDefinitions: QuizDefinition[];
@@ -72,6 +73,7 @@ function buildActionRows(actions: RoadmapItem[], actionState: ActionState): Acti
 export function HomeScreen({
   actionState,
   onActionDone,
+  onActionReset,
   onActionSnooze,
   onOpenQuizzes,
   quizDefinitions,
@@ -107,26 +109,34 @@ export function HomeScreen({
     const isCompleted = statusView.status === "completed";
     const isSnoozed = statusView.status === "snoozed";
     const isExpanded = expandedActionId === action.id;
+    const doneButtonLabel = isCompleted ? "Undo Done" : "Done";
+    const snoozeButtonLabel = isSnoozed ? "Unsnooze" : "Snooze";
 
     return (
       <div className={cn("hr-action-controls", isPrimary && "is-primary")}>
         <Button
-          disabled={isCompleted}
-          onClick={() => onActionDone(action.id)}
+          className={cn("hr-action-button", isCompleted ? "is-undo" : "is-done")}
+          onClick={() => (isCompleted ? onActionReset(action.id) : onActionDone(action.id))}
           size="sm"
-          variant="secondary"
+          variant={isCompleted ? "quiet" : "primary"}
         >
-          {isCompleted ? "Completed" : "Done"}
+          {doneButtonLabel}
         </Button>
         <Button
-          disabled={isCompleted || isSnoozed}
-          onClick={() => onActionSnooze(action.id)}
+          className={cn("hr-action-button", isSnoozed && "is-unsnooze")}
+          disabled={isCompleted}
+          onClick={() => (isSnoozed ? onActionReset(action.id) : onActionSnooze(action.id))}
+          size="sm"
+          variant={isSnoozed ? "secondary" : "quiet"}
+        >
+          {snoozeButtonLabel}
+        </Button>
+        <Button
+          className={cn("hr-action-button", "is-details", isExpanded && "is-open")}
+          onClick={() => toggleDetails(action.id)}
           size="sm"
           variant="quiet"
         >
-          {isSnoozed ? "Snoozed" : "Snooze"}
-        </Button>
-        <Button onClick={() => toggleDetails(action.id)} size="sm" variant="quiet">
           {isExpanded ? "Hide Details" : "Details"}
         </Button>
       </div>

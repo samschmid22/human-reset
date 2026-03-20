@@ -3,32 +3,32 @@
 :root {
   color-scheme: light;
 
-  --hr-app-bg: #d3e0cf;
-  --hr-shell-bg: #f3f7f2;
+  --hr-app-bg: #e8eeea;
+  --hr-shell-bg: #f8faf8;
   --hr-surface-1: #ffffff;
-  --hr-surface-2: #f2f6f0;
-  --hr-surface-3: #e7efe5;
+  --hr-surface-2: #f4f7f4;
+  --hr-surface-3: #e7eeea;
 
-  --hr-border: #c4d1c2;
-  --hr-border-strong: #aabca9;
+  --hr-border: #ccd6cf;
+  --hr-border-strong: #b6c4bc;
 
-  --hr-text-primary: #122219;
-  --hr-text-secondary: #2f4639;
-  --hr-text-muted: #4d6558;
+  --hr-text-primary: #10261c;
+  --hr-text-secondary: #274235;
+  --hr-text-muted: #496357;
 
-  --hr-accent: #176140;
-  --hr-accent-deep: #11442d;
-  --hr-accent-soft: #d9e8dc;
-  --hr-success-soft: #d9ead8;
-  --hr-accent-ink: #0e3523;
-  --hr-tab-bg: rgba(245, 248, 244, 0.97);
+  --hr-accent: #136145;
+  --hr-accent-deep: #0e422f;
+  --hr-accent-soft: #d7e5dc;
+  --hr-success-soft: #d5e6d9;
+  --hr-accent-ink: #0b3121;
+  --hr-tab-bg: rgba(12, 49, 34, 0.96);
 
-  --hr-shadow-shell: 0 24px 54px rgba(12, 28, 19, 0.2);
-  --hr-shadow-card: 0 12px 28px rgba(11, 24, 17, 0.11);
+  --hr-shadow-shell: 0 24px 56px rgba(10, 31, 21, 0.18);
+  --hr-shadow-card: 0 10px 26px rgba(11, 24, 17, 0.08);
 
-  --hr-radius-sm: 10px;
-  --hr-radius-md: 16px;
-  --hr-radius-lg: 22px;
+  --hr-radius-sm: 12px;
+  --hr-radius-md: 18px;
+  --hr-radius-lg: 26px;
 
   --hr-space-1: 4px;
   --hr-space-2: 8px;
@@ -56,7 +56,7 @@ body {
 }
 
 body {
-  background: radial-gradient(circle at top, #dde8db 0%, var(--hr-app-bg) 58%, #ccd9c9 100%);
+  background: linear-gradient(180deg, #eef3ef 0%, var(--hr-app-bg) 100%);
   color: var(--hr-text-primary);
   font-family: var(--font-body);
 }
@@ -74,7 +74,7 @@ select {
 }
 
 .hr-shell {
-  background: linear-gradient(180deg, #f5f9f3 0%, var(--hr-shell-bg) 100%);
+  background: var(--hr-shell-bg);
   border: 1px solid var(--hr-border-strong);
   display: flex;
   flex-direction: column;
@@ -92,9 +92,9 @@ select {
 
 .hr-shell-header {
   align-items: center;
-  background: var(--hr-surface-1);
-  border-bottom: 1px solid var(--hr-border-strong);
-  box-shadow: 0 1px 0 rgba(14, 32, 22, 0.08);
+  background: linear-gradient(125deg, #0d3f2d 0%, #15573e 100%);
+  border-bottom: 0;
+  box-shadow: 0 2px 0 rgba(12, 28, 19, 0.22);
   display: grid;
   gap: var(--hr-space-3);
   grid-template-columns: 40px minmax(0, 1fr) minmax(0, auto);
@@ -103,10 +103,10 @@ select {
 
 .hr-shell-mark {
   align-items: center;
-  background: #d4e5d8;
-  border: 1px solid #9eb69f;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.34);
   border-radius: var(--hr-radius-sm);
-  color: var(--hr-accent-deep);
+  color: #ffffff;
   display: inline-flex;
   font-size: 0.71rem;
   font-weight: 700;
@@ -124,7 +124,7 @@ select {
 }
 
 .hr-shell-title {
-  color: var(--hr-accent-deep);
+  color: #ffffff;
   font-family: var(--font-display);
   font-size: clamp(1.4rem, 2.1vw, 1.86rem);
   font-weight: 500;
@@ -134,8 +134,8 @@ select {
 }
 
 .hr-shell-context {
-  color: var(--hr-text-muted);
-  font-size: 0.74rem;
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   margin: 2px 0 0;
@@ -151,10 +151,10 @@ select {
 }
 
 .hr-shell-badge {
-  background: #dceade;
-  border: 1px solid #b5c9b7;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 999px;
-  color: var(--hr-accent-deep);
+  color: #ffffff;
   font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.07em;
@@ -164,7 +164,7 @@ select {
 }
 
 .hr-shell-meta {
-  color: var(--hr-text-secondary);
+  color: rgba(255, 255, 255, 0.86);
   font-size: 0.68rem;
   font-weight: 650;
   letter-spacing: 0.04em;
@@ -184,10 +184,10 @@ select {
 
 .hr-icon-button {
   align-items: center;
-  background: #eff4ed;
-  border: 1px solid #b2c4b1;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.34);
   border-radius: var(--hr-radius-sm);
-  color: var(--hr-accent-deep);
+  color: #ffffff;
   display: inline-flex;
   height: 36px;
   justify-content: center;
@@ -201,10 +201,11 @@ select {
 }
 
 .hr-icon-button:not(:disabled):hover {
-  background: var(--hr-surface-3);
+  background: rgba(255, 255, 255, 0.24);
 }
 
 .hr-shell-body {
+  background: linear-gradient(180deg, #f8faf8 0%, #f3f7f4 100%);
   flex: 1;
   min-height: 0;
   order: 1;
@@ -235,8 +236,8 @@ select {
 
 .hr-card {
   background: var(--hr-surface-1);
-  border: 1px solid var(--hr-border);
-  border-radius: 18px;
+  border: 1px solid #d2dbd4;
+  border-radius: 14px;
   box-shadow: var(--hr-shadow-card);
   display: flex;
   flex-direction: column;
@@ -249,12 +250,12 @@ select {
 }
 
 .hr-card--soft {
-  background: #f6f9f5;
+  background: #f6faf7;
 }
 
 .hr-card--accent {
-  background: linear-gradient(165deg, #e4efe5 0%, #f1f6ef 100%);
-  border-color: #afc4af;
+  background: linear-gradient(165deg, #eef5f1 0%, #f8fbf9 100%);
+  border-color: #c5d4cb;
 }
 
 .hr-card-row {
@@ -270,7 +271,7 @@ select {
 
 .hr-overline {
   color: var(--hr-accent-deep);
-  font-size: 0.69rem;
+  font-size: 0.67rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   margin: 0;
@@ -280,7 +281,7 @@ select {
 .hr-feature-title {
   color: var(--hr-text-primary);
   font-family: var(--font-display);
-  font-size: clamp(1.46rem, 2.5vw, 1.86rem);
+  font-size: clamp(1.58rem, 2.8vw, 2.08rem);
   font-weight: 500;
   line-height: 1.14;
   margin: 0;
@@ -325,7 +326,7 @@ select {
 
 .hr-section-header {
   align-items: flex-end;
-  border-bottom: 1px solid var(--hr-border);
+  border-bottom: 1px solid #d1dad3;
   display: flex;
   gap: var(--hr-space-3);
   justify-content: space-between;
@@ -335,7 +336,7 @@ select {
 .hr-section-title {
   color: var(--hr-accent-ink);
   font-family: var(--font-display);
-  font-size: 1.28rem;
+  font-size: 1.36rem;
   font-weight: 600;
   line-height: 1.2;
   margin: 0;
@@ -356,7 +357,7 @@ select {
 .hr-button {
   align-items: center;
   border: 1px solid transparent;
-  border-radius: 999px;
+  border-radius: 11px;
   cursor: pointer;
   display: inline-flex;
   font-size: 0.82rem;
@@ -375,37 +376,38 @@ select {
 }
 
 .hr-button--sm {
-  min-height: 30px;
-  padding: 0 12px;
+  min-height: 36px;
+  padding: 0 13px;
 }
 
 .hr-button--md {
-  min-height: 36px;
-  padding: 0 14px;
+  min-height: 40px;
+  padding: 0 15px;
 }
 
 .hr-button--primary {
-  background: linear-gradient(180deg, #1d6b47 0%, #155338 100%);
+  background: var(--hr-accent-deep);
+  border-color: #0b2e20;
   color: #ffffff;
 }
 
 .hr-button--primary:hover {
-  background: linear-gradient(180deg, #1b6242 0%, #124a31 100%);
+  background: #0c3827;
 }
 
 .hr-button--secondary {
-  background: #dce9dd;
-  border-color: #bccfbd;
+  background: #ebf2ed;
+  border-color: #b9c9be;
   color: var(--hr-accent-deep);
 }
 
 .hr-button--secondary:hover {
-  background: #d2e2d4;
+  background: #dfe8e2;
 }
 
 .hr-button--quiet {
-  background: #f7faf6;
-  border-color: #ccd8cb;
+  background: #ffffff;
+  border-color: #c9d5cb;
   color: var(--hr-text-secondary);
 }
 
@@ -466,13 +468,28 @@ select {
 
 .hr-action-controls {
   align-items: center;
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   gap: var(--hr-space-2);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  width: 100%;
 }
 
 .hr-action-controls.is-primary {
   margin-top: var(--hr-space-3);
+}
+
+.hr-action-button {
+  width: 100%;
+}
+
+.hr-action-button.is-details {
+  grid-column: 1 / -1;
+  justify-self: stretch;
+}
+
+.hr-action-button.is-details.is-open {
+  border-color: #9ab6a5;
+  color: var(--hr-accent-deep);
 }
 
 .hr-action-list-card {
@@ -575,7 +592,8 @@ select {
 }
 
 .hr-home-dashboard-grid {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: var(--hr-space-4);
 }
 
@@ -617,8 +635,8 @@ select {
 }
 
 .hr-home-primary-action {
-  background: rgba(255, 255, 255, 0.85);
-  border: 1px solid #c2d2c1;
+  background: #ffffff;
+  border: 1px solid #c9d6cc;
   border-radius: var(--hr-radius-sm);
   display: flex;
   flex-direction: column;
@@ -631,8 +649,8 @@ select {
 }
 
 .hr-home-stats {
-  background: linear-gradient(180deg, #f8fbf7 0%, #f2f7f0 100%);
-  border-color: #b9cbb9;
+  background: #f7faf8;
+  border-color: #c4d2c8;
   justify-content: center;
   position: relative;
 }
@@ -656,7 +674,7 @@ select {
 .hr-kpi-grid {
   display: grid;
   gap: var(--hr-space-3);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
 }
 
 .hr-kpi {
@@ -690,14 +708,15 @@ select {
 }
 
 .hr-calibration-banner {
-  background: #f4f8f2;
-  border-left: 4px solid var(--hr-accent);
-  border-color: #bfd0bf;
+  background: #eff5f1;
+  border-left: 4px solid var(--hr-accent-deep);
+  border-color: #c3d2c8;
   gap: var(--hr-space-2);
 }
 
 .hr-home-secondary-grid {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: var(--hr-space-4);
 }
 
@@ -732,7 +751,7 @@ select {
 }
 
 .hr-roadmap-summary-item {
-  background: rgba(255, 255, 255, 0.74);
+  background: rgba(255, 255, 255, 0.92);
   border: 1px solid #becfbd;
   border-radius: var(--hr-radius-sm);
   display: flex;
@@ -989,7 +1008,7 @@ select {
 
 .hr-quiz-row {
   align-items: center;
-  border-top: 1px solid #c6d3c4;
+  border-top: 1px solid #d0dad2;
   display: flex;
   gap: var(--hr-space-3);
   justify-content: space-between;
@@ -1119,8 +1138,8 @@ select {
 }
 
 .hr-vault-entry-card {
-  background: #f8fbf7;
-  border-color: #c2d1c1;
+  background: #ffffff;
+  border-color: #d1dbd3;
 }
 
 .hr-vault-topic-line {
@@ -1473,10 +1492,10 @@ select {
 }
 
 .hr-tabs {
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(8px);
   background: var(--hr-tab-bg);
-  border-top: 1px solid #afc1af;
-  box-shadow: 0 -10px 26px rgba(15, 35, 23, 0.12);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 -10px 30px rgba(8, 22, 15, 0.34);
   order: 2;
   position: sticky;
   bottom: 0;
@@ -1485,7 +1504,7 @@ select {
 }
 
 .hr-tabs-heading {
-  color: var(--hr-accent-ink);
+  color: rgba(255, 255, 255, 0.78);
   display: none;
   font-size: 0.72rem;
   font-weight: 700;
@@ -1510,10 +1529,10 @@ select {
 
 .hr-tab-button {
   align-items: center;
-  background: #f1f6ef;
-  border: 1px solid #c4d2c3;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--hr-radius-sm);
-  color: #3f5849;
+  color: rgba(255, 255, 255, 0.72);
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -1524,13 +1543,13 @@ select {
 }
 
 .hr-tab-button.is-active {
-  background: var(--hr-accent-deep);
-  border-color: var(--hr-accent-deep);
-  color: #ffffff;
+  background: #ffffff;
+  border-color: #ffffff;
+  color: #163626;
 }
 
 .hr-tab-button.is-active::after {
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--hr-accent-deep);
   border-radius: 999px;
   content: "";
   height: 2px;
@@ -1548,7 +1567,7 @@ select {
 }
 
 .hr-tab-label {
-  font-size: 0.71rem;
+  font-size: 0.72rem;
   font-weight: 700;
   line-height: 1;
 }
@@ -1585,6 +1604,10 @@ select {
   .hr-card {
     gap: 10px;
     padding: 14px;
+  }
+
+  .hr-action-controls {
+    grid-template-columns: 1fr;
   }
 
   .hr-feature-title {
@@ -1627,11 +1650,11 @@ select {
   }
 
   .hr-home-dashboard-grid {
-    grid-template-columns: minmax(0, 1.45fr) minmax(280px, 1fr);
+    grid-template-columns: 1fr;
   }
 
   .hr-home-secondary-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
   }
 
   .hr-vault-category-grid {
@@ -1670,9 +1693,9 @@ select {
 
   .hr-tabs {
     align-self: stretch;
-    border-right: 1px solid #b9cab8;
+    border-right: 0;
     border-top: 0;
-    box-shadow: inset -1px 0 0 rgba(16, 36, 24, 0.04);
+    box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.08);
     min-width: 236px;
     order: 1;
     position: static;
@@ -1691,8 +1714,8 @@ select {
   }
 
   .hr-tab-button {
-    border-color: #c2d2c1;
-    color: #385040;
+    border-color: rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.78);
     flex-direction: row;
     gap: 12px;
     justify-content: flex-start;
@@ -1728,10 +1751,6 @@ select {
 @media (min-width: 1220px) {
   .hr-vault-category-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .hr-kpi-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .hr-profile-grid {
