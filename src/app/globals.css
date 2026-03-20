@@ -21,7 +21,7 @@
   --hr-accent-soft: #d7e5dc;
   --hr-success-soft: #d5e6d9;
   --hr-accent-ink: #0b3121;
-  --hr-tab-bg: rgba(12, 49, 34, 0.96);
+  --hr-tab-bg: rgba(240, 246, 242, 0.94);
 
   --hr-shadow-shell: 0 24px 56px rgba(10, 31, 21, 0.18);
   --hr-shadow-card: 0 10px 26px rgba(11, 24, 17, 0.08);
@@ -92,9 +92,9 @@ select {
 
 .hr-shell-header {
   align-items: center;
-  background: linear-gradient(125deg, #0d3f2d 0%, #15573e 100%);
-  border-bottom: 0;
-  box-shadow: 0 2px 0 rgba(12, 28, 19, 0.22);
+  background: linear-gradient(180deg, #f8fcf9 0%, #f2f7f3 100%);
+  border-bottom: 1px solid #d2ddd5;
+  box-shadow: 0 1px 0 rgba(13, 32, 22, 0.06);
   display: grid;
   gap: var(--hr-space-3);
   grid-template-columns: 40px minmax(0, 1fr) minmax(0, auto);
@@ -103,10 +103,10 @@ select {
 
 .hr-shell-mark {
   align-items: center;
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.34);
+  background: #e6efe8;
+  border: 1px solid #c2d3c7;
   border-radius: var(--hr-radius-sm);
-  color: #ffffff;
+  color: var(--hr-accent-deep);
   display: inline-flex;
   font-size: 0.71rem;
   font-weight: 700;
@@ -124,7 +124,7 @@ select {
 }
 
 .hr-shell-title {
-  color: #ffffff;
+  color: var(--hr-accent-deep);
   font-family: var(--font-display);
   font-size: clamp(1.4rem, 2.1vw, 1.86rem);
   font-weight: 500;
@@ -134,7 +134,7 @@ select {
 }
 
 .hr-shell-context {
-  color: rgba(255, 255, 255, 0.84);
+  color: var(--hr-text-muted);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -151,10 +151,10 @@ select {
 }
 
 .hr-shell-badge {
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: #e5efe7;
+  border: 1px solid #c2d2c5;
   border-radius: 999px;
-  color: #ffffff;
+  color: var(--hr-accent-deep);
   font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.07em;
@@ -164,7 +164,7 @@ select {
 }
 
 .hr-shell-meta {
-  color: rgba(255, 255, 255, 0.86);
+  color: var(--hr-text-secondary);
   font-size: 0.68rem;
   font-weight: 650;
   letter-spacing: 0.04em;
@@ -184,10 +184,10 @@ select {
 
 .hr-icon-button {
   align-items: center;
-  background: rgba(255, 255, 255, 0.16);
-  border: 1px solid rgba(255, 255, 255, 0.34);
+  background: #eff5f1;
+  border: 1px solid #c4d3c8;
   border-radius: var(--hr-radius-sm);
-  color: #ffffff;
+  color: var(--hr-accent-deep);
   display: inline-flex;
   height: 36px;
   justify-content: center;
@@ -201,7 +201,7 @@ select {
 }
 
 .hr-icon-button:not(:disabled):hover {
-  background: rgba(255, 255, 255, 0.24);
+  background: #e4eee7;
 }
 
 .hr-shell-body {
@@ -241,8 +241,8 @@ select {
   box-shadow: var(--hr-shadow-card);
   display: flex;
   flex-direction: column;
-  gap: var(--hr-space-3);
-  padding: var(--hr-space-4);
+  gap: 11px;
+  padding: 18px;
 }
 
 .hr-card--surface {
@@ -357,11 +357,11 @@ select {
 .hr-button {
   align-items: center;
   border: 1px solid transparent;
-  border-radius: 11px;
+  border-radius: 10px;
   cursor: pointer;
   display: inline-flex;
-  font-size: 0.82rem;
-  font-weight: 650;
+  font-size: 0.8rem;
+  font-weight: 600;
   justify-content: center;
   letter-spacing: 0.01em;
   transition:
@@ -376,18 +376,18 @@ select {
 }
 
 .hr-button--sm {
-  min-height: 36px;
-  padding: 0 13px;
+  min-height: 33px;
+  padding: 0 11px;
 }
 
 .hr-button--md {
-  min-height: 40px;
-  padding: 0 15px;
+  min-height: 37px;
+  padding: 0 13px;
 }
 
 .hr-button--primary {
   background: var(--hr-accent-deep);
-  border-color: #0b2e20;
+  border-color: #0d3f2c;
   color: #ffffff;
 }
 
@@ -396,8 +396,8 @@ select {
 }
 
 .hr-button--secondary {
-  background: #ebf2ed;
-  border-color: #b9c9be;
+  background: #e7f1e9;
+  border-color: #bdcec1;
   color: var(--hr-accent-deep);
 }
 
@@ -407,7 +407,7 @@ select {
 
 .hr-button--quiet {
   background: #ffffff;
-  border-color: #c9d5cb;
+  border-color: #ced9d1;
   color: var(--hr-text-secondary);
 }
 
@@ -468,10 +468,10 @@ select {
 
 .hr-action-controls {
   align-items: center;
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
   gap: var(--hr-space-2);
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  width: 100%;
+  row-gap: 6px;
 }
 
 .hr-action-controls.is-primary {
@@ -479,12 +479,12 @@ select {
 }
 
 .hr-action-button {
-  width: 100%;
+  flex: 0 0 auto;
+  min-width: 82px;
 }
 
 .hr-action-button.is-details {
-  grid-column: 1 / -1;
-  justify-self: stretch;
+  min-width: 90px;
 }
 
 .hr-action-button.is-details.is-open {
@@ -594,7 +594,7 @@ select {
 .hr-home-dashboard-grid {
   display: flex;
   flex-direction: column;
-  gap: var(--hr-space-4);
+  gap: 14px;
 }
 
 .hr-home-hero {
@@ -674,7 +674,7 @@ select {
 .hr-kpi-grid {
   display: grid;
   gap: var(--hr-space-3);
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .hr-kpi {
@@ -683,14 +683,14 @@ select {
   border-radius: var(--hr-radius-sm);
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
   min-width: 0;
-  padding: var(--hr-space-3);
+  padding: 10px 12px;
 }
 
 .hr-kpi strong {
   color: var(--hr-accent-ink);
-  font-size: 1.18rem;
+  font-size: 1.12rem;
   line-height: 1.1;
 }
 
@@ -704,7 +704,7 @@ select {
 
 .hr-kpi-note {
   color: var(--hr-text-secondary);
-  font-size: 0.76rem;
+  font-size: 0.74rem;
 }
 
 .hr-calibration-banner {
@@ -717,7 +717,7 @@ select {
 .hr-home-secondary-grid {
   display: flex;
   flex-direction: column;
-  gap: var(--hr-space-4);
+  gap: 14px;
 }
 
 .hr-home-next-card .hr-card-row {
@@ -1494,8 +1494,8 @@ select {
 .hr-tabs {
   backdrop-filter: blur(8px);
   background: var(--hr-tab-bg);
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 -10px 30px rgba(8, 22, 15, 0.34);
+  border-top: 1px solid #cfddd2;
+  box-shadow: 0 -8px 22px rgba(12, 30, 20, 0.1);
   order: 2;
   position: sticky;
   bottom: 0;
@@ -1504,7 +1504,7 @@ select {
 }
 
 .hr-tabs-heading {
-  color: rgba(255, 255, 255, 0.78);
+  color: var(--hr-text-secondary);
   display: none;
   font-size: 0.72rem;
   font-weight: 700;
@@ -1529,10 +1529,10 @@ select {
 
 .hr-tab-button {
   align-items: center;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #edf3ee;
+  border: 1px solid #cbd8cf;
   border-radius: var(--hr-radius-sm);
-  color: rgba(255, 255, 255, 0.72);
+  color: #3a5345;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -1544,8 +1544,8 @@ select {
 
 .hr-tab-button.is-active {
   background: #ffffff;
-  border-color: #ffffff;
-  color: #163626;
+  border-color: #b7cabd;
+  color: var(--hr-accent-deep);
 }
 
 .hr-tab-button.is-active::after {
@@ -1603,11 +1603,11 @@ select {
 
   .hr-card {
     gap: 10px;
-    padding: 14px;
+    padding: 15px;
   }
 
   .hr-action-controls {
-    grid-template-columns: 1fr;
+    gap: 6px;
   }
 
   .hr-feature-title {
@@ -1695,12 +1695,12 @@ select {
     align-self: stretch;
     border-right: 0;
     border-top: 0;
-    box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.08);
-    min-width: 236px;
+    box-shadow: inset -1px 0 0 rgba(12, 32, 22, 0.06);
+    min-width: 192px;
     order: 1;
     position: static;
-    padding: 24px 14px;
-    width: 236px;
+    padding: 18px 10px;
+    width: 192px;
   }
 
   .hr-tabs-heading {
@@ -1714,13 +1714,13 @@ select {
   }
 
   .hr-tab-button {
-    border-color: rgba(255, 255, 255, 0.18);
-    color: rgba(255, 255, 255, 0.78);
+    border-color: #cad8ce;
+    color: #3c5547;
     flex-direction: row;
-    gap: 12px;
+    gap: 10px;
     justify-content: flex-start;
-    min-height: 44px;
-    padding: 0 12px;
+    min-height: 40px;
+    padding: 0 10px;
   }
 
   .hr-tab-button.is-active::after {

@@ -39,7 +39,7 @@ function toStatusLabel(status: ActionStatus): string {
     return "Snoozed";
   }
 
-  return "Active";
+  return "Pending";
 }
 
 function toPhaseStateLabel(state: PhaseVisualState): string {
@@ -173,7 +173,7 @@ export function RoadmapScreen({
     const isCompleted = statusView.status === "completed";
     const isSnoozed = statusView.status === "snoozed";
     const isExpanded = expandedActionId === item.id;
-    const doneButtonLabel = isCompleted ? "Undo Done" : "Done";
+    const doneButtonLabel = isCompleted ? "Undo" : "Done";
     const snoozeButtonLabel = isSnoozed ? "Unsnooze" : "Snooze";
 
     return (
@@ -189,10 +189,12 @@ export function RoadmapScreen({
           <p className="hr-action-list-meta">{item.category}</p>
           <h3 className="hr-item-title">{item.title}</h3>
           <p className="hr-item-description">{item.minimumStep}</p>
-          <p className="hr-action-list-status">
-            {toStatusLabel(statusView.status)}
-            {statusView.snoozedUntil ? ` until ${statusView.snoozedUntil}` : ""}
-          </p>
+          {statusView.status !== "pending" ? (
+            <p className="hr-action-list-status">
+              {toStatusLabel(statusView.status)}
+              {statusView.snoozedUntil ? ` until ${statusView.snoozedUntil}` : ""}
+            </p>
+          ) : null}
         </div>
 
         <div className="hr-action-controls">

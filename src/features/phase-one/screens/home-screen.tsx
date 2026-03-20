@@ -60,7 +60,7 @@ function toStatusLabel(status: ActionStatus): string {
     return "Snoozed";
   }
 
-  return "Active";
+  return "Pending";
 }
 
 function buildActionRows(actions: RoadmapItem[], actionState: ActionState): ActionRow[] {
@@ -109,7 +109,7 @@ export function HomeScreen({
     const isCompleted = statusView.status === "completed";
     const isSnoozed = statusView.status === "snoozed";
     const isExpanded = expandedActionId === action.id;
-    const doneButtonLabel = isCompleted ? "Undo Done" : "Done";
+    const doneButtonLabel = isCompleted ? "Undo" : "Done";
     const snoozeButtonLabel = isSnoozed ? "Unsnooze" : "Snooze";
 
     return (
@@ -152,9 +152,11 @@ export function HomeScreen({
         <div className="hr-action-list-content">
           <div className="hr-action-list-heading">
             <p className="hr-action-list-meta">{action.category}</p>
-            <span className={cn("hr-action-status-chip", `is-${statusView.status}`)}>
-              {toStatusLabel(statusView.status)}
-            </span>
+            {statusView.status !== "pending" ? (
+              <span className={cn("hr-action-status-chip", `is-${statusView.status}`)}>
+                {toStatusLabel(statusView.status)}
+              </span>
+            ) : null}
           </div>
           <h3 className="hr-item-title">{action.title}</h3>
           <p className="hr-item-description">{action.minimumStep}</p>
@@ -189,9 +191,11 @@ export function HomeScreen({
               <div className="hr-home-primary-main">
                 <div className="hr-action-list-heading">
                   <p className="hr-action-list-meta">{topPriority.action.category}</p>
-                  <span className={cn("hr-action-status-chip", `is-${topPriority.statusView.status}`)}>
-                    {toStatusLabel(topPriority.statusView.status)}
-                  </span>
+                  {topPriority.statusView.status !== "pending" ? (
+                    <span className={cn("hr-action-status-chip", `is-${topPriority.statusView.status}`)}>
+                      {toStatusLabel(topPriority.statusView.status)}
+                    </span>
+                  ) : null}
                 </div>
                 <h3 className="hr-item-title">{topPriority.action.title}</h3>
                 <p className="hr-item-description">{topPriority.action.minimumStep}</p>
