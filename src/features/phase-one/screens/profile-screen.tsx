@@ -197,11 +197,11 @@ export function ProfileScreen({
 
             <div className="hr-setting-row">
               <span className="hr-setting-label">Focus Style</span>
-              <div className="hr-segmented-control">
+              <div className="hr-chip-grid">
                 <button
                   aria-pressed={responses.focusStyle === "mixed"}
                   className={cn(
-                    "hr-segmented-control-button",
+                    "hr-toggle-chip",
                     responses.focusStyle === "mixed" && "is-selected",
                   )}
                   onClick={() => commitResponses({ ...responses, focusStyle: "mixed" })}
@@ -212,7 +212,7 @@ export function ProfileScreen({
                 <button
                   aria-pressed={responses.focusStyle === "one_category"}
                   className={cn(
-                    "hr-segmented-control-button",
+                    "hr-toggle-chip",
                     responses.focusStyle === "one_category" && "is-selected",
                   )}
                   onClick={() => commitResponses({ ...responses, focusStyle: "one_category" })}

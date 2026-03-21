@@ -220,7 +220,7 @@ select {
   min-height: 0;
   order: 1;
   overflow: auto;
-  padding: var(--hr-space-5) var(--hr-space-4) calc(108px + env(safe-area-inset-bottom, 0px));
+  padding: var(--hr-space-5) 20px calc(108px + env(safe-area-inset-bottom, 0px));
 }
 
 .hr-search-panel {
@@ -297,13 +297,13 @@ select {
 
 .hr-card {
   background: #e9e7df;
-  border: 1px solid rgba(26, 61, 26, 0.12);
+  border: none;
   border-radius: 16px;
-  box-shadow: 0 2px 12px rgba(10, 36, 10, 0.10);
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 18px 20px;
+  padding: 16px 18px;
 }
 
 .hr-card--surface {
@@ -312,12 +312,10 @@ select {
 
 .hr-card--soft {
   background: #dedad0;
-  border-color: rgba(26, 61, 26, 0.1);
 }
 
 .hr-card--accent {
   background: #dedad0;
-  border-color: rgba(26, 61, 26, 0.1);
   border-left: 4px solid #228C22;
 }
 
@@ -429,15 +427,6 @@ select {
   border-top-color: rgba(26, 61, 26, 0.1);
 }
 
-.hr-card .hr-quiz-row {
-  border-top-color: rgba(26, 61, 26, 0.08);
-}
-
-.hr-card .hr-quiz-group-head {
-  border-bottom: 1px solid rgba(26, 61, 26, 0.08);
-  padding-bottom: 10px;
-}
-
 .hr-card .hr-roadmap-journey-actions {
   border-top: 0;
 }
@@ -500,13 +489,13 @@ select {
 /* Toggle chips on light cards */
 .hr-card .hr-toggle-chip {
   background: transparent;
-  border: 1.5px solid rgba(26, 61, 26, 0.3);
+  border: 1.5px solid rgba(26, 61, 26, 0.25);
   color: #1a3d1a;
 }
 
 .hr-card .hr-toggle-chip.is-selected {
-  background: #228C22;
-  border-color: #228C22;
+  background: linear-gradient(135deg, #2d7d2d, #228C22, #1a6b1a);
+  border-color: transparent;
   color: #ffffff;
 }
 
@@ -602,18 +591,16 @@ select {
 
 .hr-section-header {
   align-items: flex-end;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   display: flex;
   gap: var(--hr-space-3);
   justify-content: space-between;
-  padding-bottom: 10px;
 }
 
 .hr-section-title {
   color: #ffffff;
   font-family: var(--font-display);
-  font-size: 1.34rem;
-  font-weight: 600;
+  font-size: 1.5rem;
+  font-weight: 700;
   line-height: 1.2;
   margin: 0;
 }
@@ -652,13 +639,14 @@ select {
 }
 
 .hr-button--sm {
-  min-height: 31px;
-  padding: 0 12px;
+  font-size: 0.73rem;
+  min-height: 34px;
+  padding: 0 14px;
 }
 
 .hr-button--md {
   min-height: 36px;
-  padding: 0 14px;
+  padding: 0 16px;
 }
 
 .hr-button--primary {
@@ -774,10 +762,8 @@ select {
 
 .hr-action-card {
   border-radius: 16px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
-  display: grid;
   gap: 10px;
-  grid-template-columns: minmax(0, 1fr);
+  padding: 14px 18px;
 }
 
 .hr-action-list-row {
@@ -802,8 +788,19 @@ select {
   font-size: 0.69rem;
   font-weight: 700;
   letter-spacing: 0.06em;
-  margin: 0 0 7px;
+  margin: 0 0 5px;
   text-transform: uppercase;
+}
+
+/* Inside linen action cards: dark green category label */
+.hr-action-card .hr-action-list-meta {
+  color: #228C22;
+  font-size: 0.67rem;
+  letter-spacing: 0.05em;
+}
+
+.hr-action-card .hr-item-title {
+  font-size: 1rem;
 }
 
 .hr-action-status-chip {
@@ -964,9 +961,9 @@ select {
 }
 
 .hr-kpi {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--hr-radius-sm);
+  background: #dedad0;
+  border: none;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
   gap: 3px;
@@ -982,14 +979,14 @@ select {
 }
 
 .hr-kpi strong {
-  color: var(--hr-accent-ink);
+  color: #1a3d1a;
   font-size: 1.16rem;
   line-height: 1.1;
   text-align: right;
 }
 
 .hr-kpi-label {
-  color: var(--hr-text-muted);
+  color: #3d6b3d;
   font-size: 0.66rem;
   font-weight: 700;
   letter-spacing: 0.07em;
@@ -1158,38 +1155,29 @@ select {
 }
 
 .hr-roadmap-phase-state {
-  border-radius: 999px;
-  font-size: 0.64rem;
-  font-weight: 700;
+  background: rgba(181, 225, 155, 0.12);
+  border: 1px solid rgba(181, 225, 155, 0.4);
+  border-radius: 12px;
+  color: #b5e19b;
+  font-size: 0.67rem;
+  font-weight: 600;
   letter-spacing: 0.05em;
   line-height: 1;
-  padding: 5px 8px;
+  padding: 3px 10px;
   text-transform: uppercase;
 }
 
-.hr-roadmap-phase-state.is-current {
-  background: rgba(34, 140, 34, 0.15);
-  border: 1px solid rgba(34, 140, 34, 0.35);
-  color: #1a5a1a;
-}
-
-.hr-roadmap-phase-state.is-next {
-  background: rgba(34, 140, 34, 0.08);
-  border: 1px solid rgba(34, 140, 34, 0.2);
-  color: #2d7a2d;
-}
-
 .hr-roadmap-phase-state.is-complete {
-  background: rgba(26, 61, 26, 0.08);
-  border: 1px solid rgba(26, 61, 26, 0.15);
-  color: #3d6b3d;
+  background: rgba(181, 225, 155, 0.06);
+  border-color: rgba(181, 225, 155, 0.2);
+  color: #8fba8f;
 }
 
 .hr-roadmap-phase-state.is-later,
 .hr-roadmap-phase-state.is-empty {
-  background: rgba(26, 61, 26, 0.04);
-  border: 1px solid rgba(26, 61, 26, 0.1);
-  color: #5a8a5a;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #8fba8f;
 }
 
 .hr-roadmap-phase-count {
@@ -1236,28 +1224,76 @@ select {
 .hr-roadmap-journey-actions {
   gap: 10px;
   margin-top: 12px;
+  padding-left: 16px;
 }
 
 .hr-roadmap-action-row {
-  background: #2d5a2d;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--hr-radius-sm);
+  background: #e9e7df;
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
-  gap: var(--hr-space-2);
-  padding: var(--hr-space-3);
+  gap: 10px;
+  padding: 14px 18px;
 }
 
 .hr-roadmap-action-row.is-done-today {
-  background: rgba(34, 140, 34, 0.25);
+  background: #dedad0;
 }
 
 .hr-roadmap-action-row.is-snoozed {
-  background: rgba(255, 255, 255, 0.05);
+  background: #dedad0;
+  opacity: 0.8;
 }
 
 .hr-roadmap-action-row.is-skipped {
   opacity: 0.55;
+}
+
+/* Roadmap action row — linen context (same as .hr-card) */
+.hr-roadmap-action-row .hr-item-title {
+  color: #1a3d1a;
+  font-size: 1rem;
+}
+
+.hr-roadmap-action-row .hr-item-description {
+  color: #3d6b3d;
+}
+
+.hr-roadmap-action-row .hr-action-list-meta {
+  color: #228C22;
+  font-size: 0.67rem;
+  letter-spacing: 0.05em;
+}
+
+.hr-roadmap-action-row .hr-action-list-status {
+  color: #3d6b3d;
+}
+
+.hr-roadmap-action-row .hr-button--secondary,
+.hr-roadmap-action-row .hr-button--quiet {
+  background: transparent;
+  border: 1.5px solid #228C22;
+  color: #228C22;
+}
+
+.hr-roadmap-action-row .hr-button--secondary:hover,
+.hr-roadmap-action-row .hr-button--quiet:hover {
+  background: rgba(34, 140, 34, 0.08);
+}
+
+.hr-roadmap-action-row .hr-action-status-chip {
+  background: rgba(26, 61, 26, 0.08);
+  border-color: rgba(26, 61, 26, 0.15);
+  color: #3d6b3d;
+}
+
+.hr-roadmap-action-row .hr-action-status-chip.is-done_today,
+.hr-roadmap-action-row .hr-action-status-chip.is-done_permanent {
+  background: rgba(34, 140, 34, 0.12);
+  border-color: rgba(34, 140, 34, 0.25);
+  color: #228C22;
 }
 
 .hr-roadmap-action-main {
@@ -1278,40 +1314,61 @@ select {
   margin-bottom: 2px;
 }
 
-.hr-quiz-list-card {
-  background: #2d5a2d;
-  border-color: rgba(255, 255, 255, 0.08);
-  padding: var(--hr-space-3);
+.hr-quiz-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-/* Quiz card dark-theme overrides (reverse the global linen card context) */
-.hr-quiz-list-card .hr-item-title {
-  color: #e9e7df;
+.hr-quiz-card {
+  gap: 10px;
+  padding: 14px 18px;
 }
 
-.hr-quiz-list-card .hr-item-description {
-  color: #8fba8f;
+.hr-quiz-card-main {
+  min-width: 0;
 }
 
-.hr-quiz-list-card .hr-overline {
-  color: #b5e19b;
-}
-
-.hr-quiz-list-card .hr-roadmap-phase-count {
-  background: rgba(0, 0, 0, 0.2);
-  border-color: transparent;
-  color: #c8e6c8;
-}
-
-.hr-quiz-list-card .hr-button--secondary {
-  background: #e9e7df;
-  border-color: #e9e7df;
+.hr-quiz-card-title {
   color: #1a3d1a;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 0;
 }
 
-.hr-quiz-list-card .hr-button--secondary:hover {
-  background: #f0ede4;
-  border-color: #f0ede4;
+.hr-quiz-card-description {
+  color: #3d6b3d;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  margin: 4px 0 0;
+}
+
+.hr-quiz-card-controls {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.hr-quiz-group-label {
+  align-items: center;
+  color: #8fba8f;
+  display: flex;
+  font-size: 0.72rem;
+  font-weight: 700;
+  gap: var(--hr-space-2);
+  letter-spacing: 0.06em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.hr-quiz-group-count {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  color: #c8e6c8;
+  font-size: 0.67rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 2px 7px;
 }
 
 .hr-quiz-list-stack {
@@ -1442,6 +1499,13 @@ select {
 
 .hr-vault-tap-card-body {
   min-width: 0;
+}
+
+/* Vault chevron arrows — visible on linen */
+.hr-vault-tap-card > svg,
+.hr-vault-track-row > svg {
+  color: #228C22;
+  flex-shrink: 0;
 }
 
 .hr-vault-tap-title {
@@ -1669,17 +1733,17 @@ select {
 }
 
 .hr-profile-plan-label {
-  color: var(--hr-text-muted);
-  font-size: 0.69rem;
+  color: #3d6b3d;
+  font-size: 0.67rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
 .hr-profile-plan-value {
-  color: var(--hr-text-primary);
-  font-size: 0.96rem;
-  font-weight: 600;
+  color: #1a3d1a;
+  font-size: 1.04rem;
+  font-weight: 700;
 }
 
 .hr-setting-row-actions {
@@ -1698,7 +1762,7 @@ select {
 }
 
 .hr-profile-settings-card {
-  background: #2d5a2d;
+  /* inherits linen from .hr-card */
 }
 
 .hr-profile-save-state {
@@ -1713,7 +1777,7 @@ select {
 
 .hr-profile-skipped-row {
   align-items: flex-start;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(26, 61, 26, 0.1);
   display: flex;
   gap: var(--hr-space-3);
   justify-content: space-between;
@@ -1735,7 +1799,7 @@ select {
 
 .hr-setting-row {
   align-items: flex-start;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(26, 61, 26, 0.1);
   display: flex;
   flex-direction: column;
   gap: 3px;
@@ -1748,8 +1812,8 @@ select {
 }
 
 .hr-setting-label {
-  color: var(--hr-text-muted);
-  font-size: 0.72rem;
+  color: #3d6b3d;
+  font-size: 0.69rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
