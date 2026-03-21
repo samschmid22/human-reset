@@ -5,7 +5,7 @@ export const waterQuiz: QuizDefinition = {
   category: "Water",
   title: "Water Quiz",
   description:
-    "Map drinking, cooking, and shower water exposure.",
+    "Tell us about your drinking, cooking, and shower water sources.",
   questions: [
     {
       id: "q1",

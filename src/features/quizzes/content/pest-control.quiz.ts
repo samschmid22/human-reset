@@ -5,7 +5,7 @@ export const pestControlQuiz: QuizDefinition = {
   category: "Pest Control",
   title: "Pest Control Quiz",
   description:
-    "Map pesticide use to support prevention-first habits.",
+    "Tell us how you handle pests at home and what products you use.",
   questions: [
     {
       id: "q1",

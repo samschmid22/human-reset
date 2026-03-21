@@ -5,7 +5,7 @@ export const personalCareQuiz: QuizDefinition = {
   category: "Personal Care",
   title: "Personal Care Quiz",
   description:
-    "Map leave-on products and fragrance in daily routines.",
+    "Share the products you use on your skin and body each day.",
   questions: [
     {
       id: "q1",

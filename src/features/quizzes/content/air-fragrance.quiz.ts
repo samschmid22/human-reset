@@ -5,7 +5,7 @@ export const airFragranceQuiz: QuizDefinition = {
   category: "Air + Fragrance",
   title: "Air + Fragrance Quiz",
   description:
-    "Map fragrance and air exposure to guide your reset.",
+    "Tell us how fragrance and air products show up in your home.",
   questions: [
     {
       id: "q1",

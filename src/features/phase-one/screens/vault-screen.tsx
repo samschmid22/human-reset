@@ -128,11 +128,7 @@ export function VaultScreen() {
   return (
     <ScreenContainer className="hr-vault-screen">
       <Card className="hr-vault-hero" tone="soft">
-        <p className="hr-overline">Vault Library</p>
-        <h2 className="hr-feature-title">Curated guidance for your reset system</h2>
-        <p className="hr-copy">
-          Structured education for practical swaps, clear routines, and lower-friction decisions.
-        </p>
+        <h2 className="hr-feature-title">The Knowledge</h2>
 
         <div className="hr-vault-search-shell">
           <input

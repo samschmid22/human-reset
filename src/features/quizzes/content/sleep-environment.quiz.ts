@@ -5,7 +5,7 @@ export const sleepEnvironmentQuiz: QuizDefinition = {
   category: "Sleep Environment",
   title: "Sleep Environment Quiz",
   description:
-    "Map bedroom and evening habits that affect recovery.",
+    "Share what your bedroom and wind-down routine actually look like.",
   questions: [
     {
       id: "q1",

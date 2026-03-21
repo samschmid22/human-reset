@@ -5,7 +5,7 @@ export const cookwareFoodStorageQuiz: QuizDefinition = {
   category: "Cookware + Food Storage",
   title: "Cookware + Food Storage Quiz",
   description:
-    "Map cookware and storage habits for safer kitchen use.",
+    "Let us know what you cook with and how you store food.",
   questions: [
     {
       id: "q1",

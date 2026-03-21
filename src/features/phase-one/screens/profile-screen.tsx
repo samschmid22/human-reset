@@ -133,7 +133,6 @@ export function ProfileScreen({
     <ScreenContainer className="hr-profile-screen">
       {/* Dashboard header card */}
       <Card className="hr-profile-hero" tone="accent">
-        <p className="hr-overline">Your Reset</p>
         <h2 className="hr-feature-title">{maturity.title}</h2>
         <p className="hr-copy">{maturity.summary}</p>
         <div className="hr-profile-stats-row">

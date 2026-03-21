@@ -74,7 +74,6 @@ export function QuizHub({ onOpenQuiz, quizzes, quizState }: QuizHubProps) {
           </div>
 
           <div className="hr-quiz-row-right">
-            <span className="hr-quiz-row-count">{entry.answeredCount}/{entry.quiz.questions.length}</span>
             <Button onClick={() => onOpenQuiz(entry.quiz.id)} size="sm" variant="secondary">
               {buttonLabelMap[entry.status]}
             </Button>

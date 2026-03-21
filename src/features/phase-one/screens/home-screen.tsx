@@ -6,14 +6,12 @@ import { ActionDetailView } from "@/components/actions/action-detail-view";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ContentStack, ScreenContainer } from "@/components/ui/layout";
-import { ProgressRing } from "@/components/ui/progress-ring";
 import { SectionHeader } from "@/components/ui/section-header";
 import { getActionStatusView } from "@/features/actions/storage";
 import { ActionState, ActionStatus, ActionStatusView } from "@/features/actions/types";
 import { getPlanMaturity } from "@/features/findings/plan-maturity";
 import { FindingsRoadmapResult, RoadmapItem } from "@/features/findings/types";
 import { QuizDefinition } from "@/features/quizzes/types";
-import { StreakState } from "@/features/streak/types";
 import { cn } from "@/lib/cn";
 
 type HomeScreenProps = {
@@ -27,7 +25,6 @@ type HomeScreenProps = {
   onOpenQuizzes: () => void;
   quizDefinitions: QuizDefinition[];
   report: FindingsRoadmapResult;
-  streakState: StreakState;
 };
 
 type ActionRow = {
@@ -61,7 +58,6 @@ export function HomeScreen({
   onOpenQuizzes,
   quizDefinitions,
   report,
-  streakState,
 }: HomeScreenProps) {
   const [expandedActionId, setExpandedActionId] = useState<string | null>(null);
   const [snoozedExpanded, setSnoozedExpanded] = useState(false);
@@ -78,8 +74,6 @@ export function HomeScreen({
   const topPriority = pendingActions[0] ?? actionRows[0] ?? null;
   const additionalActions = pendingActions.slice(1);
   const maturity = getPlanMaturity(report.completedQuizCount, report.totalQuizCount);
-  const calibrationPercent =
-    report.totalQuizCount > 0 ? Math.round((report.completedQuizCount / report.totalQuizCount) * 100) : 0;
 
   // Suppress unused variable warning — quizDefinitions kept for future use
   void quizDefinitions;
@@ -89,7 +83,7 @@ export function HomeScreen({
     setExpandedActionId((current) => (current === actionId ? null : actionId));
   }
 
-  function renderActionControls(row: ActionRow, isPrimary: boolean) {
+  function renderActionControls(row: ActionRow) {
     const { action, statusView } = row;
     const isDoneToday = statusView.status === "done_today";
     const isSnoozed = statusView.status === "snoozed";
@@ -98,21 +92,13 @@ export function HomeScreen({
     const snoozeButtonLabel = isSnoozed ? "Unsnooze" : "Snooze";
 
     return (
-      <div className={cn("hr-action-controls", isPrimary && "is-primary")}>
-        <Button
-          className={cn("hr-action-button", isDoneToday ? "is-undo" : "is-done")}
-          onClick={() => (isDoneToday ? onActionReset(action.id) : onActionDoneToday(action.id))}
-          size="sm"
-          variant={isDoneToday ? "quiet" : "primary"}
-        >
-          {doneButtonLabel}
-        </Button>
+      <div className="hr-action-controls">
         <Button
           className={cn("hr-action-button", isSnoozed && "is-unsnooze")}
           disabled={isDoneToday}
           onClick={() => (isSnoozed ? onActionReset(action.id) : onActionSnooze(action.id))}
           size="sm"
-          variant={isSnoozed ? "secondary" : "quiet"}
+          variant="quiet"
         >
           {snoozeButtonLabel}
         </Button>
@@ -132,6 +118,14 @@ export function HomeScreen({
           variant="quiet"
         >
           Skip
+        </Button>
+        <Button
+          className={cn("hr-action-button", isDoneToday ? "is-undo" : "is-done")}
+          onClick={() => (isDoneToday ? onActionReset(action.id) : onActionDoneToday(action.id))}
+          size="sm"
+          variant={isDoneToday ? "secondary" : "primary"}
+        >
+          {doneButtonLabel}
         </Button>
       </div>
     );
@@ -157,7 +151,7 @@ export function HomeScreen({
             <p className="hr-action-list-status">Snoozed until {statusView.snoozedUntil}</p>
           ) : null}
         </div>
-        {renderActionControls(row, false)}
+        {renderActionControls(row)}
         {isExpanded ? (
           <ActionDetailView
             action={action}
@@ -170,34 +164,6 @@ export function HomeScreen({
 
   return (
     <ScreenContainer className="hr-home-screen">
-      {/* Progress card */}
-      <Card className="hr-progress-card" tone="surface">
-        <p className="hr-overline">Your Progress</p>
-        <div className="hr-progress-row">
-          <ProgressRing
-            label={`${report.completedQuizCount}/${report.totalQuizCount}`}
-            percent={calibrationPercent}
-            sublabel="categories"
-          />
-          <div className="hr-progress-stats">
-            <div className="hr-progress-stat">
-              <strong className="hr-progress-stat-value">{calibrationPercent}%</strong>
-              <span className="hr-progress-stat-label">Plan calibrated</span>
-            </div>
-            <div className="hr-progress-stat">
-              <strong className="hr-progress-stat-value">{streakState.currentStreak}</strong>
-              <span className="hr-progress-stat-label">Day streak</span>
-            </div>
-            {streakState.longestStreak > 1 ? (
-              <div className="hr-progress-stat">
-                <strong className="hr-progress-stat-value">{streakState.longestStreak}</strong>
-                <span className="hr-progress-stat-label">Best streak</span>
-              </div>
-            ) : null}
-          </div>
-        </div>
-      </Card>
-
       <section className="hr-home-main-column">
         {maturity.stage !== "calibrated" ? (
           <Card className="hr-calibration-banner" tone="soft">
@@ -230,7 +196,7 @@ export function HomeScreen({
                 </div>
                 <h3 className="hr-item-title">{topPriority.action.title}</h3>
               </div>
-              {renderActionControls(topPriority, true)}
+              {renderActionControls(topPriority)}
               {expandedActionId === topPriority.action.id ? (
                 <ActionDetailView
                   action={topPriority.action}
@@ -240,7 +206,7 @@ export function HomeScreen({
             </div>
 
             {additionalActions.length > 0 ? (
-              <ContentStack>
+              <ContentStack className="hr-action-additional-stack">
                 {additionalActions.map((row) => renderActionListRow(row))}
               </ContentStack>
             ) : null}

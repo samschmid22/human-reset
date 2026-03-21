@@ -5,7 +5,7 @@ export const foodResetQuiz: QuizDefinition = {
   category: "Food Reset",
   title: "Food Reset Quiz",
   description:
-    "Map processed food and additive patterns in your diet.",
+    "Share what your meals typically look like and where things come from.",
   questions: [
     {
       id: "q1",

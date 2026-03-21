@@ -5,11 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ContentStack, ScreenContainer } from "@/components/ui/layout";
 import { SectionHeader } from "@/components/ui/section-header";
-import { SharedTopCard } from "@/components/ui/shared-top-card";
 import { getActionStatusView } from "@/features/actions/storage";
 import { ActionState, ActionStatus } from "@/features/actions/types";
 import { getRoadmapPhaseCount } from "@/features/findings/engine";
-import { getPlanMaturity } from "@/features/findings/plan-maturity";
 import { FindingsRoadmapResult, RoadmapItem, ROADMAP_PHASE_LABELS } from "@/features/findings/types";
 import { cn } from "@/lib/cn";
 
@@ -51,7 +49,7 @@ export function RoadmapScreen({
   report,
 }: RoadmapScreenProps) {
   const [expandedActionId, setExpandedActionId] = useState<string | null>(null);
-  const [collapsedPhases, setCollapsedPhases] = useState<Set<string>>(new Set());
+  const [expandedPhases, setExpandedPhases] = useState<Set<string>>(new Set());
 
   const phaseProgress = useMemo<PhaseProgress[]>(() => {
     return getRoadmapPhaseCount(report.roadmapByPhase).map((entry) => {
@@ -100,23 +98,6 @@ export function RoadmapScreen({
     return next >= 0 ? next : null;
   }, [currentPhaseIndex, phaseProgress]);
 
-  const statusSummary = useMemo(() => {
-    return report.priorities.reduce(
-      (accumulator, item) => {
-        const status = getActionStatusView(actionState, item.id).status;
-        if (status === "done_today" || status === "done_permanent") {
-          accumulator.done += 1;
-        } else if (status === "snoozed") {
-          accumulator.snoozed += 1;
-        } else {
-          accumulator.pending += 1;
-        }
-        return accumulator;
-      },
-      { pending: 0, done: 0, snoozed: 0 },
-    );
-  }, [actionState, report.priorities]);
-  const maturity = getPlanMaturity(report.completedQuizCount, report.totalQuizCount);
 
   function getPhaseVisualState(index: number, count: number): PhaseVisualState {
     if (count === 0) {
@@ -142,10 +123,9 @@ export function RoadmapScreen({
     setExpandedActionId((current) => (current === actionId ? null : actionId));
   }
 
-  function togglePhaseCollapse(phase: string, state: PhaseVisualState): void {
-    // Current phase cannot be collapsed
+  function togglePhaseExpand(phase: string, state: PhaseVisualState): void {
     if (state === "current") return;
-    setCollapsedPhases((prev) => {
+    setExpandedPhases((prev) => {
       const next = new Set(prev);
       if (next.has(phase)) {
         next.delete(phase);
@@ -158,7 +138,7 @@ export function RoadmapScreen({
 
   function isPhaseExpanded(phase: string, state: PhaseVisualState): boolean {
     if (state === "current") return true;
-    return !collapsedPhases.has(phase);
+    return expandedPhases.has(phase);
   }
 
   function renderActionRow(item: RoadmapItem) {
@@ -245,19 +225,7 @@ export function RoadmapScreen({
             Complete a category input to generate your first phased journey.
           </p>
         </Card>
-      ) : (
-        <SharedTopCard
-          className="hr-roadmap-summary-card"
-          metrics={[
-            { label: "Active", value: statusSummary.pending },
-            { label: "Completed", value: statusSummary.done },
-            { label: "Snoozed", value: statusSummary.snoozed },
-          ]}
-          overline={maturity.badge}
-          summary={maturity.summary}
-          title={maturity.title}
-        />
-      )}
+      ) : null}
 
       <SectionHeader title="Roadmap Timeline" />
 
@@ -282,7 +250,7 @@ export function RoadmapScreen({
                   <button
                     className={cn("hr-roadmap-phase-header", canToggle && "is-clickable")}
                     disabled={!canToggle}
-                    onClick={() => togglePhaseCollapse(entry.phase, state)}
+                    onClick={() => togglePhaseExpand(entry.phase, state)}
                     type="button"
                   >
                     <div className="hr-roadmap-phase-header-left">
@@ -299,7 +267,7 @@ export function RoadmapScreen({
                           {state === "current" ? "Current" : state === "next" ? "Next" : state === "complete" ? "Done" : "Later"}
                         </span>
                       ) : null}
-                      {canToggle ? (
+                      {entry.count > 0 ? (
                         <svg
                           aria-hidden="true"
                           className={cn("hr-snooze-chevron", expanded && "is-open")}

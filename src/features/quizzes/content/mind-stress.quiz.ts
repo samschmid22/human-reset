@@ -5,7 +5,7 @@ export const mindStressQuiz: QuizDefinition = {
   category: "Mind + Stress",
   title: "Mind + Stress Quiz",
   description:
-    "Map daily stress load and recovery to lower overwhelm.",
+    "Let us know how your daily stress load and recovery actually feel.",
   questions: [
     {
       id: "q1",
