@@ -15,8 +15,10 @@ import { cn } from "@/lib/cn";
 
 type RoadmapScreenProps = {
   actionState: ActionState;
-  onActionDone: (actionId: string) => void;
+  onActionDoneToday: (actionId: string) => void;
+  onActionDonePermanent: (actionId: string) => void;
   onActionReset: (actionId: string) => void;
+  onActionSkip: (actionId: string) => void;
   onActionSnooze: (actionId: string) => void;
   report: FindingsRoadmapResult;
 };
@@ -32,14 +34,10 @@ type PhaseProgress = {
 type PhaseVisualState = "current" | "next" | "complete" | "later" | "empty";
 
 function toStatusLabel(status: ActionStatus): string {
-  if (status === "completed") {
-    return "Completed";
-  }
-
-  if (status === "snoozed") {
-    return "Snoozed";
-  }
-
+  if (status === "done_today") return "Done today";
+  if (status === "done_permanent") return "Completed";
+  if (status === "snoozed") return "Snoozed";
+  if (status === "skipped") return "Skipped";
   return "Pending";
 }
 
@@ -65,8 +63,10 @@ function toPhaseStateLabel(state: PhaseVisualState): string {
 
 export function RoadmapScreen({
   actionState,
-  onActionDone,
+  onActionDoneToday,
+  onActionDonePermanent,
   onActionReset,
+  onActionSkip,
   onActionSnooze,
   report,
 }: RoadmapScreenProps) {
@@ -78,17 +78,23 @@ export function RoadmapScreen({
       const summary = items.reduce(
         (accumulator, item) => {
           const status = getActionStatusView(actionState, item.id).status;
-          accumulator[status] += 1;
+          if (status === "done_today" || status === "done_permanent") {
+            accumulator.done += 1;
+          } else if (status === "snoozed") {
+            accumulator.snoozed += 1;
+          } else if (status === "pending") {
+            accumulator.pending += 1;
+          }
           return accumulator;
         },
-        { pending: 0, completed: 0, snoozed: 0 } as Record<ActionStatus, number>,
+        { pending: 0, done: 0, snoozed: 0 },
       );
 
       return {
         phase: entry.phase,
         count: entry.count,
         pending: summary.pending,
-        completed: summary.completed,
+        completed: summary.done,
         snoozed: summary.snoozed,
       };
     });
@@ -117,10 +123,16 @@ export function RoadmapScreen({
     return report.priorities.reduce(
       (accumulator, item) => {
         const status = getActionStatusView(actionState, item.id).status;
-        accumulator[status] += 1;
+        if (status === "done_today" || status === "done_permanent") {
+          accumulator.done += 1;
+        } else if (status === "snoozed") {
+          accumulator.snoozed += 1;
+        } else {
+          accumulator.pending += 1;
+        }
         return accumulator;
       },
-      { pending: 0, completed: 0, snoozed: 0 } as Record<ActionStatus, number>,
+      { pending: 0, done: 0, snoozed: 0 },
     );
   }, [actionState, report.priorities]);
   const maturity = getPlanMaturity(report.completedQuizCount, report.totalQuizCount);
@@ -151,17 +163,17 @@ export function RoadmapScreen({
 
   function renderActionRow(item: RoadmapItem) {
     const statusView = getActionStatusView(actionState, item.id);
-    const isCompleted = statusView.status === "completed";
+    const isDoneToday = statusView.status === "done_today";
     const isSnoozed = statusView.status === "snoozed";
     const isExpanded = expandedActionId === item.id;
-    const doneButtonLabel = isCompleted ? "Undo" : "Done";
+    const doneButtonLabel = isDoneToday ? "Undo" : "Done";
     const snoozeButtonLabel = isSnoozed ? "Unsnooze" : "Snooze";
 
     return (
       <div
         className={cn(
           "hr-roadmap-action-row",
-          isCompleted && "is-completed",
+          isDoneToday && "is-done-today",
           isSnoozed && "is-snoozed",
         )}
         key={item.id}
@@ -180,16 +192,16 @@ export function RoadmapScreen({
 
         <div className="hr-action-controls">
           <Button
-            className={cn("hr-action-button", isCompleted ? "is-undo" : "is-done")}
-            onClick={() => (isCompleted ? onActionReset(item.id) : onActionDone(item.id))}
+            className={cn("hr-action-button", isDoneToday ? "is-undo" : "is-done")}
+            onClick={() => (isDoneToday ? onActionReset(item.id) : onActionDoneToday(item.id))}
             size="sm"
-            variant={isCompleted ? "quiet" : "primary"}
+            variant={isDoneToday ? "quiet" : "primary"}
           >
             {doneButtonLabel}
           </Button>
           <Button
             className={cn("hr-action-button", isSnoozed && "is-unsnooze")}
-            disabled={isCompleted}
+            disabled={isDoneToday}
             onClick={() => (isSnoozed ? onActionReset(item.id) : onActionSnooze(item.id))}
             size="sm"
             variant={isSnoozed ? "secondary" : "quiet"}
@@ -204,9 +216,23 @@ export function RoadmapScreen({
           >
             {isExpanded ? "Hide Details" : "Details"}
           </Button>
+          <Button
+            className="hr-action-button is-skip"
+            disabled={isDoneToday}
+            onClick={() => onActionSkip(item.id)}
+            size="sm"
+            variant="quiet"
+          >
+            Skip
+          </Button>
         </div>
 
-        {isExpanded ? <ActionDetailView action={item} /> : null}
+        {isExpanded ? (
+          <ActionDetailView
+            action={item}
+            onDonePermanent={() => onActionDonePermanent(item.id)}
+          />
+        ) : null}
       </div>
     );
   }
@@ -225,7 +251,7 @@ export function RoadmapScreen({
           className="hr-roadmap-summary-card"
           metrics={[
             { label: "Active", value: statusSummary.pending },
-            { label: "Completed", value: statusSummary.completed },
+            { label: "Completed", value: statusSummary.done },
             { label: "Snoozed", value: statusSummary.snoozed },
             {
               label: "Coverage",

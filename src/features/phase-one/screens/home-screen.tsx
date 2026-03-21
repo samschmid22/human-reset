@@ -1,25 +1,33 @@
+"use client";
+
 import { useMemo, useState } from "react";
 
 import { ActionDetailView } from "@/components/actions/action-detail-view";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ContentStack, ScreenContainer } from "@/components/ui/layout";
+import { ProgressRing } from "@/components/ui/progress-ring";
 import { SectionHeader } from "@/components/ui/section-header";
 import { getActionStatusView } from "@/features/actions/storage";
 import { ActionState, ActionStatus, ActionStatusView } from "@/features/actions/types";
 import { getPlanMaturity } from "@/features/findings/plan-maturity";
 import { FindingsRoadmapResult, RoadmapItem } from "@/features/findings/types";
 import { QuizDefinition } from "@/features/quizzes/types";
+import { StreakState } from "@/features/streak/types";
 import { cn } from "@/lib/cn";
 
 type HomeScreenProps = {
   actionState: ActionState;
-  onActionDone: (actionId: string) => void;
+  onActionDoneToday: (actionId: string) => void;
+  onActionDonePermanent: (actionId: string) => void;
   onActionReset: (actionId: string) => void;
+  onActionSkip: (actionId: string) => void;
   onActionSnooze: (actionId: string) => void;
+  onFocusStyleChange: (style: "mixed" | "one_category") => void;
   onOpenQuizzes: () => void;
   quizDefinitions: QuizDefinition[];
   report: FindingsRoadmapResult;
+  streakState: StreakState;
 };
 
 type ActionRow = {
@@ -27,39 +35,11 @@ type ActionRow = {
   statusView: ActionStatusView;
 };
 
-function toFocusLabel(focusStyle: FindingsRoadmapResult["dailyPlan"]["focusStyle"]): string {
-  return focusStyle === "one_category" ? "One category/day" : "Mixed categories";
-}
-
-function toMaturityStageLabel(stage: ReturnType<typeof getPlanMaturity>["stage"]): string {
-  if (stage === "pending") {
-    return "Pending";
-  }
-
-  if (stage === "early") {
-    return "Early";
-  }
-
-  if (stage === "developing") {
-    return "Developing";
-  }
-
-  if (stage === "refining") {
-    return "Refining";
-  }
-
-  return "Calibrated";
-}
-
 function toStatusLabel(status: ActionStatus): string {
-  if (status === "completed") {
-    return "Completed";
-  }
-
-  if (status === "snoozed") {
-    return "Snoozed";
-  }
-
+  if (status === "done_today") return "Done today";
+  if (status === "done_permanent") return "Completed";
+  if (status === "snoozed") return "Snoozed";
+  if (status === "skipped") return "Skipped";
   return "Pending";
 }
 
@@ -72,12 +52,16 @@ function buildActionRows(actions: RoadmapItem[], actionState: ActionState): Acti
 
 export function HomeScreen({
   actionState,
-  onActionDone,
+  onActionDoneToday,
+  onActionDonePermanent,
   onActionReset,
+  onActionSkip,
   onActionSnooze,
+  onFocusStyleChange,
   onOpenQuizzes,
   quizDefinitions,
   report,
+  streakState,
 }: HomeScreenProps) {
   const [expandedActionId, setExpandedActionId] = useState<string | null>(null);
 
@@ -88,19 +72,18 @@ export function HomeScreen({
 
   const pendingActions = actionRows.filter((row) => row.statusView.status === "pending");
   const snoozedActions = actionRows.filter((row) => row.statusView.status === "snoozed");
-  const completedActions = actionRows.filter((row) => row.statusView.status === "completed");
+  const doneTodayActions = actionRows.filter((row) => row.statusView.status === "done_today");
 
   const topPriority = pendingActions[0] ?? actionRows[0] ?? null;
   const additionalActions = pendingActions.slice(1);
   const nextBestQuiz = report.nextBestQuizId
     ? (quizDefinitions.find((quiz) => quiz.id === report.nextBestQuizId) ?? null)
     : null;
-  const activePhases = Object.values(report.roadmapByPhase).filter((items) => items.length > 0).length;
+  const maturity = getPlanMaturity(report.completedQuizCount, report.totalQuizCount);
   const calibrationPercent =
     report.totalQuizCount > 0 ? Math.round((report.completedQuizCount / report.totalQuizCount) * 100) : 0;
-  const maturity = getPlanMaturity(report.completedQuizCount, report.totalQuizCount);
   const hasSideColumn =
-    Boolean(nextBestQuiz) || snoozedActions.length > 0 || completedActions.length > 0;
+    Boolean(nextBestQuiz) || snoozedActions.length > 0 || doneTodayActions.length > 0;
 
   function toggleDetails(actionId: string): void {
     setExpandedActionId((current) => (current === actionId ? null : actionId));
@@ -108,25 +91,25 @@ export function HomeScreen({
 
   function renderActionControls(row: ActionRow, isPrimary: boolean) {
     const { action, statusView } = row;
-    const isCompleted = statusView.status === "completed";
+    const isDoneToday = statusView.status === "done_today";
     const isSnoozed = statusView.status === "snoozed";
     const isExpanded = expandedActionId === action.id;
-    const doneButtonLabel = isCompleted ? "Undo" : "Done";
+    const doneButtonLabel = isDoneToday ? "Undo" : "Done";
     const snoozeButtonLabel = isSnoozed ? "Unsnooze" : "Snooze";
 
     return (
       <div className={cn("hr-action-controls", isPrimary && "is-primary")}>
         <Button
-          className={cn("hr-action-button", isCompleted ? "is-undo" : "is-done")}
-          onClick={() => (isCompleted ? onActionReset(action.id) : onActionDone(action.id))}
+          className={cn("hr-action-button", isDoneToday ? "is-undo" : "is-done")}
+          onClick={() => (isDoneToday ? onActionReset(action.id) : onActionDoneToday(action.id))}
           size="sm"
-          variant={isCompleted ? "quiet" : "primary"}
+          variant={isDoneToday ? "quiet" : "primary"}
         >
           {doneButtonLabel}
         </Button>
         <Button
           className={cn("hr-action-button", isSnoozed && "is-unsnooze")}
-          disabled={isCompleted}
+          disabled={isDoneToday}
           onClick={() => (isSnoozed ? onActionReset(action.id) : onActionSnooze(action.id))}
           size="sm"
           variant={isSnoozed ? "secondary" : "quiet"}
@@ -140,6 +123,15 @@ export function HomeScreen({
           variant="quiet"
         >
           {isExpanded ? "Hide Details" : "Details"}
+        </Button>
+        <Button
+          className="hr-action-button is-skip"
+          disabled={isDoneToday}
+          onClick={() => onActionSkip(action.id)}
+          size="sm"
+          variant="quiet"
+        >
+          Skip
         </Button>
       </div>
     );
@@ -167,7 +159,12 @@ export function HomeScreen({
           ) : null}
         </div>
         {renderActionControls(row, false)}
-        {isExpanded ? <ActionDetailView action={action} /> : null}
+        {isExpanded ? (
+          <ActionDetailView
+            action={action}
+            onDonePermanent={() => onActionDonePermanent(action.id)}
+          />
+        ) : null}
       </div>
     );
   }
@@ -177,15 +174,38 @@ export function HomeScreen({
       <section className="hr-home-intro-stack">
         <Card className="hr-home-hero" tone="accent">
           <div className="hr-home-hero-head">
-            <p className="hr-overline">Dashboard</p>
-            <span className="hr-home-hero-badge">{maturity.badge}</span>
+            <p className="hr-overline">Today's Focus</p>
+            <div className="hr-focus-toggle">
+              <button
+                aria-pressed={report.dailyPlan.focusStyle === "mixed"}
+                className={cn(
+                  "hr-focus-toggle-option",
+                  report.dailyPlan.focusStyle === "mixed" && "is-selected",
+                )}
+                onClick={() => onFocusStyleChange("mixed")}
+                type="button"
+              >
+                Mixed
+              </button>
+              <button
+                aria-pressed={report.dailyPlan.focusStyle === "one_category"}
+                className={cn(
+                  "hr-focus-toggle-option",
+                  report.dailyPlan.focusStyle === "one_category" && "is-selected",
+                )}
+                onClick={() => onFocusStyleChange("one_category")}
+                type="button"
+              >
+                One category
+              </button>
+            </div>
           </div>
           <h2 className="hr-feature-title">
             {topPriority ? "Start here today" : "Start your reset plan"}
           </h2>
           <p className="hr-copy">
             {topPriority
-              ? `${toFocusLabel(report.dailyPlan.focusStyle)} · up to ${report.dailyPlan.maxActions} guided actions`
+              ? `Up to ${report.dailyPlan.maxActions} guided actions`
               : "Complete your first category input to generate a practical, phased plan."}
           </p>
           {topPriority ? (
@@ -203,7 +223,12 @@ export function HomeScreen({
                 <p className="hr-item-description">{topPriority.action.minimumStep}</p>
               </div>
               {renderActionControls(topPriority, true)}
-              {expandedActionId === topPriority.action.id ? <ActionDetailView action={topPriority.action} /> : null}
+              {expandedActionId === topPriority.action.id ? (
+                <ActionDetailView
+                  action={topPriority.action}
+                  onDonePermanent={() => onActionDonePermanent(topPriority.action.id)}
+                />
+              ) : null}
             </div>
           ) : (
             <Button onClick={onOpenQuizzes} size="sm" variant="secondary">
@@ -212,41 +237,34 @@ export function HomeScreen({
           )}
         </Card>
 
-        <Card className="hr-home-stats" tone="surface">
-          <div className="hr-home-stats-head">
-            <p className="hr-overline">Plan Snapshot</p>
-            <p className="hr-home-stats-caption">{maturity.progressLabel}</p>
-          </div>
-          <div className="hr-kpi-grid">
-            <div className="hr-kpi">
-              <div className="hr-kpi-main">
-                <span className="hr-kpi-label">Plan Maturity</span>
-                <strong>{calibrationPercent}%</strong>
+        <Card className="hr-progress-card" tone="surface">
+          <p className="hr-overline">Your Progress</p>
+          <div className="hr-progress-row">
+            <ProgressRing
+              label={`${report.completedQuizCount}/${report.totalQuizCount}`}
+              percent={calibrationPercent}
+              sublabel="categories"
+            />
+            <div className="hr-progress-stats">
+              <div className="hr-progress-stat">
+                <strong className="hr-progress-stat-value">{calibrationPercent}%</strong>
+                <span className="hr-progress-stat-label">Plan calibrated</span>
               </div>
-              <span className="hr-kpi-note">{toMaturityStageLabel(maturity.stage)}</span>
-            </div>
-            <div className="hr-kpi">
-              <div className="hr-kpi-main">
-                <span className="hr-kpi-label">Top Category</span>
-                <strong>{report.highestPriorityCategory ?? "Pending"}</strong>
+              <div className="hr-progress-stat">
+                <strong className="hr-progress-stat-value">{streakState.currentStreak}</strong>
+                <span className="hr-progress-stat-label">
+                  {streakState.currentStreak === 1 ? "day streak" : "day streak"}
+                </span>
               </div>
-              <span className="hr-kpi-note">Current emphasis</span>
-            </div>
-            <div className="hr-kpi">
-              <div className="hr-kpi-main">
-                <span className="hr-kpi-label">Actions Today</span>
-                <strong>{pendingActions.length}</strong>
-              </div>
-              <span className="hr-kpi-note">{report.dailyPlan.maxActions} max/day</span>
-            </div>
-            <div className="hr-kpi">
-              <div className="hr-kpi-main">
-                <span className="hr-kpi-label">Reset Depth</span>
-                <strong>{report.priorities.length}</strong>
-              </div>
-              <span className="hr-kpi-note">{activePhases} active phases</span>
+              {streakState.longestStreak > 0 ? (
+                <div className="hr-progress-stat">
+                  <strong className="hr-progress-stat-value">{streakState.longestStreak}</strong>
+                  <span className="hr-progress-stat-label">best streak</span>
+                </div>
+              ) : null}
             </div>
           </div>
+          <p className="hr-progress-badge">{maturity.badge}</p>
         </Card>
       </section>
 
@@ -262,7 +280,7 @@ export function HomeScreen({
 
           <SectionHeader
             subtitle="Do the top step first, then continue if capacity allows."
-            title="Today’s Steps"
+            title="Today's Steps"
           />
 
           {actionRows.length > 0 ? (
@@ -311,10 +329,10 @@ export function HomeScreen({
               </Card>
             ) : null}
 
-            {completedActions.length > 0 ? (
+            {doneTodayActions.length > 0 ? (
               <Card>
-                <SectionHeader className="hr-subsection-header" title="Completed Steps" />
-                <ContentStack>{completedActions.map((row) => renderActionListRow(row))}</ContentStack>
+                <SectionHeader className="hr-subsection-header" title="Done Today" />
+                <ContentStack>{doneTodayActions.map((row) => renderActionListRow(row))}</ContentStack>
               </Card>
             ) : null}
           </aside>

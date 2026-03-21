@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { ContentStack, ScreenContainer } from "@/components/ui/layout";
 import { SectionHeader } from "@/components/ui/section-header";
 import { getPlanMaturity } from "@/features/findings/plan-maturity";
-import { FindingsRoadmapResult } from "@/features/findings/types";
+import { FindingsRoadmapResult, RoadmapItem } from "@/features/findings/types";
 import {
   clampActionsPerDay,
   CONCERN_OPTIONS,
@@ -17,9 +17,12 @@ import { OnboardingResponses, OnboardingState } from "@/features/onboarding/type
 import { cn } from "@/lib/cn";
 
 type ProfileScreenProps = {
+  donePermanentRoadmapItems: RoadmapItem[];
+  onActionUnskip: (actionId: string) => void;
   onboardingState: OnboardingState;
   onOnboardingStateChange: (next: OnboardingState) => void;
   report: FindingsRoadmapResult;
+  skippedRoadmapItems: RoadmapItem[];
 };
 
 function formatList(values: string[]): string {
@@ -52,9 +55,12 @@ function formatAutosaveTimestamp(value: string): string {
 }
 
 export function ProfileScreen({
+  donePermanentRoadmapItems,
+  onActionUnskip,
   onboardingState,
   onOnboardingStateChange,
   report,
+  skippedRoadmapItems,
 }: ProfileScreenProps) {
   const [newSensitivity, setNewSensitivity] = useState("");
   const responses = onboardingState.responses;
@@ -143,7 +149,7 @@ export function ProfileScreen({
               <div className="hr-range-row">
                 <input
                   className="hr-range"
-                  max={10}
+                  max={20}
                   min={1}
                   onChange={(event) => updatePace(Number(event.currentTarget.value))}
                   type="range"
@@ -347,6 +353,64 @@ export function ProfileScreen({
           </ContentStack>
         </Card>
       </div>
+
+      {skippedRoadmapItems.length > 0 ? (
+        <>
+          <SectionHeader
+            subtitle="Actions you removed from your plan. Restore any to add it back."
+            title="Skipped Items"
+          />
+          <Card className="hr-profile-skipped-card">
+            <ContentStack className="hr-setting-stack">
+              {skippedRoadmapItems.map((item) => (
+                <div className="hr-profile-skipped-row" key={item.id}>
+                  <div className="hr-profile-skipped-main">
+                    <p className="hr-action-list-meta">{item.category}</p>
+                    <h3 className="hr-item-title">{item.title}</h3>
+                    <p className="hr-item-description">{item.minimumStep}</p>
+                  </div>
+                  <Button
+                    onClick={() => onActionUnskip(item.id)}
+                    size="sm"
+                    variant="secondary"
+                  >
+                    Restore
+                  </Button>
+                </div>
+              ))}
+            </ContentStack>
+          </Card>
+        </>
+      ) : null}
+
+      {donePermanentRoadmapItems.length > 0 ? (
+        <>
+          <SectionHeader
+            subtitle="Actions you marked as permanently complete. Restore to put them back in your plan."
+            title="Completed Items"
+          />
+          <Card className="hr-profile-skipped-card">
+            <ContentStack className="hr-setting-stack">
+              {donePermanentRoadmapItems.map((item) => (
+                <div className="hr-profile-skipped-row" key={item.id}>
+                  <div className="hr-profile-skipped-main">
+                    <p className="hr-action-list-meta">{item.category}</p>
+                    <h3 className="hr-item-title">{item.title}</h3>
+                    <p className="hr-item-description">{item.minimumStep}</p>
+                  </div>
+                  <Button
+                    onClick={() => onActionUnskip(item.id)}
+                    size="sm"
+                    variant="secondary"
+                  >
+                    Restore
+                  </Button>
+                </div>
+              ))}
+            </ContentStack>
+          </Card>
+        </>
+      ) : null}
     </ScreenContainer>
   );
 }

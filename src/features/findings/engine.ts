@@ -206,7 +206,7 @@ function buildEmptyRoadmapByPhase(): Record<RoadmapPhaseId, RoadmapItem[]> {
 }
 
 function createEmptyDailyPlan(onboarding: OnboardingResponses): DailyPlan {
-  const maxActions = Math.max(1, Math.min(10, Math.round(onboarding.actionsPerDay)));
+  const maxActions = Math.max(1, Math.min(20, Math.round(onboarding.actionsPerDay)));
 
   return {
     date: new Date().toISOString().slice(0, 10),
@@ -403,7 +403,7 @@ function pickFocusCategory(priorities: RoadmapItem[]): string | null {
 }
 
 function buildDailyPlan(priorities: RoadmapItem[], onboarding: OnboardingResponses): DailyPlan {
-  const maxActions = Math.max(1, Math.min(10, Math.round(onboarding.actionsPerDay)));
+  const maxActions = Math.max(1, Math.min(20, Math.round(onboarding.actionsPerDay)));
   const date = new Date().toISOString().slice(0, 10);
 
   if (priorities.length === 0) {
@@ -638,4 +638,34 @@ export function getRoadmapPhaseCount(
     phase,
     count: roadmapByPhase[phase].length,
   }));
+}
+
+/**
+ * Filters skipped and done_permanent actions from the roadmap result.
+ * The inactiveIds set should contain IDs of all actions that should be
+ * removed from the active plan (skipped or permanently completed).
+ */
+export function removeInactiveFromResult(
+  result: FindingsRoadmapResult,
+  inactiveIds: Set<string>,
+): FindingsRoadmapResult {
+  if (inactiveIds.size === 0) {
+    return result;
+  }
+
+  const priorities = result.priorities.filter((item) => !inactiveIds.has(item.id));
+
+  const roadmapByPhase = buildEmptyRoadmapByPhase();
+  ROADMAP_PHASE_ORDER.forEach((phase) => {
+    roadmapByPhase[phase] = result.roadmapByPhase[phase].filter((item) => !inactiveIds.has(item.id));
+  });
+
+  const dailyPlanActions = result.dailyPlan.actions.filter((item) => !inactiveIds.has(item.id));
+
+  return {
+    ...result,
+    priorities,
+    roadmapByPhase,
+    dailyPlan: { ...result.dailyPlan, actions: dailyPlanActions },
+  };
 }

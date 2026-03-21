@@ -4,9 +4,10 @@ import { RoadmapItem, ROADMAP_PHASE_LABELS } from "@/features/findings/types";
 
 type ActionDetailViewProps = {
   action: RoadmapItem;
+  onDonePermanent?: () => void;
 };
 
-export function ActionDetailView({ action }: ActionDetailViewProps) {
+export function ActionDetailView({ action, onDonePermanent }: ActionDetailViewProps) {
   return (
     <Card className="hr-action-detail-card" tone="soft">
       <ContentStack className="hr-action-detail-stack">
@@ -34,6 +35,11 @@ export function ActionDetailView({ action }: ActionDetailViewProps) {
           <p className="hr-field-label">Premium Upgrade</p>
           <p className="hr-item-description">{action.premiumUpgrade}</p>
         </div>
+        {onDonePermanent ? (
+          <button className="hr-action-detail-permanent" onClick={onDonePermanent} type="button">
+            Mark as permanently complete — remove from plan
+          </button>
+        ) : null}
       </ContentStack>
     </Card>
   );

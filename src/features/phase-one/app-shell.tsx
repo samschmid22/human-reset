@@ -7,13 +7,19 @@ import { Button } from "@/components/ui/button";
 import {
   clearActionStatus,
   createInitialActionState,
+  getDonePermanentActionIds,
+  getDoneTodayCount,
+  getSkippedActionIds,
   loadActionState,
   saveActionState,
-  setActionCompleted,
+  setActionDonePermanent,
+  setActionDoneToday,
+  setActionSkipped,
   setActionSnoozed,
+  getTodayDateKey,
 } from "@/features/actions/storage";
 import { ActionState } from "@/features/actions/types";
-import { generateFindingsRoadmap } from "@/features/findings/engine";
+import { generateFindingsRoadmap, removeInactiveFromResult } from "@/features/findings/engine";
 import { getPlanMaturity } from "@/features/findings/plan-maturity";
 import { OnboardingFlow } from "@/features/onboarding/onboarding-flow";
 import { createDefaultOnboardingState } from "@/features/onboarding/constants";
@@ -33,6 +39,14 @@ import {
   saveQuizState,
 } from "@/features/quizzes/storage";
 import { QuizState } from "@/features/quizzes/types";
+import {
+  checkStreakReset,
+  createInitialStreakState,
+  loadStreakState,
+  maybeExtendStreak,
+  saveStreakState,
+} from "@/features/streak/storage";
+import { StreakState } from "@/features/streak/types";
 
 const searchableTabs: TabId[] = ["home", "roadmap", "vault"];
 const vaultSearchTopics = [
@@ -67,18 +81,42 @@ export function PhaseOneAppShell() {
   const [actionState, setActionState] = useState<ActionState>(() =>
     typeof window === "undefined" ? createInitialActionState() : loadActionState(),
   );
+  const [streakState, setStreakState] = useState<StreakState>(() =>
+    typeof window === "undefined" ? createInitialStreakState() : loadStreakState(),
+  );
   const shellBodyRef = useRef<HTMLDivElement | null>(null);
 
-  const findingsRoadmap = useMemo(
-    () =>
-      generateFindingsRoadmap({
-        onboarding: onboardingState.responses,
-        onboardingCompleted: onboardingState.completed,
-        quizState,
-        quizzes: QUIZ_DEFINITIONS,
-      }),
-    [onboardingState.completed, onboardingState.responses, quizState],
-  );
+  // Reset streak if user missed a day (run once on mount).
+  useEffect(() => {
+    const today = getTodayDateKey();
+    const checked = checkStreakReset(streakState, today);
+    if (checked.currentStreak !== streakState.currentStreak) {
+      setStreakState(checked);
+      saveStreakState(checked);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const { findingsRoadmap, skippedRoadmapItems, donePermanentRoadmapItems } = useMemo(() => {
+    const base = generateFindingsRoadmap({
+      onboarding: onboardingState.responses,
+      onboardingCompleted: onboardingState.completed,
+      quizState,
+      quizzes: QUIZ_DEFINITIONS,
+    });
+    const skippedIds = new Set(getSkippedActionIds(actionState));
+    const donePermanentIds = new Set(getDonePermanentActionIds(actionState));
+    const inactiveIds = new Set([...skippedIds, ...donePermanentIds]);
+
+    const skipped = base.priorities.filter((item) => skippedIds.has(item.id));
+    const donePermanent = base.priorities.filter((item) => donePermanentIds.has(item.id));
+
+    return {
+      findingsRoadmap: removeInactiveFromResult(base, inactiveIds),
+      skippedRoadmapItems: skipped,
+      donePermanentRoadmapItems: donePermanent,
+    };
+  }, [actionState, onboardingState.completed, onboardingState.responses, quizState]);
 
   const onboardingIncomplete = !onboardingState.completed;
   const searchEnabled = !onboardingIncomplete && searchableTabs.includes(activeTab);
@@ -92,56 +130,28 @@ export function PhaseOneAppShell() {
   const maturityBadge = onboardingIncomplete ? "Setup in progress" : maturity.badge;
 
   const searchEntries = useMemo<SearchEntry[]>(() => {
-    if (onboardingIncomplete) {
-      return [];
-    }
+    if (onboardingIncomplete) return [];
 
     const entries: SearchEntry[] = [];
     const seenIds = new Set<string>();
 
     function push(entry: SearchEntry): void {
-      if (seenIds.has(entry.id)) {
-        return;
-      }
-
+      if (seenIds.has(entry.id)) return;
       seenIds.add(entry.id);
       entries.push(entry);
     }
 
     findingsRoadmap.priorities.forEach((item) => {
-      push({
-        id: `action-${item.id}`,
-        label: item.title,
-        meta: `Roadmap action • ${item.category}`,
-        tab: "roadmap",
-      });
+      push({ id: `action-${item.id}`, label: item.title, meta: `Roadmap action • ${item.category}`, tab: "roadmap" });
     });
-
     findingsRoadmap.dailyPlan.actions.forEach((item) => {
-      push({
-        id: `daily-${item.id}`,
-        label: item.title,
-        meta: `Today • ${item.category}`,
-        tab: "home",
-      });
+      push({ id: `daily-${item.id}`, label: item.title, meta: `Today • ${item.category}`, tab: "home" });
     });
-
     QUIZ_DEFINITIONS.forEach((quiz) => {
-      push({
-        id: `quiz-${quiz.id}`,
-        label: quiz.title,
-        meta: "Quiz category",
-        tab: "quizzes",
-      });
+      push({ id: `quiz-${quiz.id}`, label: quiz.title, meta: "Quiz category", tab: "quizzes" });
     });
-
     vaultSearchTopics.forEach((topic) => {
-      push({
-        id: `vault-${topic}`,
-        label: topic,
-        meta: "Vault topic",
-        tab: "vault",
-      });
+      push({ id: `vault-${topic}`, label: topic, meta: "Vault topic", tab: "vault" });
     });
 
     return entries;
@@ -149,28 +159,31 @@ export function PhaseOneAppShell() {
 
   const filteredSearchEntries = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
-
-    if (query.length === 0) {
-      return searchEntries.slice(0, 10);
-    }
-
+    if (query.length === 0) return searchEntries.slice(0, 10);
     return searchEntries
-      .filter((entry) => {
-        return (
-          entry.label.toLowerCase().includes(query) ||
-          entry.meta.toLowerCase().includes(query)
-        );
-      })
+      .filter((e) => e.label.toLowerCase().includes(query) || e.meta.toLowerCase().includes(query))
       .slice(0, 12);
   }, [searchEntries, searchQuery]);
 
   useEffect(() => {
-    if (onboardingIncomplete) {
-      return;
-    }
-
+    if (onboardingIncomplete) return;
     shellBodyRef.current?.scrollTo({ top: 0 });
   }, [activeTab, onboardingIncomplete]);
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+
+  function commitStreak(nextActionState: ActionState): void {
+    const today = getTodayDateKey();
+    const doneCount = getDoneTodayCount(nextActionState, today);
+    const paceTarget = Math.max(1, findingsRoadmap.dailyPlan.maxActions);
+    const nextStreak = maybeExtendStreak(streakState, doneCount, paceTarget, today);
+    if (nextStreak !== streakState) {
+      setStreakState(nextStreak);
+      saveStreakState(nextStreak);
+    }
+  }
+
+  // ── Event handlers ─────────────────────────────────────────────────────────
 
   function handleOnboardingStateChange(next: OnboardingState): void {
     setOnboardingState(next);
@@ -189,28 +202,45 @@ export function PhaseOneAppShell() {
     saveQuizState(normalized);
   }
 
-  function handleActionDone(actionId: string): void {
-    setActionState((current) => {
-      const next = setActionCompleted(current, actionId);
-      saveActionState(next);
-      return next;
-    });
+  function handleActionDoneToday(actionId: string): void {
+    const next = setActionDoneToday(actionState, actionId);
+    saveActionState(next);
+    setActionState(next);
+    commitStreak(next);
+  }
+
+  function handleActionDonePermanent(actionId: string): void {
+    const next = setActionDonePermanent(actionState, actionId);
+    saveActionState(next);
+    setActionState(next);
   }
 
   function handleActionSnooze(actionId: string): void {
-    setActionState((current) => {
-      const next = setActionSnoozed(current, actionId);
-      saveActionState(next);
-      return next;
-    });
+    const next = setActionSnoozed(actionState, actionId);
+    saveActionState(next);
+    setActionState(next);
+  }
+
+  function handleActionSkip(actionId: string): void {
+    const next = setActionSkipped(actionState, actionId);
+    saveActionState(next);
+    setActionState(next);
   }
 
   function handleActionReset(actionId: string): void {
-    setActionState((current) => {
-      const next = clearActionStatus(current, actionId);
-      saveActionState(next);
-      return next;
-    });
+    const next = clearActionStatus(actionState, actionId);
+    saveActionState(next);
+    setActionState(next);
+  }
+
+  function handleFocusStyleChange(style: "mixed" | "one_category"): void {
+    const next: OnboardingState = {
+      ...onboardingState,
+      responses: { ...onboardingState.responses, focusStyle: style },
+      updatedAt: new Date().toISOString(),
+    };
+    setOnboardingState(next);
+    saveOnboardingState(next);
   }
 
   function handleTabChange(nextTab: TabId): void {
@@ -220,10 +250,7 @@ export function PhaseOneAppShell() {
   }
 
   function handleSearchToggle(): void {
-    if (!searchEnabled) {
-      return;
-    }
-
+    if (!searchEnabled) return;
     setSearchOpen((current) => !current);
   }
 
@@ -233,18 +260,24 @@ export function PhaseOneAppShell() {
     setSearchQuery("");
   }
 
+  // ── Render ─────────────────────────────────────────────────────────────────
+
   function renderActiveScreen() {
     switch (activeTab) {
       case "home":
         return (
           <HomeScreen
             actionState={actionState}
-            onActionDone={handleActionDone}
+            onActionDoneToday={handleActionDoneToday}
+            onActionDonePermanent={handleActionDonePermanent}
             onActionReset={handleActionReset}
+            onActionSkip={handleActionSkip}
             onActionSnooze={handleActionSnooze}
+            onFocusStyleChange={handleFocusStyleChange}
             onOpenQuizzes={() => handleTabChange("quizzes")}
             quizDefinitions={QUIZ_DEFINITIONS}
             report={findingsRoadmap}
+            streakState={streakState}
           />
         );
 
@@ -255,8 +288,10 @@ export function PhaseOneAppShell() {
         return (
           <RoadmapScreen
             actionState={actionState}
-            onActionDone={handleActionDone}
+            onActionDoneToday={handleActionDoneToday}
+            onActionDonePermanent={handleActionDonePermanent}
             onActionReset={handleActionReset}
+            onActionSkip={handleActionSkip}
             onActionSnooze={handleActionSnooze}
             report={findingsRoadmap}
           />
@@ -268,9 +303,12 @@ export function PhaseOneAppShell() {
       case "profile":
         return (
           <ProfileScreen
+            donePermanentRoadmapItems={donePermanentRoadmapItems}
+            onActionUnskip={handleActionReset}
             onboardingState={onboardingState}
             onOnboardingStateChange={handleOnboardingStateChange}
             report={findingsRoadmap}
+            skippedRoadmapItems={skippedRoadmapItems}
           />
         );
 
@@ -278,12 +316,16 @@ export function PhaseOneAppShell() {
         return (
           <HomeScreen
             actionState={actionState}
-            onActionDone={handleActionDone}
+            onActionDoneToday={handleActionDoneToday}
+            onActionDonePermanent={handleActionDonePermanent}
             onActionReset={handleActionReset}
+            onActionSkip={handleActionSkip}
             onActionSnooze={handleActionSnooze}
+            onFocusStyleChange={handleFocusStyleChange}
             onOpenQuizzes={() => handleTabChange("quizzes")}
             quizDefinitions={QUIZ_DEFINITIONS}
             report={findingsRoadmap}
+            streakState={streakState}
           />
         );
     }
