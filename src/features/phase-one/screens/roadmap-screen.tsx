@@ -229,8 +229,7 @@ export function RoadmapScreen({
 
       <SectionHeader title="Roadmap Timeline" />
 
-      <Card className="hr-roadmap-journey-card">
-        <ol className="hr-roadmap-journey-list">
+      <ol className="hr-roadmap-journey-list">
           {phaseProgress.map((entry, index) => {
             const state = getPhaseVisualState(index, entry.count);
             const items = report.roadmapByPhase[entry.phase];
@@ -296,7 +295,6 @@ export function RoadmapScreen({
             );
           })}
         </ol>
-      </Card>
     </ScreenContainer>
   );
 }

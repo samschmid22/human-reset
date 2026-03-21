@@ -1,4 +1,4 @@
-import type { BrowsePath, DiyRecipe, FeaturedTrack, IngredientNote, SwapRow } from "./types";
+import type { BrowsePath, BrowsePathGroup, DiyRecipe, FeaturedTrack, IngredientNote, SwapRow } from "./types";
 
 export const INGREDIENT_NOTES: IngredientNote[] = [
   {
@@ -330,27 +330,121 @@ export const SWAP_ROWS: SwapRow[] = [
   },
 ];
 
-export const BROWSE_PATHS: BrowsePath[] = [
+const BY_CONCERN_GROUPS: BrowsePathGroup[] = [
   {
-    id: "by-room",
-    title: "Browse by Room",
-    summary:
-      "Room-by-room guidance for kitchen, laundry, bedroom, and air routines.",
-    ingredientNoteIds: ["pfas", "vocs", "formaldehyde", "phthalates"],
+    label: "Sleep quality",
+    description: "Reduce nighttime exposures that interfere with rest and recovery.",
+    ingredientNoteIds: ["formaldehyde", "phthalates", "parabens"],
   },
+  {
+    label: "Skin sensitivity",
+    description: "Identify surface-contact triggers in personal care and laundry.",
+    ingredientNoteIds: ["parabens", "oxybenzone", "sulfates"],
+  },
+  {
+    label: "Indoor air quality",
+    description: "Reduce airborne load from products, furnishings, and cleaning agents.",
+    ingredientNoteIds: ["vocs", "formaldehyde", "phthalates"],
+  },
+  {
+    label: "Hormone balance",
+    description: "Limit endocrine-disrupting inputs in daily-use products.",
+    ingredientNoteIds: ["parabens", "oxybenzone", "bpa", "phthalates"],
+  },
+  {
+    label: "Chemical sensitivity",
+    description: "Simplify product stacks to reduce total reactive load.",
+    ingredientNoteIds: ["quats", "triclosan", "vocs"],
+  },
+  {
+    label: "Gut + digestive",
+    description: "Address food-contact and water sources most linked to gut disruption.",
+    ingredientNoteIds: ["bpa", "pfas"],
+  },
+  {
+    label: "Cleaning burden",
+    description: "Replace high-residue cleaning agents with lower-load alternatives.",
+    ingredientNoteIds: ["quats", "triclosan", "sulfates"],
+  },
+];
+
+const BY_ROOM_GROUPS: BrowsePathGroup[] = [
+  {
+    label: "Kitchen",
+    description: "Cookware, storage, water, and food-contact priorities.",
+    ingredientNoteIds: ["pfas", "bpa", "vocs"],
+  },
+  {
+    label: "Bathroom",
+    description: "Personal care, cleaning, and fragrance decisions.",
+    ingredientNoteIds: ["parabens", "oxybenzone", "sulfates", "triclosan"],
+  },
+  {
+    label: "Bedroom",
+    description: "Bedding, laundry residue, and nighttime air quality.",
+    ingredientNoteIds: ["formaldehyde", "phthalates", "parabens"],
+  },
+  {
+    label: "Laundry",
+    description: "Detergent, softeners, and fabric residue.",
+    ingredientNoteIds: ["quats", "vocs", "sulfates"],
+  },
+  {
+    label: "Living spaces",
+    description: "Furniture, candles, air fresheners, and general air load.",
+    ingredientNoteIds: ["vocs", "formaldehyde", "phthalates"],
+  },
+  {
+    label: "Personal care + outdoors",
+    description: "Sunscreen, skincare, and outdoor product choices.",
+    ingredientNoteIds: ["oxybenzone", "parabens", "sulfates"],
+  },
+];
+
+const BY_BUDGET_GROUPS: BrowsePathGroup[] = [
+  {
+    label: "Free — habit changes only",
+    description: "Ventilate more, reduce spray use, stop air fresheners. No spend required.",
+    ingredientNoteIds: ["vocs", "formaldehyde"],
+  },
+  {
+    label: "Under $20 — product swaps",
+    description: "Switch cleaning and personal care products to simpler, lower-load alternatives.",
+    ingredientNoteIds: ["triclosan", "quats", "sulfates"],
+  },
+  {
+    label: "$20–$100 — targeted upgrades",
+    description: "Cookware, water filtration, or a few key personal care replacements.",
+    ingredientNoteIds: ["pfas", "bpa", "parabens"],
+  },
+  {
+    label: "$100+ — full category resets",
+    description: "Cookware sets, quality filters, or rebuilding a full product category.",
+    ingredientNoteIds: ["pfas", "phthalates", "oxybenzone"],
+  },
+];
+
+export const BROWSE_PATHS: BrowsePath[] = [
   {
     id: "by-concern",
     title: "Browse by Concern",
-    summary:
-      "Start from outcomes like sleep, stress load, or sensitivity support.",
-    ingredientNoteIds: ["parabens", "oxybenzone", "bpa", "sulfates"],
+    summary: "Start from outcomes like sleep, skin sensitivity, or indoor air quality.",
+    ingredientNoteIds: ["parabens", "oxybenzone", "bpa", "sulfates", "vocs", "formaldehyde", "phthalates", "quats", "triclosan", "pfas"],
+    groups: BY_CONCERN_GROUPS,
+  },
+  {
+    id: "by-room",
+    title: "Browse by Room",
+    summary: "Room-by-room guidance for kitchen, laundry, bedroom, and air routines.",
+    ingredientNoteIds: ["pfas", "vocs", "formaldehyde", "phthalates", "parabens", "oxybenzone", "sulfates", "triclosan", "quats", "bpa"],
+    groups: BY_ROOM_GROUPS,
   },
   {
     id: "by-budget",
     title: "Browse by Budget",
-    summary:
-      "Find minimum step, low-cost, and premium pathways in one place.",
-    ingredientNoteIds: ["triclosan", "quats", "vocs"],
+    summary: "Find no-cost habit changes, low-cost swaps, and targeted investment upgrades.",
+    ingredientNoteIds: ["triclosan", "quats", "vocs", "pfas", "bpa", "parabens", "phthalates", "oxybenzone", "formaldehyde", "sulfates"],
+    groups: BY_BUDGET_GROUPS,
   },
 ];
 

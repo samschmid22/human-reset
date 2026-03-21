@@ -13,7 +13,7 @@ import {
   INGREDIENT_NOTES,
   SWAP_ROWS,
 } from "@/features/vault/content";
-import type { BrowsePath, DiyRecipe, FeaturedTrack, IngredientNote } from "@/features/vault/types";
+import type { BrowsePath, BrowsePathGroup, DiyRecipe, FeaturedTrack, IngredientNote } from "@/features/vault/types";
 import { cn } from "@/lib/cn";
 
 // ---------------------------------------------------------------------------
@@ -144,7 +144,47 @@ type BrowsePathDetailProps = {
   onNavigate: (view: VaultView) => void;
 };
 
+function renderBrowseGroup(group: BrowsePathGroup, onNavigate: (view: VaultView) => void) {
+  const notes = INGREDIENT_NOTES.filter((n) => group.ingredientNoteIds.includes(n.id));
+  return (
+    <div className="hr-vault-browse-group" key={group.label}>
+      <p className="hr-vault-detail-label">{group.label}</p>
+      {group.description ? (
+        <p className="hr-vault-browse-group-desc">{group.description}</p>
+      ) : null}
+      <Card className="hr-vault-track-card">
+        {notes.map((note, index) => (
+          <button
+            className={cn("hr-vault-track-row", index > 0 && "has-border")}
+            key={note.id}
+            onClick={() => onNavigate({ type: "ingredient", id: note.id })}
+            type="button"
+          >
+            <div className="hr-vault-tap-card-body">
+              <p className="hr-vault-tap-title">{note.name}</p>
+            </div>
+            <ChevronRight />
+          </button>
+        ))}
+      </Card>
+    </div>
+  );
+}
+
 function BrowsePathDetail({ browsePath, onBack, onNavigate }: BrowsePathDetailProps) {
+  if (browsePath.groups && browsePath.groups.length > 0) {
+    return (
+      <div className="hr-vault-detail">
+        <BackButton onBack={onBack} />
+        <h2 className="hr-vault-detail-title">{browsePath.title}</h2>
+        <p className="hr-vault-detail-body">{browsePath.summary}</p>
+        <div className="hr-vault-browse-groups">
+          {browsePath.groups.map((group) => renderBrowseGroup(group, onNavigate))}
+        </div>
+      </div>
+    );
+  }
+
   const linkedNotes = INGREDIENT_NOTES.filter((n) =>
     browsePath.ingredientNoteIds.includes(n.id),
   );

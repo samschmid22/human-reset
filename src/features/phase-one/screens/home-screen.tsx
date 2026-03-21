@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { ActionDetailView } from "@/components/actions/action-detail-view";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ContentStack, ScreenContainer } from "@/components/ui/layout";
+import { ScreenContainer } from "@/components/ui/layout";
 import { SectionHeader } from "@/components/ui/section-header";
 import { getActionStatusView } from "@/features/actions/storage";
 import { ActionState, ActionStatus, ActionStatusView } from "@/features/actions/types";
@@ -131,12 +131,12 @@ export function HomeScreen({
     );
   }
 
-  function renderActionListRow(row: ActionRow) {
+  function renderActionCard(row: ActionRow) {
     const { action, statusView } = row;
     const isExpanded = expandedActionId === action.id;
 
     return (
-      <div className="hr-action-list-row" key={action.id}>
+      <Card className="hr-action-card" key={action.id}>
         <div className="hr-action-list-content">
           <div className="hr-action-list-heading">
             <p className="hr-action-list-meta">{action.category}</p>
@@ -158,7 +158,7 @@ export function HomeScreen({
             onDonePermanent={() => onActionDonePermanent(action.id)}
           />
         ) : null}
-      </div>
+      </Card>
     );
   }
 
@@ -179,35 +179,10 @@ export function HomeScreen({
         <SectionHeader title="Today's Steps" />
 
         {topPriority ? (
-          <Card className="hr-action-list-card">
-            {/* Primary action */}
-            <div className="hr-action-list-row is-primary-row">
-              <div className="hr-action-list-content">
-                <div className="hr-action-list-heading">
-                  <p className="hr-action-list-meta">{topPriority.action.category}</p>
-                  {topPriority.statusView.status !== "pending" ? (
-                    <span className={cn("hr-action-status-chip", `is-${topPriority.statusView.status}`)}>
-                      {toStatusLabel(topPriority.statusView.status)}
-                    </span>
-                  ) : null}
-                </div>
-                <h3 className="hr-item-title">{topPriority.action.title}</h3>
-              </div>
-              {renderActionControls(topPriority)}
-              {expandedActionId === topPriority.action.id ? (
-                <ActionDetailView
-                  action={topPriority.action}
-                  onDonePermanent={() => onActionDonePermanent(topPriority.action.id)}
-                />
-              ) : null}
-            </div>
-
-            {additionalActions.length > 0 ? (
-              <ContentStack className="hr-action-additional-stack">
-                {additionalActions.map((row) => renderActionListRow(row))}
-              </ContentStack>
-            ) : null}
-          </Card>
+          <div className="hr-action-cards-list">
+            {renderActionCard(topPriority)}
+            {additionalActions.map((row) => renderActionCard(row))}
+          </div>
         ) : (
           <Card className="hr-empty-state" tone="soft">
             <p className="hr-empty-title">No actions scheduled yet</p>
@@ -218,7 +193,7 @@ export function HomeScreen({
         )}
 
         {snoozedActions.length > 0 ? (
-          <Card className="hr-snooze-summary-card">
+          <>
             <button
               className="hr-snooze-summary-toggle"
               onClick={() => setSnoozedExpanded((v) => !v)}
@@ -233,25 +208,25 @@ export function HomeScreen({
               </svg>
             </button>
             {snoozedExpanded ? (
-              <ContentStack className="hr-snooze-list">
-                {snoozedActions.map((row) => renderActionListRow(row))}
-              </ContentStack>
+              <div className="hr-action-cards-list">
+                {snoozedActions.map((row) => renderActionCard(row))}
+              </div>
             ) : null}
-          </Card>
+          </>
         ) : null}
 
         {doneTodayActions.length > 0 ? (
-          <Card className="hr-snooze-summary-card">
+          <>
             <div className="hr-snooze-summary-toggle">
               <span className="hr-snooze-summary-label">
                 Done today
                 <span className="hr-snooze-summary-count">{doneTodayActions.length}</span>
               </span>
             </div>
-            <ContentStack className="hr-snooze-list">
-              {doneTodayActions.map((row) => renderActionListRow(row))}
-            </ContentStack>
-          </Card>
+            <div className="hr-action-cards-list">
+              {doneTodayActions.map((row) => renderActionCard(row))}
+            </div>
+          </>
         ) : null}
       </section>
     </ScreenContainer>

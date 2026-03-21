@@ -22,11 +22,18 @@ export type SwapRow = {
   ingredientNoteId?: string;
 };
 
+export type BrowsePathGroup = {
+  label: string;
+  description?: string;
+  ingredientNoteIds: string[];
+};
+
 export type BrowsePath = {
   id: string;
   title: string;
   summary: string;
   ingredientNoteIds: string[];
+  groups?: BrowsePathGroup[];
 };
 
 export type FeaturedTrack = {
