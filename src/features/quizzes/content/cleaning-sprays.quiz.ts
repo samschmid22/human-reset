@@ -5,7 +5,7 @@ export const cleaningSpraysQuiz: QuizDefinition = {
   category: "Cleaning Sprays",
   title: "Cleaning Sprays + Wipes Quiz",
   description:
-    "Identify daily cleaner, disinfectant, and aerosol exposure patterns to support a simpler low-fume cleaning baseline.",
+    "Map cleaner and aerosol patterns for a low-fume home.",
   questions: [
     {
       id: "q1",

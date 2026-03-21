@@ -5,7 +5,7 @@ export const mindStressQuiz: QuizDefinition = {
   category: "Mind + Stress",
   title: "Mind + Stress Quiz",
   description:
-    "Identify daily nervous-system load patterns and recovery habits to support a steadier, lower-overwhelm baseline.",
+    "Map daily stress load and recovery to lower overwhelm.",
   questions: [
     {
       id: "q1",

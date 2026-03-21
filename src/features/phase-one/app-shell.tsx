@@ -124,11 +124,6 @@ export function PhaseOneAppShell() {
     findingsRoadmap.completedQuizCount,
     findingsRoadmap.totalQuizCount,
   );
-  const completionLabel = onboardingIncomplete
-    ? "Collecting setup inputs"
-    : `${findingsRoadmap.completedQuizCount}/${findingsRoadmap.totalQuizCount} categories`;
-  const maturityBadge = onboardingIncomplete ? "Setup in progress" : maturity.badge;
-
   const searchEntries = useMemo<SearchEntry[]>(() => {
     if (onboardingIncomplete) return [];
 
@@ -167,7 +162,7 @@ export function PhaseOneAppShell() {
 
   useEffect(() => {
     if (onboardingIncomplete) return;
-    shellBodyRef.current?.scrollTo({ top: 0 });
+    shellBodyRef.current?.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
   }, [activeTab, onboardingIncomplete]);
 
   // ── Helpers ────────────────────────────────────────────────────────────────
@@ -303,12 +298,15 @@ export function PhaseOneAppShell() {
       case "profile":
         return (
           <ProfileScreen
+            actionState={actionState}
             donePermanentRoadmapItems={donePermanentRoadmapItems}
             onActionUnskip={handleActionReset}
             onboardingState={onboardingState}
+            onNavigateToQuizzes={() => handleTabChange("quizzes")}
             onOnboardingStateChange={handleOnboardingStateChange}
             report={findingsRoadmap}
             skippedRoadmapItems={skippedRoadmapItems}
+            streakState={streakState}
           />
         );
 
@@ -343,10 +341,6 @@ export function PhaseOneAppShell() {
 
           <div className="hr-shell-title-wrap">
             <h1 className="hr-shell-title">The Human Reset</h1>
-            <div className="hr-shell-plan-line">
-              <p className="hr-shell-badge">{maturityBadge}</p>
-              <p className="hr-shell-meta">{completionLabel}</p>
-            </div>
           </div>
 
           <div className="hr-shell-header-right">
@@ -359,9 +353,9 @@ export function PhaseOneAppShell() {
               onClick={handleSearchToggle}
               type="button"
             >
-              <svg aria-hidden="true" className="hr-shell-icon" fill="none" viewBox="0 0 24 24">
-                <circle cx="10" cy="10" r="5" />
-                <path d="m14 14 5 5" />
+              <svg aria-hidden="true" className="hr-shell-icon" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24">
+                <circle cx="10.5" cy="10.5" r="5.5" />
+                <path d="m15 15 5 5" />
               </svg>
             </button>
           </div>

@@ -5,7 +5,7 @@ export const foodResetQuiz: QuizDefinition = {
   category: "Food Reset",
   title: "Food Reset Quiz",
   description:
-    "Identify processed-food, oil, and additive exposure patterns to support a calmer, more stable food baseline.",
+    "Map processed food and additive patterns in your diet.",
   questions: [
     {
       id: "q1",

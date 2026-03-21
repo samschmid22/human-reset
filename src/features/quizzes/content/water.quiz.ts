@@ -5,7 +5,7 @@ export const waterQuiz: QuizDefinition = {
   category: "Water",
   title: "Water Quiz",
   description:
-    "Identify drinking, cooking, and shower water exposure habits to support a clean filtration baseline.",
+    "Map drinking, cooking, and shower water exposure.",
   questions: [
     {
       id: "q1",

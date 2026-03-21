@@ -5,7 +5,7 @@ export const laundryQuiz: QuizDefinition = {
   category: "Laundry",
   title: "Laundry Quiz",
   description:
-    "Identify laundry-related residue and fragrance exposure patterns across clothing, bedding, and washer habits.",
+    "Map residue and fragrance across laundry and bedding.",
   questions: [
     {
       id: "q1",

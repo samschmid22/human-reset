@@ -5,7 +5,7 @@ export const personalCareQuiz: QuizDefinition = {
   category: "Personal Care",
   title: "Personal Care Quiz",
   description:
-    "Identify daily fragrance and leave-on product exposure patterns across body, skin, hair, and makeup routines.",
+    "Map leave-on products and fragrance in daily routines.",
   questions: [
     {
       id: "q1",

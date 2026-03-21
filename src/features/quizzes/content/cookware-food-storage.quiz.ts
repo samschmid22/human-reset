@@ -5,7 +5,7 @@ export const cookwareFoodStorageQuiz: QuizDefinition = {
   category: "Cookware + Food Storage",
   title: "Cookware + Food Storage Quiz",
   description:
-    "Identify high-heat cookware and storage habits that affect food-contact exposure, then support practical kitchen swaps.",
+    "Map cookware and storage habits for safer kitchen use.",
   questions: [
     {
       id: "q1",

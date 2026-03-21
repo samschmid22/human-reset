@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ContentStack, ScreenContainer } from "@/components/ui/layout";
 import { SectionHeader } from "@/components/ui/section-header";
+import { getDonePermanentActionIds } from "@/features/actions/storage";
+import { ActionState } from "@/features/actions/types";
 import { getPlanMaturity } from "@/features/findings/plan-maturity";
-import { FindingsRoadmapResult, RoadmapItem } from "@/features/findings/types";
+import { FindingsRoadmapResult, RoadmapItem, ROADMAP_PHASE_LABELS } from "@/features/findings/types";
 import {
   clampActionsPerDay,
   CONCERN_OPTIONS,
@@ -14,24 +16,20 @@ import {
   PACE_PRESET_CONFIG,
 } from "@/features/onboarding/constants";
 import { OnboardingResponses, OnboardingState } from "@/features/onboarding/types";
+import { StreakState } from "@/features/streak/types";
 import { cn } from "@/lib/cn";
 
 type ProfileScreenProps = {
+  actionState: ActionState;
   donePermanentRoadmapItems: RoadmapItem[];
   onActionUnskip: (actionId: string) => void;
   onboardingState: OnboardingState;
+  onNavigateToQuizzes: () => void;
   onOnboardingStateChange: (next: OnboardingState) => void;
   report: FindingsRoadmapResult;
   skippedRoadmapItems: RoadmapItem[];
+  streakState: StreakState;
 };
-
-function formatList(values: string[]): string {
-  if (values.length === 0) {
-    return "Not set";
-  }
-
-  return values.join(", ");
-}
 
 function toggleArrayValue(values: string[], value: string): string[] {
   if (values.includes(value)) {
@@ -41,31 +39,34 @@ function toggleArrayValue(values: string[], value: string): string[] {
   return [...values, value];
 }
 
-function formatAutosaveTimestamp(value: string): string {
-  const date = new Date(value);
+function getCurrentPhaseLabel(report: FindingsRoadmapResult): string {
+  const phases = Object.keys(report.roadmapByPhase) as Array<keyof typeof report.roadmapByPhase>;
 
-  if (Number.isNaN(date.getTime())) {
-    return "Autosaved locally";
+  for (const phase of phases) {
+    if (report.roadmapByPhase[phase].length > 0) {
+      return ROADMAP_PHASE_LABELS[phase];
+    }
   }
 
-  return `Autosaved locally at ${date.toLocaleTimeString([], {
-    hour: "numeric",
-    minute: "2-digit",
-  })}`;
+  return "Not started";
 }
 
 export function ProfileScreen({
+  actionState,
   donePermanentRoadmapItems,
   onActionUnskip,
   onboardingState,
+  onNavigateToQuizzes,
   onOnboardingStateChange,
   report,
   skippedRoadmapItems,
+  streakState,
 }: ProfileScreenProps) {
   const [newSensitivity, setNewSensitivity] = useState("");
+  const [resetConfirm, setResetConfirm] = useState(false);
   const responses = onboardingState.responses;
-  const planReady = report.priorities.length > 0;
   const maturity = getPlanMaturity(report.completedQuizCount, report.totalQuizCount);
+  const completedActionsCount = getDonePermanentActionIds(actionState).length;
   const availableSensitivities = useMemo(
     () =>
       Array.from(new Set([...DEFAULT_SENSITIVITY_OPTIONS, ...responses.additionalSensitivities])),
@@ -118,27 +119,66 @@ export function ProfileScreen({
     });
   }
 
+  function handleResetData(): void {
+    if (!resetConfirm) {
+      setResetConfirm(true);
+      return;
+    }
+
+    localStorage.clear();
+    window.location.reload();
+  }
+
   return (
     <ScreenContainer className="hr-profile-screen">
+      {/* Dashboard header card */}
       <Card className="hr-profile-hero" tone="accent">
-        <div className="hr-card-row">
-          <div>
-            <p className="hr-overline">Profile + Settings</p>
-            <h2 className="hr-feature-title">
-              {planReady ? "Your reset profile is actively shaping your plan" : "Your reset profile is saved locally"}
-            </h2>
-            <p className="hr-copy">{maturity.summary}</p>
+        <p className="hr-overline">Your Reset</p>
+        <h2 className="hr-feature-title">{maturity.title}</h2>
+        <p className="hr-copy">{maturity.summary}</p>
+        <div className="hr-profile-stats-row">
+          <div className="hr-profile-stat">
+            <strong className="hr-profile-stat-value">{streakState.currentStreak}</strong>
+            <span className="hr-profile-stat-label">Day streak</span>
           </div>
-          <div className="hr-profile-hero-stats">
-            <span>{maturity.badge}</span>
-            <span>{report.completedQuizCount}/{report.totalQuizCount} categories</span>
-            <span>{report.priorities.length} actions</span>
+          <div className="hr-profile-stat">
+            <strong className="hr-profile-stat-value">{completedActionsCount}</strong>
+            <span className="hr-profile-stat-label">Completed</span>
+          </div>
+          <div className="hr-profile-stat">
+            <strong className="hr-profile-stat-value">{report.priorities.length}</strong>
+            <span className="hr-profile-stat-label">Active actions</span>
+          </div>
+          <div className="hr-profile-stat">
+            <strong className="hr-profile-stat-value">{report.completedQuizCount}/{report.totalQuizCount}</strong>
+            <span className="hr-profile-stat-label">Categories</span>
           </div>
         </div>
-        <p className="hr-profile-save-state">{formatAutosaveTimestamp(onboardingState.updatedAt)}</p>
       </Card>
 
-      <SectionHeader subtitle="Settings update immediately and persist on this device." title="Plan Preferences" />
+      {/* My Plan summary grid */}
+      <SectionHeader title="My Plan" />
+      <div className="hr-profile-plan-grid">
+        <Card className="hr-profile-plan-stat-card">
+          <span className="hr-profile-plan-label">Current Phase</span>
+          <strong className="hr-profile-plan-value">{getCurrentPhaseLabel(report)}</strong>
+        </Card>
+        <Card className="hr-profile-plan-stat-card">
+          <span className="hr-profile-plan-label">Daily Pace</span>
+          <strong className="hr-profile-plan-value">{responses.actionsPerDay}/day</strong>
+        </Card>
+        <Card className="hr-profile-plan-stat-card">
+          <span className="hr-profile-plan-label">Quizzes Done</span>
+          <strong className="hr-profile-plan-value">{report.completedQuizCount} of {report.totalQuizCount}</strong>
+        </Card>
+        <Card className="hr-profile-plan-stat-card">
+          <span className="hr-profile-plan-label">Plan Stage</span>
+          <strong className="hr-profile-plan-value">{maturity.badge}</strong>
+        </Card>
+      </div>
+
+      {/* Preferences */}
+      <SectionHeader title="Preferences" />
 
       <div className="hr-profile-grid">
         <Card className="hr-profile-settings-card">
@@ -197,7 +237,7 @@ export function ProfileScreen({
                   onClick={() => commitResponses({ ...responses, focusStyle: "mixed" })}
                   type="button"
                 >
-                  Mixed categories
+                  Mixed
                 </button>
                 <button
                   aria-pressed={responses.focusStyle === "one_category"}
@@ -208,35 +248,9 @@ export function ProfileScreen({
                   onClick={() => commitResponses({ ...responses, focusStyle: "one_category" })}
                   type="button"
                 >
-                  One category/day
+                  One category
                 </button>
               </div>
-            </div>
-
-            <div className="hr-setting-row hr-setting-row-switch">
-              <div>
-                <span className="hr-setting-label">Notifications</span>
-                <p className="hr-item-description">
-                  Gentle local reminders for daily reset steps.
-                </p>
-              </div>
-              <button
-                aria-label="Toggle notifications"
-                aria-pressed={responses.notificationsEnabled}
-                className={cn(
-                  "hr-switch",
-                  responses.notificationsEnabled && "is-on",
-                )}
-                onClick={() =>
-                  commitResponses({
-                    ...responses,
-                    notificationsEnabled: !responses.notificationsEnabled,
-                  })
-                }
-                type="button"
-              >
-                <span className="hr-switch-knob" />
-              </button>
             </div>
           </ContentStack>
         </Card>
@@ -324,36 +338,9 @@ export function ProfileScreen({
             </div>
           </ContentStack>
         </Card>
-
-        <Card className="hr-profile-settings-card">
-          <h3 className="hr-item-title">System Snapshot</h3>
-          <ContentStack className="hr-setting-stack">
-            <div className="hr-setting-row">
-              <span className="hr-setting-label">Daily Plan</span>
-              <span className="hr-setting-value">
-                {report.dailyPlan.actions.length}/{report.dailyPlan.maxActions} scheduled
-              </span>
-            </div>
-            <div className="hr-setting-row">
-              <span className="hr-setting-label">Top Category</span>
-              <span className="hr-setting-value">
-                {report.highestPriorityCategory ?? "Not available yet"}
-              </span>
-            </div>
-            <div className="hr-setting-row">
-              <span className="hr-setting-label">Sensitivity Profile</span>
-              <span className="hr-setting-value">{formatList(responses.sensitivities)}</span>
-            </div>
-            <div className="hr-setting-row">
-              <span className="hr-setting-label">Custom Goal</span>
-              <span className="hr-setting-value">
-                {responses.customConcern.trim().length > 0 ? responses.customConcern : "Not set"}
-              </span>
-            </div>
-          </ContentStack>
-        </Card>
       </div>
 
+      {/* Skipped items */}
       {skippedRoadmapItems.length > 0 ? (
         <>
           <SectionHeader
@@ -383,6 +370,7 @@ export function ProfileScreen({
         </>
       ) : null}
 
+      {/* Completed items */}
       {donePermanentRoadmapItems.length > 0 ? (
         <>
           <SectionHeader
@@ -411,6 +399,69 @@ export function ProfileScreen({
           </Card>
         </>
       ) : null}
+
+      {/* Settings section */}
+      <SectionHeader title="Settings" />
+      <Card className="hr-profile-settings-card">
+        <ContentStack className="hr-setting-stack">
+          <div className="hr-setting-row hr-setting-row-switch">
+            <div>
+              <span className="hr-setting-label">Notifications</span>
+              <p className="hr-item-description">
+                Gentle local reminders for daily reset steps.
+              </p>
+            </div>
+            <button
+              aria-label="Toggle notifications"
+              aria-pressed={responses.notificationsEnabled}
+              className={cn(
+                "hr-switch",
+                responses.notificationsEnabled && "is-on",
+              )}
+              onClick={() =>
+                commitResponses({
+                  ...responses,
+                  notificationsEnabled: !responses.notificationsEnabled,
+                })
+              }
+              type="button"
+            >
+              <span className="hr-switch-knob" />
+            </button>
+          </div>
+
+          <div className="hr-setting-row hr-setting-row-actions">
+            <div>
+              <span className="hr-setting-label">Recalculate Plan</span>
+              <p className="hr-item-description">
+                Complete more quizzes to refine your roadmap.
+              </p>
+            </div>
+            <Button onClick={onNavigateToQuizzes} size="sm" variant="secondary">
+              Go to quizzes
+            </Button>
+          </div>
+
+          <div className="hr-setting-row hr-setting-row-actions">
+            <div>
+              <span className="hr-setting-label">Reset All Data</span>
+              <p className="hr-item-description">
+                {resetConfirm
+                  ? "This will erase all your data. Tap again to confirm."
+                  : "Erase all local data and start fresh."}
+              </p>
+            </div>
+            <Button
+              className={cn(resetConfirm && "is-danger-confirm")}
+              onClick={handleResetData}
+              size="sm"
+              variant="quiet"
+            >
+              {resetConfirm ? "Confirm reset" : "Reset data"}
+            </Button>
+          </div>
+        </ContentStack>
+      </Card>
     </ScreenContainer>
   );
 }

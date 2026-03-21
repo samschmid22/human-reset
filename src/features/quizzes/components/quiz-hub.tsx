@@ -14,12 +14,6 @@ type QuizHubProps = {
   quizState: QuizState;
 };
 
-const statusLabelMap: Record<QuizStatus, string> = {
-  not_started: "Not started",
-  in_progress: "In progress",
-  completed: "Complete",
-};
-
 const buttonLabelMap: Record<QuizStatus, string> = {
   not_started: "Start",
   in_progress: "Continue",
@@ -75,24 +69,16 @@ export function QuizHub({ onOpenQuiz, quizzes, quizState }: QuizHubProps) {
       return (
         <div className={cn("hr-quiz-row", isNext && "is-next")} key={entry.quiz.id}>
           <div className="hr-quiz-row-main">
-            <div className="hr-quiz-row-title">
-              <h3 className="hr-item-title">{entry.quiz.title}</h3>
-              <span className={cn("hr-quiz-status-badge", `is-${entry.status}`)}>
-                {statusLabelMap[entry.status]}
-              </span>
-            </div>
+            <h3 className="hr-item-title">{entry.quiz.title}</h3>
             <p className="hr-item-description">{entry.quiz.description}</p>
-            <div className="hr-quiz-row-progress">
-              <span>{entry.answeredCount} of {entry.quiz.questions.length}</span>
-              <div className="hr-linear-progress" role="presentation">
-                <div className="hr-linear-progress-bar" style={{ width: `${entry.percent}%` }} />
-              </div>
-            </div>
           </div>
 
-          <Button onClick={() => onOpenQuiz(entry.quiz.id)} size="sm" variant="secondary">
-            {buttonLabelMap[entry.status]}
-          </Button>
+          <div className="hr-quiz-row-right">
+            <span className="hr-quiz-row-count">{entry.answeredCount}/{entry.quiz.questions.length}</span>
+            <Button onClick={() => onOpenQuiz(entry.quiz.id)} size="sm" variant="secondary">
+              {buttonLabelMap[entry.status]}
+            </Button>
+          </div>
         </div>
       );
     });
@@ -103,7 +89,7 @@ export function QuizHub({ onOpenQuiz, quizzes, quizState }: QuizHubProps) {
       <SharedTopCard
         action={
           nextQuiz ? (
-            <Button onClick={() => onOpenQuiz(nextQuiz.quiz.id)} size="sm" variant="secondary">
+            <Button onClick={() => onOpenQuiz(nextQuiz.quiz.id)} size="sm" variant="primary">
               {nextQuiz.status === "in_progress" ? "Continue" : "Start next"}
             </Button>
           ) : null
@@ -113,14 +99,14 @@ export function QuizHub({ onOpenQuiz, quizzes, quizState }: QuizHubProps) {
           { label: "Completed", value: completedCount },
           { label: "In progress", value: inProgressCount },
           { label: "Not started", value: notStartedCount },
-          { label: "Plan calibration", note: maturity.progressLabel, value: `${overallPercent}%` },
+          { label: "Plan calibration", value: `${overallPercent}%` },
         ]}
         overline="Quiz Intake"
         summary={maturity.summary}
         title="Calibrate your reset plan"
       />
 
-      <SectionHeader subtitle="Complete categories progressively to sharpen roadmap quality." title="Category Inputs" />
+      <SectionHeader title="Category Inputs" />
 
       {inProgressQuizzes.length > 0 ? (
         <Card className="hr-quiz-list-card">

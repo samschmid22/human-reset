@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
 
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ContentStack, ScreenContainer } from "@/components/ui/layout";
+import { ScreenContainer } from "@/components/ui/layout";
 import { SectionHeader } from "@/components/ui/section-header";
+import { cn } from "@/lib/cn";
 
 const entryPoints = [
   {
@@ -24,22 +24,22 @@ const categoryEntries = [
   {
     summary: "Ingredient and product decisions by room and routine.",
     title: "Swaps Library",
-    topics: "Product swaps • safer defaults • quick buying rules",
+    topics: "Product swaps · safer defaults · quick buying rules",
   },
   {
     summary: "Low-friction protocols to reduce repeated exposure patterns.",
     title: "Home Protocols",
-    topics: "Air routines • laundry resets • kitchen setup",
+    topics: "Air routines · laundry resets · kitchen setup",
   },
   {
     summary: "Structured explainers for ingredients, labels, and claims.",
     title: "Ingredient Notes",
-    topics: "Red flags • label decoding • what to prioritize",
+    topics: "Red flags · label decoding · what to prioritize",
   },
   {
     summary: "Short practical methods you can apply without full overhauls.",
     title: "DIY + Low-Cost",
-    topics: "DIY recipes • no-cost upgrades • minimal-step options",
+    topics: "DIY recipes · no-cost upgrades · minimal-step options",
   },
 ];
 
@@ -61,6 +61,24 @@ const featuredTracks = [
     title: "Cleaning system simplification",
   },
 ];
+
+function ChevronRight() {
+  return (
+    <svg
+      aria-hidden="true"
+      fill="none"
+      height="16"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+      width="16"
+    >
+      <path d="m9 18 6-6-6-6" />
+    </svg>
+  );
+}
 
 export function VaultScreen() {
   const [activeItem, setActiveItem] = useState<string | null>(null);
@@ -107,24 +125,14 @@ export function VaultScreen() {
     });
   }, [normalizedQuery]);
 
-  const activeSummary =
-    entryPoints.find((entry) => entry.title === activeItem)?.summary ??
-    categoryEntries.find((entry) => entry.title === activeItem)?.summary ??
-    featuredTracks.find((track) => track.title === activeItem)?.summary ??
-    null;
-
   return (
     <ScreenContainer className="hr-vault-screen">
       <Card className="hr-vault-hero" tone="soft">
-        <div>
-          <div>
-            <p className="hr-overline">Vault Library</p>
-            <h2 className="hr-feature-title">Curated guidance for your reset system</h2>
-            <p className="hr-copy">
-              Structured education for practical swaps, clear routines, and lower-friction decisions.
-            </p>
-          </div>
-        </div>
+        <p className="hr-overline">Vault Library</p>
+        <h2 className="hr-feature-title">Curated guidance for your reset system</h2>
+        <p className="hr-copy">
+          Structured education for practical swaps, clear routines, and lower-friction decisions.
+        </p>
 
         <div className="hr-vault-search-shell">
           <input
@@ -134,32 +142,40 @@ export function VaultScreen() {
             type="search"
             value={query}
           />
-          <p className="hr-vault-search-meta">
-            {filteredEntryPoints.length + filteredCategoryEntries.length + filteredTracks.length} matches
-          </p>
         </div>
       </Card>
 
-      {activeItem && activeSummary ? (
-        <Card className="hr-vault-active-card" tone="accent">
-          <p className="hr-overline">Now viewing</p>
-          <h3 className="hr-item-title">{activeItem}</h3>
-          <p className="hr-item-description">{activeSummary}</p>
-        </Card>
+      {activeItem ? (
+        <div className="hr-vault-active-strip">
+          <span className="hr-vault-active-label">Viewing:</span>
+          <strong className="hr-vault-active-title">{activeItem}</strong>
+          <button
+            className="hr-vault-active-close"
+            onClick={() => setActiveItem(null)}
+            type="button"
+          >
+            ✕
+          </button>
+        </div>
       ) : null}
 
-      <SectionHeader subtitle="Choose the navigation style that fits how you make decisions." title="Browse Paths" />
+      <SectionHeader title="Browse Paths" />
 
       <div className="hr-vault-entry-grid">
         {filteredEntryPoints.length > 0 ? (
           filteredEntryPoints.map((entry) => (
-            <Card className="hr-vault-entry-card" key={entry.title}>
-              <h3 className="hr-item-title">{entry.title}</h3>
-              <p className="hr-item-description">{entry.summary}</p>
-              <Button onClick={() => setActiveItem(entry.title)} size="sm" variant="quiet">
-                Open
-              </Button>
-            </Card>
+            <button
+              className={cn("hr-vault-tap-card", activeItem === entry.title && "is-active")}
+              key={entry.title}
+              onClick={() => setActiveItem(entry.title)}
+              type="button"
+            >
+              <div className="hr-vault-tap-card-body">
+                <h3 className="hr-vault-tap-title">{entry.title}</h3>
+                <p className="hr-vault-tap-summary">{entry.summary}</p>
+              </div>
+              <ChevronRight />
+            </button>
           ))
         ) : (
           <Card className="hr-empty-state" tone="soft">
@@ -169,19 +185,24 @@ export function VaultScreen() {
         )}
       </div>
 
-      <SectionHeader subtitle="Core knowledge architecture for product and routine decisions." title="Library Categories" />
+      <SectionHeader title="Library Categories" />
 
       <div className="hr-vault-category-grid">
         {filteredCategoryEntries.length > 0 ? (
           filteredCategoryEntries.map((entry) => (
-            <Card className="hr-vault-category-card" key={entry.title}>
-              <h3 className="hr-item-title">{entry.title}</h3>
-              <p className="hr-item-description">{entry.summary}</p>
-              <p className="hr-vault-topic-line">{entry.topics}</p>
-              <Button onClick={() => setActiveItem(entry.title)} size="sm" variant="quiet">
-                Open
-              </Button>
-            </Card>
+            <button
+              className={cn("hr-vault-tap-card", activeItem === entry.title && "is-active")}
+              key={entry.title}
+              onClick={() => setActiveItem(entry.title)}
+              type="button"
+            >
+              <div className="hr-vault-tap-card-body">
+                <h3 className="hr-vault-tap-title">{entry.title}</h3>
+                <p className="hr-vault-tap-summary">{entry.summary}</p>
+                <p className="hr-vault-tap-topics">{entry.topics}</p>
+              </div>
+              <ChevronRight />
+            </button>
           ))
         ) : (
           <Card className="hr-empty-state" tone="soft">
@@ -191,26 +212,31 @@ export function VaultScreen() {
         )}
       </div>
 
-      <SectionHeader subtitle="Curated sets of related guidance pages and action contexts." title="Featured Track Collections" />
+      <SectionHeader title="Featured Tracks" />
 
       <Card className="hr-vault-track-card">
-        <ContentStack className="hr-vault-track-list">
-          {filteredTracks.length > 0 ? (
-            filteredTracks.map((track) => (
-              <div className="hr-vault-track-row" key={track.title}>
-                <div>
-                  <h3 className="hr-item-title">{track.title}</h3>
-                  <p className="hr-item-description">{track.summary}</p>
-                </div>
-                <Button onClick={() => setActiveItem(track.title)} size="sm" variant="quiet">
-                  Open
-                </Button>
+        {filteredTracks.length > 0 ? (
+          filteredTracks.map((track, index) => (
+            <button
+              className={cn(
+                "hr-vault-track-row",
+                index > 0 && "has-border",
+                activeItem === track.title && "is-active",
+              )}
+              key={track.title}
+              onClick={() => setActiveItem(track.title)}
+              type="button"
+            >
+              <div className="hr-vault-tap-card-body">
+                <h3 className="hr-vault-tap-title">{track.title}</h3>
+                <p className="hr-vault-tap-summary">{track.summary}</p>
               </div>
-            ))
-          ) : (
-            <p className="hr-empty-copy">No featured tracks match your search.</p>
-          )}
-        </ContentStack>
+              <ChevronRight />
+            </button>
+          ))
+        ) : (
+          <p className="hr-empty-copy">No featured tracks match your search.</p>
+        )}
       </Card>
     </ScreenContainer>
   );
