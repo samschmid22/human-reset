@@ -305,7 +305,6 @@ export function PhaseOneAppShell() {
             onOnboardingStateChange={handleOnboardingStateChange}
             report={findingsRoadmap}
             skippedRoadmapItems={skippedRoadmapItems}
-            streakState={streakState}
           />
         );
 

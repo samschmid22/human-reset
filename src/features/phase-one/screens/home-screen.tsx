@@ -176,10 +176,7 @@ export function HomeScreen({
           </Card>
         ) : null}
 
-        <SectionHeader
-          subtitle="Do the top step first, then continue if capacity allows."
-          title="Today's Steps"
-        />
+        <SectionHeader title="Today's Steps" />
 
         {topPriority ? (
           <Card className="hr-action-list-card">

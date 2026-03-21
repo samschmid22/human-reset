@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ContentStack, ScreenContainer } from "@/components/ui/layout";
 import { SectionHeader } from "@/components/ui/section-header";
-import { getDonePermanentActionIds } from "@/features/actions/storage";
 import { ActionState } from "@/features/actions/types";
 import { getPlanMaturity } from "@/features/findings/plan-maturity";
 import { FindingsRoadmapResult, RoadmapItem, ROADMAP_PHASE_LABELS } from "@/features/findings/types";
@@ -16,7 +15,6 @@ import {
   PACE_PRESET_CONFIG,
 } from "@/features/onboarding/constants";
 import { OnboardingResponses, OnboardingState } from "@/features/onboarding/types";
-import { StreakState } from "@/features/streak/types";
 import { cn } from "@/lib/cn";
 
 type ProfileScreenProps = {
@@ -28,7 +26,6 @@ type ProfileScreenProps = {
   onOnboardingStateChange: (next: OnboardingState) => void;
   report: FindingsRoadmapResult;
   skippedRoadmapItems: RoadmapItem[];
-  streakState: StreakState;
 };
 
 function toggleArrayValue(values: string[], value: string): string[] {
@@ -60,13 +57,11 @@ export function ProfileScreen({
   onOnboardingStateChange,
   report,
   skippedRoadmapItems,
-  streakState,
 }: ProfileScreenProps) {
   const [newSensitivity, setNewSensitivity] = useState("");
   const [resetConfirm, setResetConfirm] = useState(false);
   const responses = onboardingState.responses;
   const maturity = getPlanMaturity(report.completedQuizCount, report.totalQuizCount);
-  const completedActionsCount = getDonePermanentActionIds(actionState).length;
   const availableSensitivities = useMemo(
     () =>
       Array.from(new Set([...DEFAULT_SENSITIVITY_OPTIONS, ...responses.additionalSensitivities])),
@@ -131,30 +126,6 @@ export function ProfileScreen({
 
   return (
     <ScreenContainer className="hr-profile-screen">
-      {/* Dashboard header card */}
-      <Card className="hr-profile-hero" tone="accent">
-        <h2 className="hr-feature-title">{maturity.title}</h2>
-        <p className="hr-copy">{maturity.summary}</p>
-        <div className="hr-profile-stats-row">
-          <div className="hr-profile-stat">
-            <strong className="hr-profile-stat-value">{streakState.currentStreak}</strong>
-            <span className="hr-profile-stat-label">Day streak</span>
-          </div>
-          <div className="hr-profile-stat">
-            <strong className="hr-profile-stat-value">{completedActionsCount}</strong>
-            <span className="hr-profile-stat-label">Completed</span>
-          </div>
-          <div className="hr-profile-stat">
-            <strong className="hr-profile-stat-value">{report.priorities.length}</strong>
-            <span className="hr-profile-stat-label">Active actions</span>
-          </div>
-          <div className="hr-profile-stat">
-            <strong className="hr-profile-stat-value">{report.completedQuizCount}/{report.totalQuizCount}</strong>
-            <span className="hr-profile-stat-label">Categories</span>
-          </div>
-        </div>
-      </Card>
-
       {/* My Plan summary grid */}
       <SectionHeader title="My Plan" />
       <div className="hr-profile-plan-grid">

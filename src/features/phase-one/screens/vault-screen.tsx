@@ -1,66 +1,35 @@
-import { useMemo, useState } from "react";
+"use client";
 
+import { useState } from "react";
+
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ScreenContainer } from "@/components/ui/layout";
 import { SectionHeader } from "@/components/ui/section-header";
+import {
+  BROWSE_PATHS,
+  DIY_RECIPES,
+  FEATURED_TRACKS,
+  INGREDIENT_NOTES,
+  SWAP_ROWS,
+} from "@/features/vault/content";
+import type { BrowsePath, DiyRecipe, FeaturedTrack, IngredientNote } from "@/features/vault/types";
 import { cn } from "@/lib/cn";
 
-const entryPoints = [
-  {
-    summary: "Room-by-room guidance for kitchen, laundry, bedroom, and air routines.",
-    title: "Browse by Room",
-  },
-  {
-    summary: "Start from outcomes like sleep, stress load, or sensitivity support.",
-    title: "Browse by Concern",
-  },
-  {
-    summary: "Find minimum step, low-cost, and premium pathways in one place.",
-    title: "Browse by Budget",
-  },
-];
+// ---------------------------------------------------------------------------
+// Local types
+// ---------------------------------------------------------------------------
 
-const categoryEntries = [
-  {
-    summary: "Ingredient and product decisions by room and routine.",
-    title: "Swaps Library",
-    topics: "Product swaps · safer defaults · quick buying rules",
-  },
-  {
-    summary: "Low-friction protocols to reduce repeated exposure patterns.",
-    title: "Home Protocols",
-    topics: "Air routines · laundry resets · kitchen setup",
-  },
-  {
-    summary: "Structured explainers for ingredients, labels, and claims.",
-    title: "Ingredient Notes",
-    topics: "Red flags · label decoding · what to prioritize",
-  },
-  {
-    summary: "Short practical methods you can apply without full overhauls.",
-    title: "DIY + Low-Cost",
-    topics: "DIY recipes · no-cost upgrades · minimal-step options",
-  },
-];
+type VaultView =
+  | { type: "home" }
+  | { type: "ingredient"; id: string }
+  | { type: "recipe"; id: string }
+  | { type: "browse-path"; id: string }
+  | { type: "track"; id: string };
 
-const featuredTracks = [
-  {
-    summary: "Build quick boundaries around sprays, candles, and fragrance-heavy inputs.",
-    title: "Air + Fragrance baseline",
-  },
-  {
-    summary: "Prioritize cookware and storage swaps that reduce repeat contact.",
-    title: "Kitchen contact reset",
-  },
-  {
-    summary: "Calm nightly exposures and set consistent low-friction sleep defaults.",
-    title: "Sleep environment reset",
-  },
-  {
-    summary: "Simplify product stacks and routines to reduce hidden repeat triggers.",
-    title: "Cleaning system simplification",
-  },
-];
+// ---------------------------------------------------------------------------
+// Inline icon
+// ---------------------------------------------------------------------------
 
 function ChevronRight() {
   return (
@@ -80,95 +49,421 @@ function ChevronRight() {
   );
 }
 
-export function VaultScreen() {
-  const [activeItem, setActiveItem] = useState<string | null>(null);
-  const [query, setQuery] = useState("");
+// ---------------------------------------------------------------------------
+// Detail views
+// ---------------------------------------------------------------------------
 
-  const normalizedQuery = query.trim().toLowerCase();
-  const filteredEntryPoints = useMemo(() => {
-    if (normalizedQuery.length === 0) {
-      return entryPoints;
-    }
+type BackButtonProps = {
+  onBack: () => void;
+};
 
-    return entryPoints.filter((entry) => {
-      return (
-        entry.title.toLowerCase().includes(normalizedQuery) ||
-        entry.summary.toLowerCase().includes(normalizedQuery)
-      );
-    });
-  }, [normalizedQuery]);
+function BackButton({ onBack }: BackButtonProps) {
+  return (
+    <Button className="hr-vault-back-button" onClick={onBack} variant="quiet">
+      ← Back
+    </Button>
+  );
+}
 
-  const filteredCategoryEntries = useMemo(() => {
-    if (normalizedQuery.length === 0) {
-      return categoryEntries;
-    }
+type IngredientDetailProps = {
+  note: IngredientNote;
+  onBack: () => void;
+};
 
-    return categoryEntries.filter((entry) => {
-      return (
-        entry.title.toLowerCase().includes(normalizedQuery) ||
-        entry.summary.toLowerCase().includes(normalizedQuery) ||
-        entry.topics.toLowerCase().includes(normalizedQuery)
-      );
-    });
-  }, [normalizedQuery]);
+function IngredientDetail({ note, onBack }: IngredientDetailProps) {
+  return (
+    <div className="hr-vault-detail">
+      <BackButton onBack={onBack} />
+      <h2 className="hr-vault-detail-title">{note.name}</h2>
 
-  const filteredTracks = useMemo(() => {
-    if (normalizedQuery.length === 0) {
-      return featuredTracks;
-    }
+      <p className="hr-vault-detail-label">Found in</p>
+      <ul>
+        {note.foundIn.map((item) => (
+          <li className="hr-vault-detail-list-item" key={item}>
+            {item}
+          </li>
+        ))}
+      </ul>
 
-    return featuredTracks.filter((track) => {
-      return (
-        track.title.toLowerCase().includes(normalizedQuery) ||
-        track.summary.toLowerCase().includes(normalizedQuery)
-      );
-    });
-  }, [normalizedQuery]);
+      <p className="hr-vault-detail-label">Why it matters</p>
+      <p className="hr-vault-detail-body">{note.whyItMatters}</p>
+
+      <p className="hr-vault-detail-label">What to avoid</p>
+      <p className="hr-vault-detail-body">{note.avoid}</p>
+
+      <div className="hr-vault-swap-block">
+        <p className="hr-vault-detail-label">Swap</p>
+        <p className="hr-vault-detail-body">{note.swap}</p>
+      </div>
+    </div>
+  );
+}
+
+type RecipeDetailProps = {
+  recipe: DiyRecipe;
+  onBack: () => void;
+};
+
+function RecipeDetail({ recipe, onBack }: RecipeDetailProps) {
+  return (
+    <div className="hr-vault-detail">
+      <BackButton onBack={onBack} />
+      <h2 className="hr-vault-detail-title">{recipe.name}</h2>
+
+      <p className="hr-vault-detail-label">Ingredients</p>
+      <ul>
+        {recipe.ingredients.map((ingredient) => (
+          <li className="hr-vault-detail-list-item" key={ingredient}>
+            {ingredient}
+          </li>
+        ))}
+      </ul>
+
+      <p className="hr-vault-detail-label">Steps</p>
+      <ol>
+        {recipe.steps.map((step, index) => (
+          <li className="hr-vault-detail-list-item" key={index}>
+            {step}
+          </li>
+        ))}
+      </ol>
+
+      {recipe.notes ? (
+        <>
+          <p className="hr-vault-detail-label">Notes</p>
+          <p className="hr-vault-detail-body">{recipe.notes}</p>
+        </>
+      ) : null}
+    </div>
+  );
+}
+
+type BrowsePathDetailProps = {
+  browsePath: BrowsePath;
+  onBack: () => void;
+  onNavigate: (view: VaultView) => void;
+};
+
+function BrowsePathDetail({ browsePath, onBack, onNavigate }: BrowsePathDetailProps) {
+  const linkedNotes = INGREDIENT_NOTES.filter((n) =>
+    browsePath.ingredientNoteIds.includes(n.id),
+  );
 
   return (
-    <ScreenContainer className="hr-vault-screen">
-      <Card className="hr-vault-hero" tone="soft">
-        <h2 className="hr-feature-title">The Knowledge</h2>
+    <div className="hr-vault-detail">
+      <BackButton onBack={onBack} />
+      <h2 className="hr-vault-detail-title">{browsePath.title}</h2>
+      <p className="hr-vault-detail-body">{browsePath.summary}</p>
 
-        <div className="hr-vault-search-shell">
-          <input
-            className="hr-input"
-            onChange={(event) => setQuery(event.currentTarget.value)}
-            placeholder="Search topics, protocols, swaps, and ingredient notes"
-            type="search"
-            value={query}
-          />
-        </div>
-      </Card>
-
-      {activeItem ? (
-        <div className="hr-vault-active-strip">
-          <span className="hr-vault-active-label">Viewing:</span>
-          <strong className="hr-vault-active-title">{activeItem}</strong>
+      <p className="hr-vault-detail-label">Ingredient Notes</p>
+      <Card className="hr-vault-track-card">
+        {linkedNotes.map((note, index) => (
           <button
-            className="hr-vault-active-close"
-            onClick={() => setActiveItem(null)}
+            className={cn("hr-vault-track-row", index > 0 && "has-border")}
+            key={note.id}
+            onClick={() => onNavigate({ type: "ingredient", id: note.id })}
             type="button"
           >
-            ✕
+            <div className="hr-vault-tap-card-body">
+              <p className="hr-vault-tap-title">{note.name}</p>
+            </div>
+            <ChevronRight />
           </button>
-        </div>
+        ))}
+      </Card>
+    </div>
+  );
+}
+
+type TrackDetailProps = {
+  track: FeaturedTrack;
+  onBack: () => void;
+  onNavigate: (view: VaultView) => void;
+};
+
+function TrackDetail({ track, onBack, onNavigate }: TrackDetailProps) {
+  const linkedNotes = INGREDIENT_NOTES.filter((n) =>
+    track.ingredientNoteIds.includes(n.id),
+  );
+  const linkedRecipes = DIY_RECIPES.filter((r) => track.recipeIds.includes(r.id));
+
+  return (
+    <div className="hr-vault-detail">
+      <BackButton onBack={onBack} />
+      <h2 className="hr-vault-detail-title">{track.title}</h2>
+      <p className="hr-vault-detail-body">{track.summary}</p>
+
+      {linkedNotes.length > 0 ? (
+        <>
+          <p className="hr-vault-detail-label">Ingredient Notes</p>
+          <Card className="hr-vault-track-card">
+            {linkedNotes.map((note, index) => (
+              <button
+                className={cn("hr-vault-track-row", index > 0 && "has-border")}
+                key={note.id}
+                onClick={() => onNavigate({ type: "ingredient", id: note.id })}
+                type="button"
+              >
+                <div className="hr-vault-tap-card-body">
+                  <p className="hr-vault-tap-title">{note.name}</p>
+                </div>
+                <ChevronRight />
+              </button>
+            ))}
+          </Card>
+        </>
       ) : null}
+
+      {linkedRecipes.length > 0 ? (
+        <>
+          <p className="hr-vault-detail-label">DIY Recipes</p>
+          <Card className="hr-vault-track-card">
+            {linkedRecipes.map((recipe, index) => (
+              <button
+                className={cn("hr-vault-track-row", index > 0 && "has-border")}
+                key={recipe.id}
+                onClick={() => onNavigate({ type: "recipe", id: recipe.id })}
+                type="button"
+              >
+                <div className="hr-vault-tap-card-body">
+                  <p className="hr-vault-tap-title">{recipe.name}</p>
+                </div>
+                <ChevronRight />
+              </button>
+            ))}
+          </Card>
+        </>
+      ) : null}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Library category list views (shown from home category grid)
+// ---------------------------------------------------------------------------
+
+type LibraryCategoryView = "ingredient-notes" | "diy-recipes" | "swaps" | "protocols";
+
+type LibraryCategoryDetailProps = {
+  category: LibraryCategoryView;
+  onBack: () => void;
+  onNavigate: (view: VaultView) => void;
+};
+
+function LibraryCategoryDetail({ category, onBack, onNavigate }: LibraryCategoryDetailProps) {
+  if (category === "ingredient-notes") {
+    return (
+      <div className="hr-vault-detail">
+        <BackButton onBack={onBack} />
+        <h2 className="hr-vault-detail-title">Ingredient Notes</h2>
+        <Card className="hr-vault-track-card">
+          {INGREDIENT_NOTES.map((note, index) => (
+            <button
+              className={cn("hr-vault-track-row", index > 0 && "has-border")}
+              key={note.id}
+              onClick={() => onNavigate({ type: "ingredient", id: note.id })}
+              type="button"
+            >
+              <div className="hr-vault-tap-card-body">
+                <p className="hr-vault-tap-title">{note.name}</p>
+                <p className="hr-vault-tap-summary">{note.foundIn.slice(0, 2).join(", ")}</p>
+              </div>
+              <ChevronRight />
+            </button>
+          ))}
+        </Card>
+      </div>
+    );
+  }
+
+  if (category === "diy-recipes") {
+    return (
+      <div className="hr-vault-detail">
+        <BackButton onBack={onBack} />
+        <h2 className="hr-vault-detail-title">DIY + Low-Cost</h2>
+        <Card className="hr-vault-track-card">
+          {DIY_RECIPES.map((recipe, index) => (
+            <button
+              className={cn("hr-vault-track-row", index > 0 && "has-border")}
+              key={recipe.id}
+              onClick={() => onNavigate({ type: "recipe", id: recipe.id })}
+              type="button"
+            >
+              <div className="hr-vault-tap-card-body">
+                <p className="hr-vault-tap-title">{recipe.name}</p>
+                <p className="hr-vault-tap-summary">
+                  {recipe.ingredients.length} ingredients · {recipe.steps.length} steps
+                </p>
+              </div>
+              <ChevronRight />
+            </button>
+          ))}
+        </Card>
+      </div>
+    );
+  }
+
+  if (category === "swaps") {
+    return (
+      <div className="hr-vault-detail">
+        <BackButton onBack={onBack} />
+        <h2 className="hr-vault-detail-title">Swaps Library</h2>
+        <Card className="hr-vault-track-card">
+          {SWAP_ROWS.map((row, index) => (
+            <button
+              className={cn("hr-vault-track-row", index > 0 && "has-border")}
+              key={row.id}
+              onClick={() => {
+                if (row.ingredientNoteId) {
+                  onNavigate({ type: "ingredient", id: row.ingredientNoteId });
+                }
+              }}
+              type="button"
+            >
+              <div className="hr-vault-tap-card-body">
+                <p className="hr-vault-tap-title">{row.item}</p>
+                <p className="hr-vault-tap-summary">Swap: {row.swap}</p>
+              </div>
+              <ChevronRight />
+            </button>
+          ))}
+        </Card>
+      </div>
+    );
+  }
+
+  // protocols
+  return (
+    <div className="hr-vault-detail">
+      <BackButton onBack={onBack} />
+      <h2 className="hr-vault-detail-title">Home Protocols</h2>
+      <Card className="hr-vault-track-card">
+        {FEATURED_TRACKS.map((track, index) => (
+          <button
+            className={cn("hr-vault-track-row", index > 0 && "has-border")}
+            key={track.id}
+            onClick={() => onNavigate({ type: "track", id: track.id })}
+            type="button"
+          >
+            <div className="hr-vault-tap-card-body">
+              <p className="hr-vault-tap-title">{track.title}</p>
+              <p className="hr-vault-tap-summary">{track.summary}</p>
+            </div>
+            <ChevronRight />
+          </button>
+        ))}
+      </Card>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Category entries config
+// ---------------------------------------------------------------------------
+
+type CategoryEntry = {
+  category: LibraryCategoryView;
+  summary: string;
+  title: string;
+  topics: string;
+};
+
+const CATEGORY_ENTRIES: CategoryEntry[] = [
+  {
+    category: "ingredient-notes",
+    summary: "Structured explainers for ingredients, labels, and claims.",
+    title: "Ingredient Notes",
+    topics: "Red flags · label decoding · what to prioritize",
+  },
+  {
+    category: "diy-recipes",
+    summary: "Short practical methods you can apply without full overhauls.",
+    title: "DIY + Low-Cost",
+    topics: "DIY recipes · no-cost upgrades · minimal-step options",
+  },
+  {
+    category: "swaps",
+    summary: "Ingredient and product decisions by room and routine.",
+    title: "Swaps Library",
+    topics: "Product swaps · safer defaults · quick buying rules",
+  },
+  {
+    category: "protocols",
+    summary: "Low-friction protocols to reduce repeated exposure patterns.",
+    title: "Home Protocols",
+    topics: "Air routines · laundry resets · kitchen setup",
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Home view
+// ---------------------------------------------------------------------------
+
+type HomeViewProps = {
+  onNavigate: (view: VaultView) => void;
+  onOpenCategory: (category: LibraryCategoryView) => void;
+};
+
+function HomeView({ onNavigate, onOpenCategory }: HomeViewProps) {
+  const [query, setQuery] = useState("");
+  const normalizedQuery = query.trim().toLowerCase();
+
+  const filteredBrowsePaths =
+    normalizedQuery.length === 0
+      ? BROWSE_PATHS
+      : BROWSE_PATHS.filter(
+          (p) =>
+            p.title.toLowerCase().includes(normalizedQuery) ||
+            p.summary.toLowerCase().includes(normalizedQuery),
+        );
+
+  const filteredCategories =
+    normalizedQuery.length === 0
+      ? CATEGORY_ENTRIES
+      : CATEGORY_ENTRIES.filter(
+          (c) =>
+            c.title.toLowerCase().includes(normalizedQuery) ||
+            c.summary.toLowerCase().includes(normalizedQuery) ||
+            c.topics.toLowerCase().includes(normalizedQuery),
+        );
+
+  const filteredTracks =
+    normalizedQuery.length === 0
+      ? FEATURED_TRACKS
+      : FEATURED_TRACKS.filter(
+          (t) =>
+            t.title.toLowerCase().includes(normalizedQuery) ||
+            t.summary.toLowerCase().includes(normalizedQuery),
+        );
+
+  return (
+    <>
+      <Card className="hr-vault-hero" tone="soft">
+        <p className="hr-overline">The Knowledge</p>
+
+        <input
+          className="hr-input hr-vault-search"
+          onChange={(event) => setQuery(event.currentTarget.value)}
+          placeholder="Search topics, protocols, swaps, and ingredient notes"
+          type="search"
+          value={query}
+        />
+      </Card>
 
       <SectionHeader title="Browse Paths" />
 
       <div className="hr-vault-entry-grid">
-        {filteredEntryPoints.length > 0 ? (
-          filteredEntryPoints.map((entry) => (
+        {filteredBrowsePaths.length > 0 ? (
+          filteredBrowsePaths.map((path) => (
             <button
-              className={cn("hr-vault-tap-card", activeItem === entry.title && "is-active")}
-              key={entry.title}
-              onClick={() => setActiveItem(entry.title)}
+              className="hr-vault-tap-card"
+              key={path.id}
+              onClick={() => onNavigate({ type: "browse-path", id: path.id })}
               type="button"
             >
               <div className="hr-vault-tap-card-body">
-                <h3 className="hr-vault-tap-title">{entry.title}</h3>
-                <p className="hr-vault-tap-summary">{entry.summary}</p>
+                <h3 className="hr-vault-tap-title">{path.title}</h3>
+                <p className="hr-vault-tap-summary">{path.summary}</p>
               </div>
               <ChevronRight />
             </button>
@@ -184,12 +479,12 @@ export function VaultScreen() {
       <SectionHeader title="Library Categories" />
 
       <div className="hr-vault-category-grid">
-        {filteredCategoryEntries.length > 0 ? (
-          filteredCategoryEntries.map((entry) => (
+        {filteredCategories.length > 0 ? (
+          filteredCategories.map((entry) => (
             <button
-              className={cn("hr-vault-tap-card", activeItem === entry.title && "is-active")}
-              key={entry.title}
-              onClick={() => setActiveItem(entry.title)}
+              className="hr-vault-tap-card"
+              key={entry.category}
+              onClick={() => onOpenCategory(entry.category)}
               type="button"
             >
               <div className="hr-vault-tap-card-body">
@@ -214,13 +509,9 @@ export function VaultScreen() {
         {filteredTracks.length > 0 ? (
           filteredTracks.map((track, index) => (
             <button
-              className={cn(
-                "hr-vault-track-row",
-                index > 0 && "has-border",
-                activeItem === track.title && "is-active",
-              )}
-              key={track.title}
-              onClick={() => setActiveItem(track.title)}
+              className={cn("hr-vault-track-row", index > 0 && "has-border")}
+              key={track.id}
+              onClick={() => onNavigate({ type: "track", id: track.id })}
               type="button"
             >
               <div className="hr-vault-tap-card-body">
@@ -234,6 +525,87 @@ export function VaultScreen() {
           <p className="hr-empty-copy">No featured tracks match your search.</p>
         )}
       </Card>
-    </ScreenContainer>
+    </>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Root screen
+// ---------------------------------------------------------------------------
+
+export function VaultScreen() {
+  const [view, setView] = useState<VaultView>({ type: "home" });
+  const [libraryCategory, setLibraryCategory] = useState<LibraryCategoryView | null>(null);
+
+  function handleNavigate(nextView: VaultView) {
+    setLibraryCategory(null);
+    setView(nextView);
+  }
+
+  function handleOpenCategory(category: LibraryCategoryView) {
+    setLibraryCategory(category);
+    setView({ type: "home" });
+  }
+
+  function handleBack() {
+    setLibraryCategory(null);
+    setView({ type: "home" });
+  }
+
+  function renderContent() {
+    // Library category detail overrides home rendering
+    if (view.type === "home" && libraryCategory !== null) {
+      return (
+        <LibraryCategoryDetail
+          category={libraryCategory}
+          onBack={handleBack}
+          onNavigate={handleNavigate}
+        />
+      );
+    }
+
+    if (view.type === "home") {
+      return (
+        <HomeView onNavigate={handleNavigate} onOpenCategory={handleOpenCategory} />
+      );
+    }
+
+    if (view.type === "ingredient") {
+      const note = INGREDIENT_NOTES.find((n) => n.id === view.id);
+      if (!note) return null;
+      return <IngredientDetail note={note} onBack={handleBack} />;
+    }
+
+    if (view.type === "recipe") {
+      const recipe = DIY_RECIPES.find((r) => r.id === view.id);
+      if (!recipe) return null;
+      return <RecipeDetail recipe={recipe} onBack={handleBack} />;
+    }
+
+    if (view.type === "browse-path") {
+      const browsePath = BROWSE_PATHS.find((p) => p.id === view.id);
+      if (!browsePath) return null;
+      return (
+        <BrowsePathDetail
+          browsePath={browsePath}
+          onBack={handleBack}
+          onNavigate={handleNavigate}
+        />
+      );
+    }
+
+    if (view.type === "track") {
+      const track = FEATURED_TRACKS.find((t) => t.id === view.id);
+      if (!track) return null;
+      return (
+        <TrackDetail track={track} onBack={handleBack} onNavigate={handleNavigate} />
+      );
+    }
+
+    return null;
+  }
+
+  return (
+    <ScreenContainer className="hr-vault-screen">{renderContent()}</ScreenContainer>
   );
 }

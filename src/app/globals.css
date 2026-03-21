@@ -296,29 +296,29 @@ select {
 }
 
 .hr-card {
-  background: var(--hr-surface-1);
-  border: 1px solid #aed490;
+  background: #e9e7df;
+  border: 1px solid rgba(26, 61, 26, 0.12);
   border-radius: 16px;
-  box-shadow: var(--hr-shadow-card);
+  box-shadow: 0 2px 12px rgba(10, 36, 10, 0.10);
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 18px;
+  padding: 18px 20px;
 }
 
 .hr-card--surface {
-  background: var(--hr-surface-1);
+  background: #e9e7df;
 }
 
 .hr-card--soft {
-  background: #2d5a2d;
-  border-color: rgba(255, 255, 255, 0.08);
+  background: #dedad0;
+  border-color: rgba(26, 61, 26, 0.1);
 }
 
 .hr-card--accent {
-  background: #2d5a2d;
-  border-color: rgba(255, 255, 255, 0.08);
-  border-left: 4px solid var(--hr-accent);
+  background: #dedad0;
+  border-color: rgba(26, 61, 26, 0.1);
+  border-left: 4px solid #228C22;
 }
 
 .hr-card-row {
@@ -330,6 +330,219 @@ select {
 
 .hr-card-row > div {
   min-width: 0;
+}
+
+/* ── Card light-theme context overrides ─────────────────────────────────── */
+/* All text/button/divider styles inside .hr-card use the light palette      */
+
+.hr-card .hr-feature-title,
+.hr-card .hr-item-title,
+.hr-card .hr-empty-title {
+  color: #1a3d1a;
+}
+
+.hr-card .hr-copy,
+.hr-card .hr-item-description,
+.hr-card .hr-empty-copy,
+.hr-card .hr-section-subtitle,
+.hr-card .hr-action-list-status,
+.hr-card .hr-action-detail-meta {
+  color: #3d6b3d;
+}
+
+.hr-card .hr-overline {
+  color: #228C22;
+}
+
+.hr-card .hr-action-list-meta {
+  color: #228C22;
+}
+
+.hr-card .hr-setting-label {
+  color: #1a3d1a;
+}
+
+.hr-card .hr-setting-value {
+  color: #3d6b3d;
+}
+
+.hr-card .hr-field-label {
+  color: #3d6b3d;
+}
+
+.hr-card .hr-field-value {
+  color: #1a3d1a;
+}
+
+.hr-card .hr-snooze-summary-label {
+  color: #1a3d1a;
+}
+
+.hr-card .hr-snooze-summary-count {
+  background: rgba(26, 61, 26, 0.08);
+  color: #3d6b3d;
+}
+
+.hr-card .hr-snooze-chevron {
+  color: #3d6b3d;
+}
+
+.hr-card .hr-roadmap-phase-meta {
+  color: #3d6b3d;
+}
+
+.hr-card .hr-roadmap-phase-count {
+  background: rgba(26, 61, 26, 0.1);
+  color: #1a3d1a;
+}
+
+/* Ghost buttons inside cards */
+.hr-card .hr-button--secondary,
+.hr-card .hr-button--quiet {
+  background: transparent;
+  border: 1.5px solid #228C22;
+  color: #228C22;
+}
+
+.hr-card .hr-button--secondary:hover,
+.hr-card .hr-button--quiet:hover {
+  background: rgba(34, 140, 34, 0.08);
+}
+
+/* Details button active state on light card */
+.hr-card .hr-action-button.is-details.is-open {
+  background: rgba(34, 140, 34, 0.1);
+  border-color: #228C22;
+  color: #228C22;
+}
+
+/* Dividers inside cards */
+.hr-card .hr-action-list-row {
+  border-top-color: rgba(26, 61, 26, 0.1);
+}
+
+.hr-card .hr-action-additional-stack {
+  border-top-color: rgba(26, 61, 26, 0.1);
+}
+
+.hr-card .hr-snooze-list {
+  border-top-color: rgba(26, 61, 26, 0.1);
+}
+
+.hr-card .hr-quiz-row {
+  border-top-color: rgba(26, 61, 26, 0.08);
+}
+
+.hr-card .hr-quiz-group-head {
+  border-bottom: 1px solid rgba(26, 61, 26, 0.08);
+  padding-bottom: 10px;
+}
+
+.hr-card .hr-roadmap-journey-actions {
+  border-top: 0;
+}
+
+.hr-card .hr-roadmap-phase-header {
+  border-bottom-color: rgba(26, 61, 26, 0.08);
+}
+
+.hr-card .hr-action-detail-permanent {
+  border-top-color: rgba(26, 61, 26, 0.12);
+  color: #3d6b3d;
+}
+
+.hr-card .hr-action-detail-permanent:hover {
+  color: #228C22;
+}
+
+/* Status chips on light cards */
+.hr-card .hr-action-status-chip.is-pending {
+  background: rgba(26, 61, 26, 0.06);
+  border-color: rgba(26, 61, 26, 0.15);
+  color: #3d6b3d;
+}
+
+.hr-card .hr-action-status-chip.is-done_today {
+  background: rgba(34, 140, 34, 0.12);
+  border-color: rgba(34, 140, 34, 0.3);
+  color: #1a6b1a;
+}
+
+.hr-card .hr-action-status-chip.is-done_permanent {
+  background: rgba(34, 140, 34, 0.15);
+  border-color: rgba(34, 140, 34, 0.35);
+  color: #1a6b1a;
+}
+
+.hr-card .hr-action-status-chip.is-snoozed {
+  background: rgba(26, 61, 26, 0.06);
+  border-color: rgba(26, 61, 26, 0.12);
+  color: #3d6b3d;
+}
+
+.hr-card .hr-action-status-chip.is-skipped {
+  background: rgba(26, 61, 26, 0.04);
+  border-color: rgba(26, 61, 26, 0.1);
+  color: #5a8a5a;
+}
+
+/* Profile stats on light cards */
+.hr-card .hr-profile-stat-value,
+.hr-card .hr-profile-plan-value {
+  color: #1a3d1a;
+}
+
+.hr-card .hr-profile-stat-label,
+.hr-card .hr-profile-plan-label {
+  color: #3d6b3d;
+}
+
+/* Toggle chips on light cards */
+.hr-card .hr-toggle-chip {
+  background: rgba(26, 61, 26, 0.06);
+  border-color: rgba(26, 61, 26, 0.15);
+  color: #1a3d1a;
+}
+
+.hr-card .hr-toggle-chip.is-selected {
+  background: rgba(34, 140, 34, 0.15);
+  border-color: #228C22;
+  color: #1a5a1a;
+}
+
+/* Range input on light cards */
+.hr-card .hr-range {
+  accent-color: #228C22;
+}
+
+/* Switch on light cards */
+.hr-card .hr-switch {
+  background: rgba(26, 61, 26, 0.15);
+}
+
+.hr-card .hr-switch.is-on {
+  background: #228C22;
+}
+
+/* Input inside cards */
+.hr-card .hr-input {
+  background: rgba(26, 61, 26, 0.06);
+  border-color: rgba(26, 61, 26, 0.2);
+  color: #1a3d1a;
+}
+
+/* Vault-specific inside cards */
+.hr-card .hr-vault-tap-title {
+  color: #1a3d1a;
+}
+
+.hr-card .hr-vault-tap-summary,
+.hr-card .hr-vault-tap-topics {
+  color: #3d6b3d;
+}
+
+.hr-card .hr-vault-track-row {
+  border-top-color: rgba(26, 61, 26, 0.1);
 }
 
 .hr-overline {
@@ -389,7 +602,7 @@ select {
 
 .hr-section-header {
   align-items: flex-end;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   display: flex;
   gap: var(--hr-space-3);
   justify-content: space-between;
@@ -534,12 +747,8 @@ select {
   display: flex;
   gap: 8px;
   flex-wrap: nowrap;
-  justify-content: flex-start;
-}
-
-.hr-action-controls.is-primary {
   justify-content: flex-end;
-  margin-top: var(--hr-space-2);
+  margin-top: 14px;
 }
 
 .hr-action-button {
@@ -691,9 +900,7 @@ select {
 }
 
 .hr-home-hero {
-  background: #2d5a2d;
-  border-left: 4px solid var(--hr-accent);
-  border-color: rgba(255, 255, 255, 0.08);
+  border-left: 4px solid #228C22;
   gap: var(--hr-space-4);
   overflow: hidden;
   position: relative;
@@ -735,8 +942,6 @@ select {
 }
 
 .hr-home-stats {
-  background: #2d5a2d;
-  border-color: rgba(255, 255, 255, 0.08);
   justify-content: center;
   position: relative;
 }
@@ -802,9 +1007,7 @@ select {
 }
 
 .hr-calibration-banner {
-  background: #234823;
-  border-left: 4px solid var(--hr-accent);
-  border-color: rgba(255, 255, 255, 0.08);
+  border-left: 4px solid #228C22;
   gap: var(--hr-space-2);
 }
 
@@ -826,9 +1029,7 @@ select {
 }
 
 .hr-shared-top-card {
-  background: #2d5a2d;
-  border-color: rgba(255, 255, 255, 0.08);
-  border-left: 4px solid var(--hr-accent);
+  border-left: 4px solid #228C22;
   overflow: hidden;
   position: relative;
 }
@@ -890,9 +1091,8 @@ select {
 }
 
 .hr-roadmap-journey-card {
-  border-color: rgba(255, 255, 255, 0.08);
-  background: #2d5a2d;
   overflow: hidden;
+  padding: 20px 16px;
 }
 
 .hr-roadmap-journey-list {
@@ -931,31 +1131,31 @@ select {
 
 /* Filled green — current */
 .hr-roadmap-node-dot.is-current {
-  background: #b5e19b;
-  box-shadow: 0 0 0 4px rgba(181, 225, 155, 0.25);
+  background: #228C22;
+  box-shadow: 0 0 0 4px rgba(34, 140, 34, 0.2);
 }
 
 /* Hollow with green border — next */
 .hr-roadmap-node-dot.is-next {
-  background: #2d5a2d;
-  border: 2.5px solid #b5e19b;
+  background: #e9e7df;
+  border: 2.5px solid #228C22;
 }
 
 /* Solid muted green — completed */
 .hr-roadmap-node-dot.is-complete {
-  background: #6a9a6a;
+  background: #5a8a5a;
 }
 
 /* Hollow gray — later/empty */
 .hr-roadmap-node-dot.is-later,
 .hr-roadmap-node-dot.is-empty {
-  background: #2d5a2d;
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: #e9e7df;
+  border: 2px solid rgba(26, 61, 26, 0.25);
 }
 
 /* Vertical spine below each dot */
 .hr-roadmap-node-spine {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(26, 61, 26, 0.15);
   flex: 1;
   min-height: 16px;
   width: 2px;
@@ -978,28 +1178,28 @@ select {
 }
 
 .hr-roadmap-phase-state.is-current {
-  background: rgba(181, 225, 155, 0.2);
-  border: 1px solid rgba(181, 225, 155, 0.4);
-  color: #b5e19b;
+  background: rgba(34, 140, 34, 0.15);
+  border: 1px solid rgba(34, 140, 34, 0.35);
+  color: #1a5a1a;
 }
 
 .hr-roadmap-phase-state.is-next {
-  background: rgba(181, 225, 155, 0.1);
-  border: 1px solid rgba(181, 225, 155, 0.25);
-  color: #c8e6c8;
+  background: rgba(34, 140, 34, 0.08);
+  border: 1px solid rgba(34, 140, 34, 0.2);
+  color: #2d7a2d;
 }
 
 .hr-roadmap-phase-state.is-complete {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #8fba8f;
+  background: rgba(26, 61, 26, 0.08);
+  border: 1px solid rgba(26, 61, 26, 0.15);
+  color: #3d6b3d;
 }
 
 .hr-roadmap-phase-state.is-later,
 .hr-roadmap-phase-state.is-empty {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #6a9a6a;
+  background: rgba(26, 61, 26, 0.04);
+  border: 1px solid rgba(26, 61, 26, 0.1);
+  color: #5a8a5a;
 }
 
 .hr-roadmap-phase-count {
@@ -1049,8 +1249,8 @@ select {
 }
 
 .hr-roadmap-action-row {
-  background: #234823;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #dedad0;
+  border: 1px solid rgba(26, 61, 26, 0.1);
   border-radius: var(--hr-radius-sm);
   display: flex;
   flex-direction: column;
@@ -1059,11 +1259,11 @@ select {
 }
 
 .hr-roadmap-action-row.is-done-today {
-  background: rgba(181, 225, 155, 0.1);
+  background: rgba(34, 140, 34, 0.08);
 }
 
 .hr-roadmap-action-row.is-snoozed {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(26, 61, 26, 0.04);
 }
 
 .hr-roadmap-action-row.is-skipped {
@@ -1163,12 +1363,7 @@ select {
 }
 
 .hr-vault-hero {
-  background: #2d5a2d;
-  border-color: rgba(255, 255, 255, 0.08);
-  border-left: 4px solid var(--hr-accent);
-  gap: var(--hr-space-4);
-  overflow: hidden;
-  position: relative;
+  gap: var(--hr-space-3);
 }
 
 /* vault hero bar replaced with border-left */
@@ -1201,28 +1396,28 @@ select {
 /* Tappable vault cards */
 .hr-vault-tap-card {
   align-items: center;
-  background: #234823;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--hr-radius);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  background: #e9e7df;
+  border: 1px solid rgba(26, 61, 26, 0.12);
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(10, 36, 10, 0.08);
   cursor: pointer;
   display: flex;
   gap: var(--hr-space-3);
   justify-content: space-between;
-  padding: var(--hr-space-4);
+  padding: 16px 18px;
   text-align: left;
   transition: background-color 120ms ease, box-shadow 120ms ease;
   width: 100%;
 }
 
 .hr-vault-tap-card:hover {
-  background: #2d5a2d;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  background: #dedad0;
+  box-shadow: 0 4px 14px rgba(10, 36, 10, 0.12);
 }
 
 .hr-vault-tap-card.is-active {
-  background: rgba(181, 225, 155, 0.12);
-  border-color: rgba(181, 225, 155, 0.3);
+  background: rgba(34, 140, 34, 0.08);
+  border-color: rgba(34, 140, 34, 0.25);
 }
 
 .hr-vault-tap-card-body {
@@ -1230,7 +1425,7 @@ select {
 }
 
 .hr-vault-tap-title {
-  color: var(--hr-text-primary);
+  color: #1a3d1a;
   font-size: 0.92rem;
   font-weight: 600;
   line-height: 1.35;
@@ -1238,14 +1433,14 @@ select {
 }
 
 .hr-vault-tap-summary {
-  color: var(--hr-text-muted);
+  color: #3d6b3d;
   font-size: 0.78rem;
   line-height: 1.5;
   margin: 3px 0 0;
 }
 
 .hr-vault-tap-topics {
-  color: var(--hr-accent-deep);
+  color: #228C22;
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.01em;
@@ -1306,25 +1501,85 @@ select {
 }
 
 .hr-vault-track-row:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(26, 61, 26, 0.04);
 }
 
 .hr-vault-track-row.has-border {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(26, 61, 26, 0.1);
 }
 
 .hr-vault-track-row.is-active {
-  background: rgba(181, 225, 155, 0.1);
+  background: rgba(34, 140, 34, 0.08);
 }
+
+/* ── Vault detail views ─────────────────────────────────────────────────── */
+
+.hr-vault-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hr-vault-back-button {
+  align-self: flex-start;
+  margin-bottom: 4px;
+}
+
+.hr-vault-detail-title {
+  color: #1a3d1a;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.hr-vault-detail-label {
+  color: #228C22;
+  font-size: 0.69rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  margin: 8px 0 0;
+  text-transform: uppercase;
+}
+
+.hr-vault-detail-body {
+  color: #1a3d1a;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.hr-vault-detail-list-item {
+  color: #1a3d1a;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0;
+  padding: 2px 0;
+}
+
+.hr-vault-swap-block {
+  background: rgba(34, 140, 34, 0.08);
+  border: 1px solid rgba(34, 140, 34, 0.2);
+  border-radius: var(--hr-radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+}
+
+.hr-vault-search {
+  width: 100%;
+}
+
+/* ── Profile ────────────────────────────────────────────────────────────── */
 
 .hr-profile-screen {
   gap: var(--hr-space-6);
 }
 
 .hr-profile-hero {
-  background: #1f471f;
-  border-color: rgba(255, 255, 255, 0.08);
-  border-left: 4px solid var(--hr-accent);
+  border-left: 4px solid #228C22;
   gap: var(--hr-space-4);
   overflow: hidden;
   position: relative;
@@ -1367,7 +1622,7 @@ select {
 }
 
 .hr-profile-plan-stat-card {
-  background: #234823;
+  background: #dedad0;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -1781,10 +2036,11 @@ select {
 }
 
 .hr-tabs {
-  backdrop-filter: blur(20px) saturate(180%);
-  background: rgba(26, 61, 26, 0.88);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.35);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  background: rgba(20, 50, 20, 0.75);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
   left: 0;
   order: 2;
   position: fixed;
@@ -1813,6 +2069,19 @@ select {
   margin: 0 auto;
   max-width: 780px;
   padding: 0;
+  position: relative;
+}
+
+.hr-tab-pill {
+  background: rgba(181, 225, 155, 0.15);
+  border-radius: 18px;
+  height: 40px;
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: left 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 0;
 }
 
 .hr-tab-item {
@@ -1827,35 +2096,24 @@ select {
   color: #6a9a6a;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
   justify-content: center;
   min-height: 54px;
   padding: 6px 4px;
   position: relative;
-  transition: color 150ms ease;
+  transition: color 200ms ease;
   width: 100%;
+  z-index: 1;
 }
 
 .hr-tab-button.is-active {
   color: #b5e19b;
 }
 
-.hr-tab-button.is-active::after {
-  background: #b5e19b;
-  border-radius: 999px;
-  bottom: 6px;
-  content: "";
-  height: 3px;
-  left: 50%;
-  position: absolute;
-  transform: translateX(-50%);
-  width: 18px;
-}
-
 .hr-tab-icon {
   display: block;
-  height: 22px;
-  width: 22px;
+  height: 24px;
+  width: 24px;
 }
 
 .hr-tab-label {
@@ -2193,12 +2451,13 @@ select {
   }
 
   .hr-tabs {
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
     align-self: stretch;
-    backdrop-filter: blur(20px) saturate(180%);
-    background: rgba(26, 61, 26, 0.95);
-    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(24px) saturate(180%);
+    background: rgba(20, 50, 20, 0.75);
+    border-right: 1px solid rgba(255, 255, 255, 0.12);
     border-top: 0;
-    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.25);
     min-width: 172px;
     order: 1;
     padding: 24px 10px;
@@ -2220,27 +2479,23 @@ select {
   .hr-tab-button {
     background: transparent;
     border: none;
+    border-left: 3px solid transparent;
+    border-radius: 0 8px 8px 0;
     color: #6a9a6a;
     flex-direction: row;
     gap: 10px;
     justify-content: flex-start;
+    margin-left: -10px;
     min-height: 42px;
     padding: 0 12px;
+    padding-left: 10px;
+    transition: color 200ms ease, border-color 200ms ease, background 200ms ease;
   }
 
   .hr-tab-button.is-active {
-    background: rgba(181, 225, 155, 0.12);
-    border-radius: 10px;
-  }
-
-  .hr-tab-button.is-active::after {
-    bottom: auto;
-    height: 100%;
-    left: 0;
-    top: 0;
-    transform: none;
-    width: 3px;
-    border-radius: 0 2px 2px 0;
+    background: rgba(181, 225, 155, 0.08);
+    border-left-color: #b5e19b;
+    border-radius: 0 8px 8px 0;
   }
 
   .hr-tab-icon {
