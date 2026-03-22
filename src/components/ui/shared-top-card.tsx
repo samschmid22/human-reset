@@ -34,7 +34,6 @@ export function SharedTopCard({
           <h2 className="hr-feature-title">{title}</h2>
           <p className="hr-copy">{summary}</p>
         </div>
-        {action ? <div className="hr-shared-top-action">{action}</div> : null}
       </div>
 
       <div className="hr-shared-top-metric-grid">
@@ -46,6 +45,8 @@ export function SharedTopCard({
           </div>
         ))}
       </div>
+
+      {action ? <div className="hr-shared-top-action">{action}</div> : null}
     </Card>
   );
 }

@@ -331,9 +331,7 @@ export function PhaseOneAppShell() {
       <main aria-label="The Human Reset" className="hr-shell" role="application">
         <header className="hr-shell-header">
           <div className="hr-shell-header-left">
-            <div aria-hidden="true" className="hr-shell-mark">
-              <span className="hr-shell-mark-dot" />
-            </div>
+            <img alt="Human Reset" className="hr-shell-logo" src="/logo.png" />
           </div>
 
           <div className="hr-shell-title-wrap">
