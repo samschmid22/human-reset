@@ -98,8 +98,8 @@ select {
   display: grid;
   gap: var(--hr-space-4);
   grid-template-columns: 1fr auto 1fr;
-  min-height: 88px;
-  padding: 12px var(--hr-space-5);
+  min-height: 112px;
+  padding: 8px var(--hr-space-5);
 }
 
 .hr-shell-header-left {
@@ -116,9 +116,9 @@ select {
 
 .hr-shell-logo {
   display: block;
-  height: 48px;
+  height: 96px;
   object-fit: contain;
-  width: 48px;
+  width: 96px;
 }
 
 .hr-shell-title-wrap {
@@ -188,10 +188,10 @@ select {
   color: #ffffff;
   cursor: pointer;
   display: inline-flex;
-  height: 48px;
+  height: 56px;
   justify-content: center;
   transition: background-color 150ms ease;
-  width: 48px;
+  width: 56px;
 }
 
 .hr-icon-button:disabled {
@@ -881,7 +881,16 @@ select {
 }
 
 .hr-roadmap-action-row .hr-action-controls {
-  justify-content: flex-end;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: 1fr 1fr;
+  justify-content: unset;
+  margin-top: 10px;
+}
+
+.hr-roadmap-action-row .hr-action-controls .hr-button {
+  justify-content: center;
+  width: 100%;
 }
 
 .hr-search-input {
@@ -1106,9 +1115,74 @@ select {
 
 .hr-roadmap-journey-item {
   display: grid;
-  gap: 14px;
-  grid-template-columns: 28px minmax(0, 1fr);
-  padding: 4px 0;
+  gap: 12px;
+  grid-template-columns: 22px minmax(0, 1fr);
+  padding: 0;
+}
+
+/* Phase card (replaces bare content) */
+.hr-roadmap-phase-card {
+  background: #e9e7df;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.13);
+  margin-bottom: 10px;
+  overflow: hidden;
+  padding: 14px 16px 14px;
+}
+
+.hr-roadmap-phase-card.is-current {
+  background: #e9e7df;
+  border-left: 4px solid #228C22;
+  box-shadow: 0 4px 20px rgba(34, 140, 34, 0.18);
+}
+
+.hr-roadmap-phase-card.is-next {
+  background: #e9e7df;
+  border-left: 4px solid rgba(181, 225, 155, 0.6);
+}
+
+.hr-roadmap-phase-card.is-complete {
+  background: #dedad0;
+  opacity: 0.75;
+}
+
+.hr-roadmap-phase-card.is-later,
+.hr-roadmap-phase-card.is-empty {
+  background: rgba(233, 231, 223, 0.35);
+  box-shadow: none;
+  opacity: 0.6;
+}
+
+.hr-roadmap-phase-title-row {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+/* Mini progress bar inside phase card */
+.hr-roadmap-phase-progress-track {
+  background: rgba(26, 61, 26, 0.1);
+  border-radius: 999px;
+  height: 4px;
+  margin-top: 10px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.hr-roadmap-phase-progress-fill {
+  background: rgba(26, 61, 26, 0.25);
+  border-radius: 999px;
+  height: 100%;
+  transition: width 400ms ease;
+}
+
+.hr-roadmap-phase-progress-fill.is-current {
+  background: linear-gradient(90deg, #228C22, #b5e19b);
+}
+
+.hr-roadmap-phase-progress-fill.is-complete {
+  background: #5a8a5a;
 }
 
 /* Node column: dot + spine */
@@ -1116,29 +1190,52 @@ select {
   align-items: center;
   display: flex;
   flex-direction: column;
-  padding-top: 14px;
+  padding-top: 18px;
   position: relative;
 }
 
 .hr-roadmap-node-dot {
+  align-items: center;
   border-radius: 999px;
+  display: flex;
   flex-shrink: 0;
-  height: 14px;
+  height: 16px;
+  justify-content: center;
   position: relative;
-  width: 14px;
+  width: 16px;
   z-index: 1;
 }
 
 /* Filled green — current */
 .hr-roadmap-node-dot.is-current {
   background: #228C22;
-  box-shadow: 0 0 0 4px rgba(34, 140, 34, 0.2);
+  box-shadow: 0 0 0 3px rgba(34, 140, 34, 0.25);
+}
+
+/* Pulse ring on current dot */
+.hr-roadmap-node-pulse {
+  animation: hr-pulse 2s ease-out infinite;
+  border: 2px solid #228C22;
+  border-radius: 999px;
+  height: 28px;
+  left: 50%;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 28px;
+}
+
+@keyframes hr-pulse {
+  0% { opacity: 0.7; transform: translate(-50%, -50%) scale(0.6); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.6); }
 }
 
 /* Hollow with green border — next */
 .hr-roadmap-node-dot.is-next {
   background: #1a3d1a;
-  border: 2.5px solid #228C22;
+  border: 2.5px solid #b5e19b;
 }
 
 /* Solid muted green — completed */
@@ -1150,21 +1247,34 @@ select {
 .hr-roadmap-node-dot.is-later,
 .hr-roadmap-node-dot.is-empty {
   background: #1a3d1a;
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.18);
 }
 
 /* Vertical spine below each dot */
 .hr-roadmap-node-spine {
-  background: rgba(255, 255, 255, 0.12);
   flex: 1;
-  min-height: 16px;
+  min-height: 10px;
   width: 2px;
+}
+
+.hr-roadmap-node-spine.is-current {
+  background: linear-gradient(to bottom, #228C22, rgba(181, 225, 155, 0.3));
+}
+
+.hr-roadmap-node-spine.is-complete {
+  background: #5a8a5a;
+}
+
+.hr-roadmap-node-spine.is-next,
+.hr-roadmap-node-spine.is-later,
+.hr-roadmap-node-spine.is-empty {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .hr-roadmap-journey-content {
   min-width: 0;
-  padding-bottom: 16px;
-  padding-top: 10px;
+  padding-bottom: 0;
+  padding-top: 0;
 }
 
 .hr-roadmap-phase-state {
@@ -1235,9 +1345,9 @@ select {
 }
 
 .hr-roadmap-journey-actions {
-  gap: 10px;
-  margin-top: 12px;
-  padding-left: 16px;
+  gap: 8px;
+  margin-top: 10px;
+  padding-left: 0;
 }
 
 .hr-roadmap-action-row {
@@ -1327,6 +1437,57 @@ select {
   margin-bottom: 2px;
 }
 
+.hr-quiz-overview-card-new {
+  border-left: 4px solid #228C22;
+  gap: 14px;
+}
+
+.hr-donut-wrap {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  padding: 4px 0 2px;
+}
+
+.hr-donut-svg {
+  height: 148px;
+  width: 148px;
+}
+
+.hr-donut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hr-donut-legend-item {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.hr-donut-legend-dot {
+  border-radius: 999px;
+  flex-shrink: 0;
+  height: 10px;
+  width: 10px;
+}
+
+.hr-donut-legend-label {
+  color: #3d6b3d;
+  flex: 1;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.hr-donut-legend-value {
+  color: #1a3d1a;
+  font-size: 0.85rem;
+  font-weight: 700;
+  min-width: 20px;
+  text-align: right;
+}
+
 .hr-quiz-cards-list {
   display: flex;
   flex-direction: column;
@@ -1363,6 +1524,12 @@ select {
 
 .hr-quiz-card-controls {
   flex-shrink: 0;
+}
+
+.hr-quiz-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .hr-quiz-group-label {
@@ -2495,19 +2662,19 @@ select {
   .hr-shell-header {
     gap: var(--hr-space-2);
     grid-template-columns: 1fr auto 1fr;
-    min-height: 72px;
-    padding: 10px 18px;
+    min-height: 104px;
+    padding: 8px 18px;
   }
 
   .hr-shell-logo {
-    height: 44px;
-    width: 44px;
+    height: 88px;
+    width: 88px;
   }
 
   .hr-icon-button {
     border-radius: 12px;
-    height: 44px;
-    width: 44px;
+    height: 52px;
+    width: 52px;
   }
 
   /* Body */
@@ -2567,7 +2734,7 @@ select {
 
   /* Roadmap journey indentation */
   .hr-roadmap-journey-actions {
-    padding-left: 10px;
+    padding-left: 0;
   }
 
   /* Section titles */

@@ -4,7 +4,7 @@ import { ActionDetailView } from "@/components/actions/action-detail-view";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ContentStack, ScreenContainer } from "@/components/ui/layout";
-import { SectionHeader } from "@/components/ui/section-header";
+import { SharedTopCard } from "@/components/ui/shared-top-card";
 import { getActionStatusView } from "@/features/actions/storage";
 import { ActionState, ActionStatus } from "@/features/actions/types";
 import { getRoadmapPhaseCount } from "@/features/findings/engine";
@@ -216,8 +216,28 @@ export function RoadmapScreen({
     );
   }
 
+  const totalActions = phaseProgress.reduce((sum, e) => sum + e.count, 0);
+  const totalDone = phaseProgress.reduce((sum, e) => sum + e.completed, 0);
+  const currentPhaseLabel = phaseProgress[currentPhaseIndex]
+    ? ROADMAP_PHASE_LABELS[phaseProgress[currentPhaseIndex].phase]
+    : "—";
+  const overallPercent = totalActions > 0 ? Math.round((totalDone / totalActions) * 100) : 0;
+
   return (
     <ScreenContainer className="hr-roadmap-screen">
+      <SharedTopCard
+        className="hr-roadmap-summary-card"
+        metrics={[
+          { label: "Current phase", value: currentPhaseLabel },
+          { label: "Actions done", value: totalDone },
+          { label: "Total actions", value: totalActions },
+          { label: "Overall progress", value: `${overallPercent}%` },
+        ]}
+        overline="Your Journey"
+        summary="Work through each phase at your own pace. Every action moves you forward."
+        title="Reset Roadmap"
+      />
+
       {report.priorities.length === 0 ? (
         <Card className="hr-empty-state" tone="soft">
           <p className="hr-empty-title">Roadmap is waiting for quiz findings</p>
@@ -227,74 +247,89 @@ export function RoadmapScreen({
         </Card>
       ) : null}
 
-      <SectionHeader title="Roadmap Timeline" />
-
       <ol className="hr-roadmap-journey-list">
-          {phaseProgress.map((entry, index) => {
-            const state = getPhaseVisualState(index, entry.count);
-            const items = report.roadmapByPhase[entry.phase];
-            const expanded = isPhaseExpanded(entry.phase, state);
-            const canToggle = state !== "current" && entry.count > 0;
+        {phaseProgress.map((entry, index) => {
+          const state = getPhaseVisualState(index, entry.count);
+          const items = report.roadmapByPhase[entry.phase];
+          const expanded = isPhaseExpanded(entry.phase, state);
+          const canToggle = state !== "current" && entry.count > 0;
+          const phasePercent = entry.count > 0 ? Math.round((entry.completed / entry.count) * 100) : 0;
 
-            return (
-              <li className={cn("hr-roadmap-journey-item", `is-${state}`)} key={entry.phase}>
-                <div className="hr-roadmap-journey-node">
-                  <div className={cn("hr-roadmap-node-dot", `is-${state}`)} />
-                  {index < phaseProgress.length - 1 ? (
-                    <div className="hr-roadmap-node-spine" />
-                  ) : null}
+          return (
+            <li className={cn("hr-roadmap-journey-item", `is-${state}`)} key={entry.phase}>
+              {/* Node column */}
+              <div className="hr-roadmap-journey-node">
+                <div className={cn("hr-roadmap-node-dot", `is-${state}`)}>
+                  {state === "current" ? <span className="hr-roadmap-node-pulse" /> : null}
                 </div>
+                {index < phaseProgress.length - 1 ? (
+                  <div className={cn("hr-roadmap-node-spine", `is-${state}`)} />
+                ) : null}
+              </div>
 
-                <div className="hr-roadmap-journey-content">
-                  <button
-                    className={cn("hr-roadmap-phase-header", canToggle && "is-clickable")}
-                    disabled={!canToggle}
-                    onClick={() => togglePhaseExpand(entry.phase, state)}
-                    type="button"
-                  >
-                    <div className="hr-roadmap-phase-header-left">
+              {/* Phase card */}
+              <div className={cn("hr-roadmap-phase-card", `is-${state}`)}>
+                <button
+                  className={cn("hr-roadmap-phase-header", canToggle && "is-clickable")}
+                  disabled={!canToggle}
+                  onClick={() => togglePhaseExpand(entry.phase, state)}
+                  type="button"
+                >
+                  <div className="hr-roadmap-phase-header-left">
+                    <div className="hr-roadmap-phase-title-row">
                       <h3 className="hr-item-title">{ROADMAP_PHASE_LABELS[entry.phase]}</h3>
-                      {entry.count > 0 ? (
-                        <span className="hr-roadmap-phase-meta">
-                          {entry.pending} active · {entry.completed} done
-                        </span>
-                      ) : null}
-                    </div>
-                    <div className="hr-roadmap-phase-header-right">
                       {state !== "empty" ? (
                         <span className={cn("hr-roadmap-phase-state", `is-${state}`)}>
-                          {state === "current" ? "Current" : state === "next" ? "Next" : state === "complete" ? "Done" : "Later"}
+                          {state === "current" ? "Current" : state === "next" ? "Next up" : state === "complete" ? "Done" : "Later"}
                         </span>
                       ) : null}
-                      {entry.count > 0 ? (
-                        <svg
-                          aria-hidden="true"
-                          className={cn("hr-snooze-chevron", expanded && "is-open")}
-                          fill="none"
-                          height="14"
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          viewBox="0 0 24 24"
-                          width="14"
-                        >
-                          <path d="m6 9 6 6 6-6" />
-                        </svg>
-                      ) : null}
                     </div>
-                  </button>
+                    {entry.count > 0 ? (
+                      <p className="hr-roadmap-phase-meta">
+                        {entry.completed} of {entry.count} actions complete
+                      </p>
+                    ) : null}
+                  </div>
+                  <div className="hr-roadmap-phase-header-right">
+                    {entry.count > 0 ? (
+                      <svg
+                        aria-hidden="true"
+                        className={cn("hr-snooze-chevron", expanded && "is-open")}
+                        fill="none"
+                        height="16"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2.5"
+                        viewBox="0 0 24 24"
+                        width="16"
+                      >
+                        <path d="m6 9 6 6 6-6" />
+                      </svg>
+                    ) : null}
+                  </div>
+                </button>
 
-                  {expanded && items.length > 0 ? (
-                    <ContentStack className="hr-roadmap-journey-actions">
-                      {items.map((item) => renderActionRow(item))}
-                    </ContentStack>
-                  ) : null}
-                </div>
-              </li>
-            );
-          })}
-        </ol>
+                {/* Mini progress bar */}
+                {entry.count > 0 && state !== "later" && state !== "empty" ? (
+                  <div className="hr-roadmap-phase-progress-track" role="presentation">
+                    <div
+                      className={cn("hr-roadmap-phase-progress-fill", `is-${state}`)}
+                      style={{ width: `${phasePercent}%` }}
+                    />
+                  </div>
+                ) : null}
+
+                {expanded && items.length > 0 ? (
+                  <ContentStack className="hr-roadmap-journey-actions">
+                    {items.map((item) => renderActionRow(item))}
+                  </ContentStack>
+                ) : null}
+              </div>
+            </li>
+          );
+        })}
+      </ol>
     </ScreenContainer>
   );
 }

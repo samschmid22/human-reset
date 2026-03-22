@@ -2,8 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ScreenContainer } from "@/components/ui/layout";
 import { SectionHeader } from "@/components/ui/section-header";
-import { SharedTopCard } from "@/components/ui/shared-top-card";
 import { getPlanMaturity } from "@/features/findings/plan-maturity";
+import { QuizOverviewCard } from "@/features/quizzes/components/quiz-overview-card";
 import { getAnsweredCount, getQuizStatus } from "@/features/quizzes/storage";
 import { QuizDefinition, QuizState, QuizStatus } from "@/features/quizzes/types";
 
@@ -79,53 +79,49 @@ export function QuizHub({ onOpenQuiz, quizzes, quizState }: QuizHubProps) {
 
   return (
     <ScreenContainer className="hr-quizzes-screen">
-      <SharedTopCard
+      <QuizOverviewCard
         action={
           nextQuiz ? (
-            <Button onClick={() => onOpenQuiz(nextQuiz.quiz.id)} size="sm" variant="primary">
+            <Button onClick={() => onOpenQuiz(nextQuiz.quiz.id)} size="md" variant="primary">
               {nextQuiz.status === "in_progress" ? "Continue" : "Start next"}
             </Button>
           ) : null
         }
-        className="hr-quiz-overview-card"
-        metrics={[
-          { label: "Completed", value: completedCount },
-          { label: "In progress", value: inProgressCount },
-          { label: "Not started", value: notStartedCount },
-          { label: "Plan calibration", value: `${overallPercent}%` },
-        ]}
-        overline="Quiz Intake"
-        summary={maturity.summary}
-        title="Calibrate your reset plan"
+        completedCount={completedCount}
+        inProgressCount={inProgressCount}
+        maturitySummary={maturity.summary}
+        notStartedCount={notStartedCount}
+        overallPercent={overallPercent}
+        totalCount={quizzes.length}
       />
 
       <SectionHeader title="Category Inputs" />
 
       {inProgressQuizzes.length > 0 ? (
-        <>
+        <div className="hr-quiz-group">
           <p className="hr-quiz-group-label">
             Continue now <span className="hr-quiz-group-count">{inProgressQuizzes.length}</span>
           </p>
           <div className="hr-quiz-cards-list">{renderQuizCards(inProgressQuizzes)}</div>
-        </>
+        </div>
       ) : null}
 
       {notStartedQuizzes.length > 0 ? (
-        <>
+        <div className="hr-quiz-group">
           <p className="hr-quiz-group-label">
             Start next <span className="hr-quiz-group-count">{notStartedQuizzes.length}</span>
           </p>
           <div className="hr-quiz-cards-list">{renderQuizCards(notStartedQuizzes)}</div>
-        </>
+        </div>
       ) : null}
 
       {completedQuizzes.length > 0 ? (
-        <>
+        <div className="hr-quiz-group">
           <p className="hr-quiz-group-label">
             Completed <span className="hr-quiz-group-count">{completedQuizzes.length}</span>
           </p>
           <div className="hr-quiz-cards-list">{renderQuizCards(completedQuizzes)}</div>
-        </>
+        </div>
       ) : null}
     </ScreenContainer>
   );
