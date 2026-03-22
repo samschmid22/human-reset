@@ -115,11 +115,10 @@ select {
 }
 
 .hr-shell-logo {
-  border-radius: 14px;
   display: block;
-  height: 64px;
-  object-fit: cover;
-  width: 64px;
+  height: 56px;
+  object-fit: contain;
+  width: 56px;
 }
 
 .hr-shell-title-wrap {
@@ -2500,9 +2499,8 @@ select {
   }
 
   .hr-shell-logo {
-    border-radius: 10px;
-    height: 44px;
-    width: 44px;
+    height: 42px;
+    width: 42px;
   }
 
   .hr-icon-button {
