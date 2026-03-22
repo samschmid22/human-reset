@@ -50,8 +50,7 @@ export function QuizHub({ onOpenQuiz, quizzes, quizState }: QuizHubProps) {
 
   const completedCount = quizMeta.filter((entry) => entry.status === "completed").length;
   const inProgressCount = quizMeta.filter((entry) => entry.status === "in_progress").length;
-  const notStartedCount = quizMeta.filter((entry) => entry.status === "not_started").length;
-  const overallPercent = quizzes.length > 0 ? Math.round((completedCount / quizzes.length) * 100) : 0;
+const overallPercent = quizzes.length > 0 ? Math.round((completedCount / quizzes.length) * 100) : 0;
   const nextQuiz =
     quizMeta.find((entry) => entry.status === "in_progress") ??
     quizMeta.find((entry) => entry.status === "not_started") ??
@@ -90,7 +89,6 @@ export function QuizHub({ onOpenQuiz, quizzes, quizState }: QuizHubProps) {
         completedCount={completedCount}
         inProgressCount={inProgressCount}
         maturitySummary={maturity.summary}
-        notStartedCount={notStartedCount}
         overallPercent={overallPercent}
         totalCount={quizzes.length}
       />

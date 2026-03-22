@@ -4,10 +4,10 @@ export const INGREDIENT_NOTES: IngredientNote[] = [
   {
     id: "formaldehyde",
     name: "Formaldehyde",
-    foundIn: ["Dryer sheets", "Fabric softeners", "Some treated clothing"],
+    foundIn: ["Dryer sheets", "Fabric softeners"],
     whyItMatters:
-      "IARC Group 1 classified human carcinogen. Linked to asthma, respiratory damage, and long-term cancer risk. Coats clothes and transfers to skin all day.",
-    avoid: 'Anything listing "fragrance", fabric softener, dryer sheets',
+      "Known human carcinogen (IARC Group 1). Causes asthma, headaches, and long-term cancer risk.",
+    avoid: "Dryer sheets, fabric softeners, anything listing \"fragrance\"",
     swap: "Wool dryer balls, fragrance-free detergent, white vinegar as softener",
   },
   {
@@ -20,7 +20,7 @@ export const INGREDIENT_NOTES: IngredientNote[] = [
       'Personal care with "fragrance"',
     ],
     whyItMatters:
-      "Mimic estrogen in the body. Linked to infertility, early puberty, breast and prostate cancers, and hormone disruption.",
+      "Mimic hormones. Linked to infertility, birth defects, early puberty, and breast and prostate cancers. These chemicals hijack your hormones so your body thinks it's in chaos.",
     avoid: 'Any product listing "fragrance" or "parfum"',
     swap: "Fragrance-free everything, essential oils, open windows",
   },
@@ -29,12 +29,10 @@ export const INGREDIENT_NOTES: IngredientNote[] = [
     name: "PFAS / Forever Chemicals",
     foundIn: [
       "Non-stick cookware (Teflon)",
-      "Stain-resistant coatings",
-      "Some food packaging",
     ],
     whyItMatters:
-      "Don't break down in the body or environment. Linked to thyroid disease, kidney and testicular cancers, and infertility.",
-    avoid: "Non-stick pans, stain-resistant sprays",
+      "Can stay in the body for a very long time. Linked to thyroid disease, infertility, and kidney and testicular cancers.",
+    avoid: "Non-stick pans",
     swap: "Cast iron, stainless steel, uncoated ceramic",
   },
   {
@@ -42,7 +40,7 @@ export const INGREDIENT_NOTES: IngredientNote[] = [
     name: "Parabens",
     foundIn: ["Lotions", "Shampoos", "Conditioners", "Cosmetics"],
     whyItMatters:
-      "Preservatives that mimic estrogen. Detected in breast tumor tissue. Linked to infertility and early puberty.",
+      "Preservatives that mimic estrogen. Detected in breast tumor tissue. Linked to breast cancer, infertility, and early puberty.",
     avoid: "Methylparaben, propylparaben, butylparaben on ingredient labels",
     swap: "EWG-verified products, Vanicream, unscented natural bars",
   },
@@ -51,9 +49,9 @@ export const INGREDIENT_NOTES: IngredientNote[] = [
     name: "Oxybenzone",
     foundIn: ["Most conventional sunscreens"],
     whyItMatters:
-      "Endocrine disruptor. Linked to lower testosterone, fertility problems, thyroid disruption. Also destroys coral reefs.",
+      "Endocrine disruptor. Linked to lower testosterone, fertility problems, and thyroid issues. Also destroys coral reefs.",
     avoid: "Benzophenone-3, oxybenzone on sunscreen labels",
-    swap: "Mineral sunscreen with zinc oxide or titanium dioxide only",
+    swap: "Mineral sunscreen with zinc oxide or titanium dioxide only — no oxybenzone or avobenzone",
   },
   {
     id: "bpa",
@@ -61,13 +59,12 @@ export const INGREDIENT_NOTES: IngredientNote[] = [
     foundIn: [
       "Plastic water bottles",
       "Food containers",
-      "Receipt paper",
-      "Canned food linings",
+      "Receipt paper (thermal paper)",
     ],
     whyItMatters:
-      "Mimics estrogen. Linked to obesity, infertility, breast and prostate cancers. BPA-free doesn't mean safe — BPS has similar effects.",
-    avoid: "Plastic #7, heating food in plastic, touching receipts",
-    swap: "Glass or stainless containers, beeswax wrap, decline receipts",
+      "Estrogen mimics. Linked to infertility, breast and prostate cancers, and obesity. BPA-free doesn't mean safe — BPS shows similar endocrine activity.",
+    avoid: "Plastic containers, heating food in plastic, touching receipts",
+    swap: "Glass or stainless steel containers, beeswax wrap, decline receipts or wash hands after handling",
   },
   {
     id: "vocs",
@@ -76,19 +73,18 @@ export const INGREDIENT_NOTES: IngredientNote[] = [
       "Air fresheners",
       "Candles",
       "Cleaning sprays",
-      "Conventional paint",
     ],
     whyItMatters:
-      "Volatile organic compounds off-gas into your air. Short term: headaches, dizziness. Long term: lung cancer risk, liver damage, nervous system effects.",
+      "Volatile organic compounds off-gas into your air. Short-term: airway irritation, headaches, dizziness. Long-term: increased risk of lung cancer, liver damage, nervous system breakdown.",
     avoid: "Aerosol sprays, plug-in air fresheners, scented candles",
-    swap: "HEPA purifier, open windows, essential oil diffuser, simmer pot",
+    swap: "HEPA purifier, open windows daily, essential oils, simmer pot",
   },
   {
     id: "triclosan",
     name: "Triclosan",
     foundIn: ["Antibacterial soaps", "Some toothpastes"],
     whyItMatters:
-      "FDA ruled it not safe or effective. Disrupts gut microbiome, linked to antibiotic resistance and thyroid problems.",
+      "FDA ruled it not generally recognized as safe or effective. Weakens the immune system by killing good bacteria. Linked to antibiotic resistance and thyroid problems.",
     avoid: 'Any soap labeled "antibacterial"',
     swap: "Plain castile soap — regular soap and water is equally effective",
   },
@@ -97,7 +93,7 @@ export const INGREDIENT_NOTES: IngredientNote[] = [
     name: "Quats (Quaternary Ammonium)",
     foundIn: ["Clorox wipes", "Many disinfectant sprays"],
     whyItMatters:
-      "Linked to asthma, skin irritation, and reduced fertility in animal studies.",
+      "Linked to asthma, skin irritation, and decreased sperm count.",
     avoid: "Benzalkonium chloride, alkyl dimethyl ammonium on labels",
     swap: "DIY all-purpose spray (water + castile soap + tea tree oil)",
   },
@@ -106,9 +102,54 @@ export const INGREDIENT_NOTES: IngredientNote[] = [
     name: "Sulfates (SLS/SLES)",
     foundIn: ["Most shampoos", "Body washes", "Toothpastes"],
     whyItMatters:
-      "Harsh detergents that strip natural oils from skin and scalp. Linked to eczema flares, eye irritation, scalp sensitivity.",
+      "Harsh detergents that strip natural oils. Linked to skin irritation, eczema, and eye damage.",
     avoid: "Sodium lauryl sulfate, sodium laureth sulfate",
     swap: "Sulfate-free shampoos, castile-based body wash",
+  },
+  {
+    id: "fragrance",
+    name: "Fragrance / Parfum",
+    foundIn: [
+      "Air fresheners",
+      "Laundry detergents",
+      "Personal care products",
+      "Cleaning sprays",
+    ],
+    whyItMatters:
+      "A trade-secret umbrella that can hide dozens to hundreds of chemicals. Often includes phthalates — hormone disruptors linked to infertility and breast and prostate cancers. Fragrance-free is the cleanest filter.",
+    avoid: 'Any product listing "fragrance" or "parfum" on the label',
+    swap: "Fragrance-free products, essential oils, open windows",
+  },
+  {
+    id: "artificial-sweeteners",
+    name: "Artificial Sweeteners",
+    foundIn: ["Diet sodas", "Sugar-free products", "Some protein bars"],
+    whyItMatters:
+      "Destroy gut microbiome — linked to bloating, IBS, and anxiety. Trick the brain into increasing cravings, leading to weight gain. Linked to depression and mood disorders.",
+    avoid: "Aspartame, sucralose, acesulfame K on ingredient labels",
+    swap: "Water, whole fruit, small amounts of real sugar",
+  },
+  {
+    id: "food-dyes",
+    name: "Food Dyes",
+    foundIn: ["Candies", "Cereals", "Drinks", "Some yogurts"],
+    whyItMatters:
+      "Disrupt brain function — linked to hyperactivity, mood swings, and behavior changes in children. Can cause allergic reactions and migraines.",
+    avoid: "Red 40, Yellow 5, Blue 1 on ingredient labels",
+    swap: "Whole foods with no added color, products colored with fruit or vegetable extracts",
+  },
+  {
+    id: "seed-oils",
+    name: "Seed Oils",
+    foundIn: [
+      "Ultra-processed foods",
+      "Restaurant frying oils",
+      "Most packaged snacks",
+    ],
+    whyItMatters:
+      "Polyunsaturated omega-6 fats that are prone to oxidation. When heated hard or reused (deep frying), they produce toxic byproducts. The problem is the pattern: processed food plus frying plus constant exposure.",
+    avoid: "Canola, soybean, sunflower, and corn oil in fried or processed foods",
+    swap: "Butter, ghee, olive oil, avocado oil — stable under heat",
   },
 ];
 
@@ -116,7 +157,7 @@ export const DIY_RECIPES: DiyRecipe[] = [
   {
     id: "all-purpose",
     name: "All-Purpose Spray",
-    ingredients: ["2 cups water", "⅓ tsp mild dish soap", "10 drops tea tree oil"],
+    ingredients: ["2 cups water", "⅓ tsp mild dish soap", "10 drops tea tree or lemon essential oil (optional)"],
     steps: [
       "Add water to a clean spray bottle.",
       "Add dish soap and tea tree oil.",
@@ -134,6 +175,17 @@ export const DIY_RECIPES: DiyRecipe[] = [
       "Shake gently.",
       "Spray on glass or mirrors and wipe with a lint-free cloth.",
     ],
+  },
+  {
+    id: "stainless-spray",
+    name: "Stainless Steel Spray",
+    ingredients: ["2 cups water", "½ cup isopropyl alcohol", "⅛–¼ tsp mild dish soap"],
+    steps: [
+      "Combine all ingredients in a spray bottle.",
+      "Shake gently.",
+      "Spray on stainless steel surfaces and wipe with a microfiber cloth.",
+    ],
+    notes: "Buff in the direction of the grain for streak-free results.",
   },
   {
     id: "bathroom-spray",
@@ -328,6 +380,30 @@ export const SWAP_ROWS: SwapRow[] = [
     swap: "Sulfate-free shampoo, castile body wash",
     ingredientNoteId: "sulfates",
   },
+  {
+    id: "swap-fragrance",
+    item: 'Fragranced personal care and cleaning products with "fragrance" or "parfum"',
+    swap: "Fragrance-free products, essential oils",
+    ingredientNoteId: "fragrance",
+  },
+  {
+    id: "swap-artificial-sweeteners",
+    item: "Diet sodas, sugar-free products, and protein bars with artificial sweeteners",
+    swap: "Water, sparkling water, whole fruit, small amounts of real sugar",
+    ingredientNoteId: "artificial-sweeteners",
+  },
+  {
+    id: "swap-food-dyes",
+    item: "Artificially colored foods — candies, cereals, drinks",
+    swap: "Whole foods, products colored with fruit or vegetable extracts",
+    ingredientNoteId: "food-dyes",
+  },
+  {
+    id: "swap-seed-oils",
+    item: "Canola, soybean, sunflower, and corn oil in fried and processed foods",
+    swap: "Butter, ghee, olive oil, or avocado oil",
+    ingredientNoteId: "seed-oils",
+  },
 ];
 
 const BY_CONCERN_GROUPS: BrowsePathGroup[] = [
@@ -344,12 +420,12 @@ const BY_CONCERN_GROUPS: BrowsePathGroup[] = [
   {
     label: "Indoor air quality",
     description: "Reduce airborne load from products, furnishings, and cleaning agents.",
-    ingredientNoteIds: ["vocs", "formaldehyde", "phthalates"],
+    ingredientNoteIds: ["vocs", "formaldehyde", "phthalates", "fragrance"],
   },
   {
     label: "Hormone balance",
     description: "Limit endocrine-disrupting inputs in daily-use products.",
-    ingredientNoteIds: ["parabens", "oxybenzone", "bpa", "phthalates"],
+    ingredientNoteIds: ["parabens", "oxybenzone", "bpa", "phthalates", "fragrance"],
   },
   {
     label: "Chemical sensitivity",
@@ -358,13 +434,18 @@ const BY_CONCERN_GROUPS: BrowsePathGroup[] = [
   },
   {
     label: "Gut + digestive",
-    description: "Address food-contact and water sources most linked to gut disruption.",
-    ingredientNoteIds: ["bpa", "pfas"],
+    description: "Address food-contact, water sources, and food additives most linked to gut disruption.",
+    ingredientNoteIds: ["bpa", "pfas", "artificial-sweeteners"],
   },
   {
     label: "Cleaning burden",
     description: "Replace high-residue cleaning agents with lower-load alternatives.",
     ingredientNoteIds: ["quats", "triclosan", "sulfates"],
+  },
+  {
+    label: "Food inputs",
+    description: "Reduce everyday food additives and industrial oils linked to gut disruption and inflammation.",
+    ingredientNoteIds: ["artificial-sweeteners", "food-dyes", "seed-oils"],
   },
 ];
 
@@ -372,12 +453,12 @@ const BY_ROOM_GROUPS: BrowsePathGroup[] = [
   {
     label: "Kitchen",
     description: "Cookware, storage, water, and food-contact priorities.",
-    ingredientNoteIds: ["pfas", "bpa", "vocs"],
+    ingredientNoteIds: ["pfas", "bpa", "vocs", "seed-oils", "artificial-sweeteners"],
   },
   {
     label: "Bathroom",
     description: "Personal care, cleaning, and fragrance decisions.",
-    ingredientNoteIds: ["parabens", "oxybenzone", "sulfates", "triclosan"],
+    ingredientNoteIds: ["parabens", "oxybenzone", "sulfates", "triclosan", "fragrance"],
   },
   {
     label: "Bedroom",
@@ -387,12 +468,12 @@ const BY_ROOM_GROUPS: BrowsePathGroup[] = [
   {
     label: "Laundry",
     description: "Detergent, softeners, and fabric residue.",
-    ingredientNoteIds: ["quats", "vocs", "sulfates"],
+    ingredientNoteIds: ["quats", "vocs", "sulfates", "fragrance"],
   },
   {
     label: "Living spaces",
     description: "Furniture, candles, air fresheners, and general air load.",
-    ingredientNoteIds: ["vocs", "formaldehyde", "phthalates"],
+    ingredientNoteIds: ["vocs", "formaldehyde", "phthalates", "fragrance"],
   },
   {
     label: "Personal care + outdoors",
@@ -404,13 +485,13 @@ const BY_ROOM_GROUPS: BrowsePathGroup[] = [
 const BY_BUDGET_GROUPS: BrowsePathGroup[] = [
   {
     label: "Free — habit changes only",
-    description: "Ventilate more, reduce spray use, stop air fresheners. No spend required.",
-    ingredientNoteIds: ["vocs", "formaldehyde"],
+    description: "Ventilate more, reduce spray use, stop air fresheners, and cut sweeteners. No spend required.",
+    ingredientNoteIds: ["vocs", "formaldehyde", "artificial-sweeteners", "food-dyes"],
   },
   {
     label: "Under $20 — product swaps",
     description: "Switch cleaning and personal care products to simpler, lower-load alternatives.",
-    ingredientNoteIds: ["triclosan", "quats", "sulfates"],
+    ingredientNoteIds: ["triclosan", "quats", "sulfates", "fragrance", "seed-oils"],
   },
   {
     label: "$20–$100 — targeted upgrades",
@@ -429,21 +510,21 @@ export const BROWSE_PATHS: BrowsePath[] = [
     id: "by-concern",
     title: "Browse by Concern",
     summary: "Start from outcomes like sleep, skin sensitivity, or indoor air quality.",
-    ingredientNoteIds: ["parabens", "oxybenzone", "bpa", "sulfates", "vocs", "formaldehyde", "phthalates", "quats", "triclosan", "pfas"],
+    ingredientNoteIds: ["parabens", "oxybenzone", "bpa", "sulfates", "vocs", "formaldehyde", "phthalates", "quats", "triclosan", "pfas", "fragrance", "artificial-sweeteners", "food-dyes", "seed-oils"],
     groups: BY_CONCERN_GROUPS,
   },
   {
     id: "by-room",
     title: "Browse by Room",
     summary: "Room-by-room guidance for kitchen, laundry, bedroom, and air routines.",
-    ingredientNoteIds: ["pfas", "vocs", "formaldehyde", "phthalates", "parabens", "oxybenzone", "sulfates", "triclosan", "quats", "bpa"],
+    ingredientNoteIds: ["pfas", "vocs", "formaldehyde", "phthalates", "parabens", "oxybenzone", "sulfates", "triclosan", "quats", "bpa", "fragrance", "seed-oils", "artificial-sweeteners"],
     groups: BY_ROOM_GROUPS,
   },
   {
     id: "by-budget",
     title: "Browse by Budget",
     summary: "Find no-cost habit changes, low-cost swaps, and targeted investment upgrades.",
-    ingredientNoteIds: ["triclosan", "quats", "vocs", "pfas", "bpa", "parabens", "phthalates", "oxybenzone", "formaldehyde", "sulfates"],
+    ingredientNoteIds: ["triclosan", "quats", "vocs", "pfas", "bpa", "parabens", "phthalates", "oxybenzone", "formaldehyde", "sulfates", "fragrance", "artificial-sweeteners", "food-dyes", "seed-oils"],
     groups: BY_BUDGET_GROUPS,
   },
 ];
@@ -455,7 +536,7 @@ export const FEATURED_TRACKS: FeaturedTrack[] = [
     summary:
       "Build quick boundaries around sprays, candles, and fragrance-heavy inputs.",
     recipeIds: ["all-purpose", "bathroom-spray"],
-    ingredientNoteIds: ["vocs", "phthalates", "formaldehyde"],
+    ingredientNoteIds: ["vocs", "phthalates", "formaldehyde", "fragrance"],
   },
   {
     id: "kitchen-contact",
@@ -472,6 +553,14 @@ export const FEATURED_TRACKS: FeaturedTrack[] = [
       "Calm nightly exposures and set consistent low-friction sleep defaults.",
     recipeIds: ["laundry-liquid", "fabric-softener"],
     ingredientNoteIds: ["formaldehyde", "phthalates", "parabens"],
+  },
+  {
+    id: "food-inputs",
+    title: "Food inputs reset",
+    summary:
+      "Identify and remove the most common food additives and industrial oils linked to gut disruption, mood changes, and inflammation.",
+    recipeIds: [],
+    ingredientNoteIds: ["artificial-sweeteners", "food-dyes", "seed-oils"],
   },
   {
     id: "cleaning-simplification",

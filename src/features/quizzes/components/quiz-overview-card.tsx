@@ -9,14 +9,13 @@ type QuizOverviewCardProps = {
   completedCount: number;
   inProgressCount: number;
   maturitySummary: string;
-  notStartedCount: number;
   overallPercent: number;
   totalCount: number;
 };
 
-const R = 48;
-const STROKE = 13;
-const SIZE = 134;
+const R = 54;
+const STROKE = 14;
+const SIZE = 160;
 const CX = SIZE / 2;
 const CY = SIZE / 2;
 const CIRCUMFERENCE = 2 * Math.PI * R;
@@ -27,7 +26,6 @@ export function QuizOverviewCard({
   completedCount,
   inProgressCount,
   maturitySummary,
-  notStartedCount,
   overallPercent,
   totalCount,
 }: QuizOverviewCardProps) {
@@ -110,24 +108,6 @@ export function QuizOverviewCard({
             CALIBRATED
           </text>
         </svg>
-      </div>
-
-      <div className="hr-donut-legend">
-        <div className="hr-donut-legend-item">
-          <span className="hr-donut-legend-dot" style={{ background: "#228C22" }} />
-          <span className="hr-donut-legend-label">Completed</span>
-          <span className="hr-donut-legend-value">{completedCount}</span>
-        </div>
-        <div className="hr-donut-legend-item">
-          <span className="hr-donut-legend-dot" style={{ background: "#b5e19b" }} />
-          <span className="hr-donut-legend-label">In progress</span>
-          <span className="hr-donut-legend-value">{inProgressCount}</span>
-        </div>
-        <div className="hr-donut-legend-item">
-          <span className="hr-donut-legend-dot" style={{ background: "rgba(26,61,26,0.18)" }} />
-          <span className="hr-donut-legend-label">Not started</span>
-          <span className="hr-donut-legend-value">{notStartedCount}</span>
-        </div>
       </div>
 
       {action ? <div className="hr-shared-top-action">{action}</div> : null}
