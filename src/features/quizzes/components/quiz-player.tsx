@@ -177,9 +177,9 @@ export function QuizPlayer({ onBackToHub, onProgressChange, progress, quiz }: Qu
         </div>
       </Card>
 
-      <Button onClick={onBackToHub} size="sm" variant="quiet">
+      <button className="hr-quiz-back-button" onClick={onBackToHub} type="button">
         Back to Categories
-      </Button>
+      </button>
     </ScreenContainer>
   );
 }

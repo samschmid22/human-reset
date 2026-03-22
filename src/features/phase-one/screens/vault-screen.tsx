@@ -20,12 +20,15 @@ import { cn } from "@/lib/cn";
 // Local types
 // ---------------------------------------------------------------------------
 
+type LibraryCategoryView = "ingredient-notes" | "diy-recipes" | "swaps" | "protocols";
+
 type VaultView =
   | { type: "home" }
   | { type: "ingredient"; id: string }
   | { type: "recipe"; id: string }
   | { type: "browse-path"; id: string }
-  | { type: "track"; id: string };
+  | { type: "track"; id: string }
+  | { type: "library"; category: LibraryCategoryView };
 
 // ---------------------------------------------------------------------------
 // Inline icon
@@ -281,8 +284,6 @@ function TrackDetail({ track, onBack, onNavigate }: TrackDetailProps) {
 // ---------------------------------------------------------------------------
 // Library category list views (shown from home category grid)
 // ---------------------------------------------------------------------------
-
-type LibraryCategoryView = "ingredient-notes" | "diy-recipes" | "swaps" | "protocols";
 
 type LibraryCategoryDetailProps = {
   category: LibraryCategoryView;
@@ -574,56 +575,52 @@ function HomeView({ onNavigate, onOpenCategory }: HomeViewProps) {
 // ---------------------------------------------------------------------------
 
 export function VaultScreen() {
-  const [view, setView] = useState<VaultView>({ type: "home" });
-  const [libraryCategory, setLibraryCategory] = useState<LibraryCategoryView | null>(null);
+  const [viewStack, setViewStack] = useState<VaultView[]>([{ type: "home" }]);
+  const currentView = viewStack[viewStack.length - 1];
 
   function handleNavigate(nextView: VaultView) {
-    setLibraryCategory(null);
-    setView(nextView);
+    setViewStack((stack) => [...stack, nextView]);
   }
 
   function handleOpenCategory(category: LibraryCategoryView) {
-    setLibraryCategory(category);
-    setView({ type: "home" });
+    setViewStack((stack) => [...stack, { type: "library", category }]);
   }
 
   function handleBack() {
-    setLibraryCategory(null);
-    setView({ type: "home" });
+    setViewStack((stack) => (stack.length > 1 ? stack.slice(0, -1) : stack));
   }
 
   function renderContent() {
-    // Library category detail overrides home rendering
-    if (view.type === "home" && libraryCategory !== null) {
+    if (currentView.type === "home") {
+      return (
+        <HomeView onNavigate={handleNavigate} onOpenCategory={handleOpenCategory} />
+      );
+    }
+
+    if (currentView.type === "library") {
       return (
         <LibraryCategoryDetail
-          category={libraryCategory}
+          category={currentView.category}
           onBack={handleBack}
           onNavigate={handleNavigate}
         />
       );
     }
 
-    if (view.type === "home") {
-      return (
-        <HomeView onNavigate={handleNavigate} onOpenCategory={handleOpenCategory} />
-      );
-    }
-
-    if (view.type === "ingredient") {
-      const note = INGREDIENT_NOTES.find((n) => n.id === view.id);
+    if (currentView.type === "ingredient") {
+      const note = INGREDIENT_NOTES.find((n) => n.id === currentView.id);
       if (!note) return null;
       return <IngredientDetail note={note} onBack={handleBack} />;
     }
 
-    if (view.type === "recipe") {
-      const recipe = DIY_RECIPES.find((r) => r.id === view.id);
+    if (currentView.type === "recipe") {
+      const recipe = DIY_RECIPES.find((r) => r.id === currentView.id);
       if (!recipe) return null;
       return <RecipeDetail recipe={recipe} onBack={handleBack} />;
     }
 
-    if (view.type === "browse-path") {
-      const browsePath = BROWSE_PATHS.find((p) => p.id === view.id);
+    if (currentView.type === "browse-path") {
+      const browsePath = BROWSE_PATHS.find((p) => p.id === currentView.id);
       if (!browsePath) return null;
       return (
         <BrowsePathDetail
@@ -634,8 +631,8 @@ export function VaultScreen() {
       );
     }
 
-    if (view.type === "track") {
-      const track = FEATURED_TRACKS.find((t) => t.id === view.id);
+    if (currentView.type === "track") {
+      const track = FEATURED_TRACKS.find((t) => t.id === currentView.id);
       if (!track) return null;
       return (
         <TrackDetail track={track} onBack={handleBack} onNavigate={handleNavigate} />
