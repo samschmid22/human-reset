@@ -2199,11 +2199,9 @@ select {
 }
 
 .hr-tabs {
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  backdrop-filter: blur(24px) saturate(180%);
-  background: rgba(20, 50, 20, 0.75);
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+  background: #1a3d1a;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.25);
   left: 0;
   order: 2;
   position: fixed;
@@ -2237,8 +2235,8 @@ select {
 
 .hr-tab-pill {
   background: rgba(181, 225, 155, 0.15);
-  border-radius: 18px;
-  height: 40px;
+  border-radius: 12px;
+  height: 54px;
   pointer-events: none;
   position: absolute;
   top: 50%;
