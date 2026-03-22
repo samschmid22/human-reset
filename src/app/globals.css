@@ -97,9 +97,9 @@ select {
   box-shadow: 0 1px 12px rgba(0, 0, 0, 0.3);
   display: grid;
   gap: var(--hr-space-4);
-  grid-template-columns: 48px minmax(0, 1fr) 48px;
-  min-height: 72px;
-  padding: 14px var(--hr-space-5);
+  grid-template-columns: 72px minmax(0, 1fr) 48px;
+  min-height: 88px;
+  padding: 12px var(--hr-space-5);
 }
 
 .hr-shell-header-left,
@@ -110,11 +110,11 @@ select {
 }
 
 .hr-shell-logo {
-  border-radius: 10px;
+  border-radius: 14px;
   display: block;
-  height: 40px;
+  height: 64px;
   object-fit: cover;
-  width: 40px;
+  width: 64px;
 }
 
 .hr-shell-title-wrap {
@@ -2488,8 +2488,8 @@ select {
 @media (max-width: 760px) {
   .hr-shell-header {
     gap: var(--hr-space-2);
-    grid-template-columns: 44px minmax(0, 1fr) 44px;
-    min-height: 62px;
+    grid-template-columns: 72px minmax(0, 1fr) 44px;
+    min-height: 84px;
     padding: 10px 14px;
   }
 
