@@ -336,15 +336,6 @@ export function PhaseOneAppShell() {
 
           <div className="hr-shell-title-wrap">
             <h1 className="hr-shell-title">The Human Reset</h1>
-            {!onboardingIncomplete ? (
-              <p className="hr-shell-summary-line">
-                {Math.round((findingsRoadmap.completedQuizCount / Math.max(1, findingsRoadmap.totalQuizCount)) * 100)}% calibrated
-                {" · "}
-                {streakState.currentStreak} day streak
-                {" · "}
-                {findingsRoadmap.completedQuizCount}/{findingsRoadmap.totalQuizCount} categories
-              </p>
-            ) : null}
           </div>
 
           <div className="hr-shell-header-right">
