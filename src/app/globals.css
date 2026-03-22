@@ -116,9 +116,9 @@ select {
 
 .hr-shell-logo {
   display: block;
-  height: 56px;
+  height: 48px;
   object-fit: contain;
-  width: 56px;
+  width: 48px;
 }
 
 .hr-shell-title-wrap {
@@ -182,8 +182,8 @@ select {
 
 .hr-icon-button {
   align-items: center;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #1a3d1a;
+  border: none;
   border-radius: 14px;
   color: #ffffff;
   cursor: pointer;
@@ -2499,12 +2499,12 @@ select {
   }
 
   .hr-shell-logo {
-    height: 42px;
-    width: 42px;
+    height: 44px;
+    width: 44px;
   }
 
   .hr-icon-button {
-    border-radius: 10px;
+    border-radius: 12px;
     height: 44px;
     width: 44px;
   }
