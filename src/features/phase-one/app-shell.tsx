@@ -161,7 +161,8 @@ export function PhaseOneAppShell() {
   }, [searchEntries, searchQuery]);
 
   useEffect(() => {
-    shellBodyRef.current?.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+    if (shellBodyRef.current) shellBodyRef.current.scrollTop = 0;
+    window.scrollTo(0, 0);
   }, [activeTab, onboardingState.currentStep]);
 
   // ── Helpers ────────────────────────────────────────────────────────────────

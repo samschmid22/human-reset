@@ -522,7 +522,7 @@ export function generateFindingsRoadmap(input: GenerateFindingsInput): FindingsR
   input.quizzes.forEach((quiz) => {
     const progress = input.quizState.quizzes[quiz.id];
 
-    if (!progress) {
+    if (!progress || !progress.completed) {
       return;
     }
 
