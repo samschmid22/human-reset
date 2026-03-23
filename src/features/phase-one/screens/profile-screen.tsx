@@ -2,7 +2,7 @@ import { ReactNode, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ContentStack, ScreenContainer } from "@/components/ui/layout";
+import { ScreenContainer } from "@/components/ui/layout";
 import { ActionState } from "@/features/actions/types";
 import { getPlanMaturity } from "@/features/findings/plan-maturity";
 import { FindingsRoadmapResult, RoadmapItem, ROADMAP_PHASE_LABELS } from "@/features/findings/types";
@@ -15,6 +15,8 @@ import {
 } from "@/features/onboarding/constants";
 import { OnboardingResponses, OnboardingState } from "@/features/onboarding/types";
 import { cn } from "@/lib/cn";
+
+type SubScreen = "pace" | "focus" | "concerns" | "sensitivities" | "skipped" | "completed" | "reset";
 
 type ProfileScreenProps = {
   actionState: ActionState;
@@ -41,7 +43,7 @@ function getCurrentPhaseLabel(report: FindingsRoadmapResult): string {
 }
 
 // ---------------------------------------------------------------------------
-// Settings icon — colored rounded square with white SVG inside
+// Icons
 // ---------------------------------------------------------------------------
 function SettingIcon({ bg = "#228C22", children }: { bg?: string; children: ReactNode }) {
   return (
@@ -51,7 +53,6 @@ function SettingIcon({ bg = "#228C22", children }: { bg?: string; children: Reac
   );
 }
 
-// Icon SVGs
 const IconLeaf = () => (
   <svg fill="none" height="14" stroke="#fff" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="14">
     <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" />
@@ -88,15 +89,9 @@ const IconCheck = () => (
     <path d="M20 6 9 17l-5-5" />
   </svg>
 );
-const IconBell = () => (
+const IconQuiz = () => (
   <svg fill="none" height="14" stroke="#fff" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="14">
-    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" />
-  </svg>
-);
-const IconRefresh = () => (
-  <svg fill="none" height="14" stroke="#fff" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="14">
-    <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" />
-    <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /><path d="M8 16H3v5" />
+    <circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" x2="12.01" y1="17" y2="17" />
   </svg>
 );
 const IconTrash = () => (
@@ -104,52 +99,77 @@ const IconTrash = () => (
     <polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
   </svg>
 );
-const IconChevron = () => (
+const IconChevronRight = () => (
   <svg className="hr-setting-chevron" fill="none" height="16" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" width="16">
     <path d="m9 18 6-6-6-6" />
   </svg>
 );
+const IconChevronLeft = () => (
+  <svg fill="none" height="18" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" viewBox="0 0 24 24" width="18">
+    <path d="m15 18-6-6 6-6" />
+  </svg>
+);
 
 // ---------------------------------------------------------------------------
-// Settings row component
+// Settings row
 // ---------------------------------------------------------------------------
 type SettingsRowProps = {
   bg?: string;
-  children?: ReactNode;
-  expanded?: boolean;
   icon: ReactNode;
   isFirst?: boolean;
   label: string;
   onTap?: () => void;
-  right?: ReactNode;
+  rightNode?: ReactNode;
+  value?: string;
 };
 
-function SettingsRow({ bg, children, expanded, icon, isFirst, label, onTap, right }: SettingsRowProps) {
+function SettingsRow({ bg, icon, isFirst, label, onTap, rightNode, value }: SettingsRowProps) {
   return (
     <div className={cn("hr-setting-row-wrap", !isFirst && "has-divider")}>
       <button
         className="hr-setting-row"
-        disabled={!onTap}
+        disabled={!onTap && !rightNode}
         onClick={onTap}
         type="button"
       >
         <SettingIcon bg={bg}>{icon}</SettingIcon>
         <span className="hr-setting-row-label">{label}</span>
-        <span className="hr-setting-row-right">{right}</span>
-        {onTap ? <IconChevron /> : null}
+        {value ? <span className="hr-setting-row-value">{value}</span> : null}
+        {rightNode ?? null}
+        {onTap ? <IconChevronRight /> : null}
       </button>
-      {expanded && children ? (
-        <div className="hr-setting-row-content">{children}</div>
-      ) : null}
     </div>
   );
 }
 
-// ---------------------------------------------------------------------------
-// Section label
-// ---------------------------------------------------------------------------
 function SectionLabel({ children }: { children: ReactNode }) {
   return <p className="hr-settings-section-label">{children}</p>;
+}
+
+// ---------------------------------------------------------------------------
+// Sub-screen wrapper
+// ---------------------------------------------------------------------------
+function SubScreenView({
+  children,
+  onBack,
+  title,
+}: {
+  children: ReactNode;
+  onBack: () => void;
+  title: string;
+}) {
+  return (
+    <ScreenContainer className="hr-profile-screen">
+      <div className="hr-subscreen-header">
+        <button className="hr-subscreen-back" onClick={onBack} type="button">
+          <IconChevronLeft />
+          <span>Profile</span>
+        </button>
+        <h2 className="hr-subscreen-title">{title}</h2>
+      </div>
+      {children}
+    </ScreenContainer>
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -165,7 +185,7 @@ export function ProfileScreen({
   report,
   skippedRoadmapItems,
 }: ProfileScreenProps) {
-  const [expandedRow, setExpandedRow] = useState<string | null>(null);
+  const [activeScreen, setActiveScreen] = useState<SubScreen | null>(null);
   const [newSensitivity, setNewSensitivity] = useState("");
   const [resetConfirm, setResetConfirm] = useState(false);
 
@@ -181,10 +201,6 @@ export function ProfileScreen({
     () => Object.values(actionState.actions).filter((s) => s.status === "done_permanent").length,
     [actionState.actions],
   );
-
-  function toggleRow(id: string): void {
-    setExpandedRow((prev) => (prev === id ? null : id));
-  }
 
   function commitResponses(nextResponses: OnboardingResponses): void {
     onOnboardingStateChange({
@@ -234,41 +250,28 @@ export function ProfileScreen({
     : "None set";
   const currentPhaseLabel = getCurrentPhaseLabel(report);
 
-  return (
-    <ScreenContainer className="hr-profile-screen">
+  // ── Sub-screens ─────────────────────────────────────────────────────────────
 
-      {/* Slim stats bar */}
-      <p className="hr-profile-stats-bar">
-        Completed: {completedCount} · Quizzes: {report.completedQuizCount}/{report.totalQuizCount} · {maturity.badge}
-      </p>
-
-      {/* MY RESET */}
-      <SectionLabel>My Reset</SectionLabel>
-      <Card className="hr-settings-card">
-        <SettingsRow
-          bg="#228C22"
-          expanded={expandedRow === "pace"}
-          icon={<IconLeaf />}
-          isFirst
-          label="Daily Pace"
-          onTap={() => toggleRow("pace")}
-          right={<span className="hr-setting-row-value">{responses.actionsPerDay}/day</span>}
-        >
-          <div className="hr-setting-expand-inner">
-            <div className="hr-setting-row-inner">
-              <span className="hr-setting-label">Actions per day</span>
-              <div className="hr-range-row">
-                <input
-                  className="hr-range"
-                  max={20}
-                  min={1}
-                  onChange={(e) => updatePace(Number(e.currentTarget.value))}
-                  type="range"
-                  value={responses.actionsPerDay}
-                />
-                <span className="hr-setting-value">{responses.actionsPerDay}/day</span>
-              </div>
+  if (activeScreen === "pace") {
+    return (
+      <SubScreenView onBack={() => setActiveScreen(null)} title="Daily Pace">
+        <Card tone="soft">
+          <div className="hr-subscreen-section">
+            <p className="hr-subscreen-section-label">Actions per day</p>
+            <div className="hr-range-row">
+              <input
+                className="hr-range"
+                max={20}
+                min={1}
+                onChange={(e) => updatePace(Number(e.currentTarget.value))}
+                type="range"
+                value={responses.actionsPerDay}
+              />
+              <span className="hr-subscreen-range-value">{responses.actionsPerDay}/day</span>
             </div>
+          </div>
+          <div className="hr-subscreen-section">
+            <p className="hr-subscreen-section-label">Preset</p>
             <div className="hr-chip-grid">
               {Object.entries(PACE_PRESET_CONFIG).map(([preset, config]) => (
                 <button
@@ -283,17 +286,17 @@ export function ProfileScreen({
               ))}
             </div>
           </div>
-        </SettingsRow>
+        </Card>
+      </SubScreenView>
+    );
+  }
 
-        <SettingsRow
-          bg="#228C22"
-          expanded={expandedRow === "focus"}
-          icon={<IconTarget />}
-          label="Focus Style"
-          onTap={() => toggleRow("focus")}
-          right={<span className="hr-setting-row-value">{focusLabel}</span>}
-        >
-          <div className="hr-setting-expand-inner">
+  if (activeScreen === "focus") {
+    return (
+      <SubScreenView onBack={() => setActiveScreen(null)} title="Focus Style">
+        <Card tone="soft">
+          <div className="hr-subscreen-section">
+            <p className="hr-subscreen-section-label">How to serve your daily actions</p>
             <div className="hr-chip-grid">
               {(["mixed", "one_category"] as const).map((style) => (
                 <button
@@ -303,34 +306,22 @@ export function ProfileScreen({
                   onClick={() => commitResponses({ ...responses, focusStyle: style })}
                   type="button"
                 >
-                  {style === "mixed" ? "Mixed" : "One category"}
+                  {style === "mixed" ? "Mixed — variety across categories" : "One category — go deep"}
                 </button>
               ))}
             </div>
           </div>
-        </SettingsRow>
+        </Card>
+      </SubScreenView>
+    );
+  }
 
-        <SettingsRow
-          bg="#3d6b3d"
-          icon={<IconMap />}
-          label="Current Phase"
-          right={<span className="hr-setting-row-value hr-setting-row-value--truncate">{currentPhaseLabel}</span>}
-        />
-      </Card>
-
-      {/* HEALTH PROFILE */}
-      <SectionLabel>Health Profile</SectionLabel>
-      <Card className="hr-settings-card">
-        <SettingsRow
-          bg="#228C22"
-          expanded={expandedRow === "concerns"}
-          icon={<IconHeart />}
-          isFirst
-          label="Concerns"
-          onTap={() => toggleRow("concerns")}
-          right={<span className="hr-setting-row-value hr-setting-row-value--truncate">{concernsLabel}</span>}
-        >
-          <div className="hr-setting-expand-inner">
+  if (activeScreen === "concerns") {
+    return (
+      <SubScreenView onBack={() => setActiveScreen(null)} title="Health Concerns">
+        <Card tone="soft">
+          <div className="hr-subscreen-section">
+            <p className="hr-subscreen-section-label">Select all that apply</p>
             <div className="hr-chip-grid">
               {CONCERN_OPTIONS.map((concern) => (
                 <button
@@ -345,17 +336,17 @@ export function ProfileScreen({
               ))}
             </div>
           </div>
-        </SettingsRow>
+        </Card>
+      </SubScreenView>
+    );
+  }
 
-        <SettingsRow
-          bg="#228C22"
-          expanded={expandedRow === "sensitivities"}
-          icon={<IconZap />}
-          label="Sensitivities"
-          onTap={() => toggleRow("sensitivities")}
-          right={<span className="hr-setting-row-value hr-setting-row-value--truncate">{sensLabel}</span>}
-        >
-          <div className="hr-setting-expand-inner">
+  if (activeScreen === "sensitivities") {
+    return (
+      <SubScreenView onBack={() => setActiveScreen(null)} title="Sensitivities">
+        <Card tone="soft">
+          <div className="hr-subscreen-section">
+            <p className="hr-subscreen-section-label">Select all that apply</p>
             <div className="hr-chip-grid">
               {availableSensitivities.map((entry) => (
                 <button
@@ -369,128 +360,200 @@ export function ProfileScreen({
                 </button>
               ))}
             </div>
+          </div>
+          <div className="hr-subscreen-section hr-subscreen-section--bordered">
+            <p className="hr-subscreen-section-label">Add custom</p>
             <div className="hr-inline-input-row">
               <input
                 className="hr-input"
                 onChange={(e) => setNewSensitivity(e.currentTarget.value)}
-                placeholder="Add sensitivity"
+                onKeyDown={(e) => { if (e.key === "Enter") handleAddSensitivity(); }}
+                placeholder="Type a sensitivity and press Add"
                 value={newSensitivity}
               />
               <Button onClick={handleAddSensitivity} size="sm" variant="quiet">Add</Button>
             </div>
             {responses.additionalSensitivities.length > 0 ? (
-              <div className="hr-chip-grid">
+              <div className="hr-chip-grid" style={{ marginTop: 8 }}>
                 {responses.additionalSensitivities.map((entry) => (
                   <button className="hr-removable-chip" key={entry} onClick={() => handleRemoveSensitivity(entry)} type="button">
-                    Remove {entry}
+                    ✕ {entry}
                   </button>
                 ))}
               </div>
             ) : null}
           </div>
-        </SettingsRow>
-      </Card>
+        </Card>
+      </SubScreenView>
+    );
+  }
 
-      {/* SKIPPED ITEMS */}
-      {skippedRoadmapItems.length > 0 ? (
-        <>
-          <SectionLabel>Skipped Items</SectionLabel>
-          <Card className="hr-settings-card">
-            <SettingsRow
-              bg="#3d6b3d"
-              expanded={expandedRow === "skipped"}
-              icon={<IconSkip />}
-              isFirst
-              label="Skipped Actions"
-              onTap={() => toggleRow("skipped")}
-              right={<span className="hr-setting-row-value">{skippedRoadmapItems.length}</span>}
+  if (activeScreen === "skipped") {
+    return (
+      <SubScreenView onBack={() => setActiveScreen(null)} title="Skipped Actions">
+        <Card className="hr-settings-card">
+          {skippedRoadmapItems.map((item, i) => (
+            <div className={cn("hr-setting-row-wrap", i > 0 && "has-divider")} key={item.id}>
+              <div className="hr-skipped-item-row">
+                <div className="hr-skipped-item-main">
+                  <p className="hr-overline">{item.category}</p>
+                  <p className="hr-skipped-item-title">{item.title}</p>
+                </div>
+                <Button onClick={() => onActionUnskip(item.id)} size="sm" variant="secondary">Restore</Button>
+              </div>
+            </div>
+          ))}
+        </Card>
+      </SubScreenView>
+    );
+  }
+
+  if (activeScreen === "completed") {
+    return (
+      <SubScreenView onBack={() => setActiveScreen(null)} title="Completed Actions">
+        <Card className="hr-settings-card">
+          {donePermanentRoadmapItems.map((item, i) => (
+            <div className={cn("hr-setting-row-wrap", i > 0 && "has-divider")} key={item.id}>
+              <div className="hr-skipped-item-row">
+                <div className="hr-skipped-item-main">
+                  <p className="hr-overline">{item.category}</p>
+                  <p className="hr-skipped-item-title">{item.title}</p>
+                </div>
+                <Button onClick={() => onActionUnskip(item.id)} size="sm" variant="secondary">Undo</Button>
+              </div>
+            </div>
+          ))}
+        </Card>
+      </SubScreenView>
+    );
+  }
+
+  if (activeScreen === "reset") {
+    return (
+      <SubScreenView onBack={() => { setActiveScreen(null); setResetConfirm(false); }} title="Reset All Data">
+        <Card tone="soft">
+          <div className="hr-subscreen-section">
+            <p className="hr-copy">This will permanently erase all your quiz answers, action progress, and onboarding data. This cannot be undone.</p>
+          </div>
+          <div className="hr-subscreen-section hr-subscreen-section--bordered">
+            <Button
+              onClick={handleResetData}
+              size="sm"
+              variant={resetConfirm ? "primary" : "secondary"}
             >
-              <ContentStack className="hr-setting-expand-inner">
-                {skippedRoadmapItems.map((item) => (
-                  <div className="hr-profile-skipped-row" key={item.id}>
-                    <div className="hr-profile-skipped-main">
-                      <p className="hr-action-list-meta">{item.category}</p>
-                      <h3 className="hr-item-title">{item.title}</h3>
-                    </div>
-                    <Button onClick={() => onActionUnskip(item.id)} size="sm" variant="secondary">Restore</Button>
-                  </div>
-                ))}
-              </ContentStack>
-            </SettingsRow>
-          </Card>
-        </>
-      ) : null}
+              {resetConfirm ? "Tap again to confirm — this cannot be undone" : "Erase all data"}
+            </Button>
+            {resetConfirm ? (
+              <button
+                className="hr-subscreen-cancel-link"
+                onClick={() => setResetConfirm(false)}
+                type="button"
+              >
+                Cancel
+              </button>
+            ) : null}
+          </div>
+        </Card>
+      </SubScreenView>
+    );
+  }
 
-      {/* COMPLETED ITEMS */}
-      {donePermanentRoadmapItems.length > 0 ? (
-        <>
-          <SectionLabel>Completed Items</SectionLabel>
-          <Card className="hr-settings-card">
-            <SettingsRow
-              bg="#228C22"
-              expanded={expandedRow === "completed"}
-              icon={<IconCheck />}
-              isFirst
-              label="Completed Actions"
-              onTap={() => toggleRow("completed")}
-              right={<span className="hr-setting-row-value">{donePermanentRoadmapItems.length}</span>}
-            >
-              <ContentStack className="hr-setting-expand-inner">
-                {donePermanentRoadmapItems.map((item) => (
-                  <div className="hr-profile-skipped-row" key={item.id}>
-                    <div className="hr-profile-skipped-main">
-                      <p className="hr-action-list-meta">{item.category}</p>
-                      <h3 className="hr-item-title">{item.title}</h3>
-                    </div>
-                    <Button onClick={() => onActionUnskip(item.id)} size="sm" variant="secondary">Restore</Button>
-                  </div>
-                ))}
-              </ContentStack>
-            </SettingsRow>
-          </Card>
-        </>
-      ) : null}
+  // ── Main list ──────────────────────────────────────────────────────────────
 
-      {/* SETTINGS */}
-      <SectionLabel>Settings</SectionLabel>
+  return (
+    <ScreenContainer className="hr-profile-screen">
+
+      <p className="hr-profile-stats-bar">
+        {completedCount} done · {report.completedQuizCount}/{report.totalQuizCount} quizzes · {maturity.badge}
+      </p>
+
+      <SectionLabel>My Reset</SectionLabel>
       <Card className="hr-settings-card">
         <SettingsRow
           bg="#228C22"
-          icon={<IconBell />}
+          icon={<IconLeaf />}
           isFirst
-          label="Notifications"
-          onTap={() => commitResponses({ ...responses, notificationsEnabled: !responses.notificationsEnabled })}
-          right={
-            <button
-              aria-label="Toggle notifications"
-              aria-pressed={responses.notificationsEnabled}
-              className={cn("hr-switch", responses.notificationsEnabled && "is-on")}
-              onClick={(e) => { e.stopPropagation(); commitResponses({ ...responses, notificationsEnabled: !responses.notificationsEnabled }); }}
-              type="button"
-            >
-              <span className="hr-switch-knob" />
-            </button>
-          }
+          label="Daily Pace"
+          onTap={() => setActiveScreen("pace")}
+          value={`${responses.actionsPerDay}/day`}
         />
-
+        <SettingsRow
+          bg="#228C22"
+          icon={<IconTarget />}
+          label="Focus Style"
+          onTap={() => setActiveScreen("focus")}
+          value={focusLabel}
+        />
         <SettingsRow
           bg="#3d6b3d"
-          icon={<IconRefresh />}
-          label="Recalculate Roadmap"
-          onTap={onNavigateToQuizzes}
-          right={<span className="hr-setting-row-value">Go to Quizzes</span>}
+          icon={<IconMap />}
+          label="Current Phase"
+          value={currentPhaseLabel}
         />
+      </Card>
 
+      <SectionLabel>Health Profile</SectionLabel>
+      <Card className="hr-settings-card">
+        <SettingsRow
+          bg="#228C22"
+          icon={<IconHeart />}
+          isFirst
+          label="Concerns"
+          onTap={() => setActiveScreen("concerns")}
+          value={concernsLabel}
+        />
+        <SettingsRow
+          bg="#228C22"
+          icon={<IconZap />}
+          label="Sensitivities"
+          onTap={() => setActiveScreen("sensitivities")}
+          value={sensLabel}
+        />
+        <SettingsRow
+          bg="#3d6b3d"
+          icon={<IconQuiz />}
+          label="Quizzes"
+          onTap={onNavigateToQuizzes}
+          value={`${report.completedQuizCount} of ${report.totalQuizCount} complete`}
+        />
+      </Card>
+
+      {(skippedRoadmapItems.length > 0 || donePermanentRoadmapItems.length > 0) ? (
+        <>
+          <SectionLabel>My Progress</SectionLabel>
+          <Card className="hr-settings-card">
+            {skippedRoadmapItems.length > 0 ? (
+              <SettingsRow
+                bg="#3d6b3d"
+                icon={<IconSkip />}
+                isFirst
+                label="Skipped Actions"
+                onTap={() => setActiveScreen("skipped")}
+                value={String(skippedRoadmapItems.length)}
+              />
+            ) : null}
+            {donePermanentRoadmapItems.length > 0 ? (
+              <SettingsRow
+                bg="#228C22"
+                icon={<IconCheck />}
+                isFirst={skippedRoadmapItems.length === 0}
+                label="Completed Actions"
+                onTap={() => setActiveScreen("completed")}
+                value={String(donePermanentRoadmapItems.length)}
+              />
+            ) : null}
+          </Card>
+        </>
+      ) : null}
+
+      <SectionLabel>App</SectionLabel>
+      <Card className="hr-settings-card">
         <SettingsRow
           bg="#8b2020"
           icon={<IconTrash />}
+          isFirst
           label="Reset All Data"
-          onTap={handleResetData}
-          right={
-            <span className={cn("hr-setting-row-value", resetConfirm && "hr-setting-row-value--danger")}>
-              {resetConfirm ? "Tap to confirm" : "Erase all data"}
-            </span>
-          }
+          onTap={() => setActiveScreen("reset")}
         />
       </Card>
 
