@@ -156,9 +156,15 @@ export function RoadmapScreen({
   const overallPercent = totalActions > 0 ? Math.round((totalDone / totalActions) * 100) : 0;
   const currentPhaseLabel = ROADMAP_PHASE_LABELS[phaseProgress[currentPhaseIndex]?.phase] ?? "—";
 
-  // Traveled = road up to the first visual node of the current phase
-  const currentNodeIndex = currentPhaseIndex * 2;
-  const traveledLen = NODE_CUM_LEN[currentNodeIndex] ?? 0;
+  // Traveled = interpolate within the current phase based on completion fraction
+  const currentPhase = phaseProgress[currentPhaseIndex];
+  const phaseCompletion = currentPhase && currentPhase.count > 0
+    ? currentPhase.completed / currentPhase.count
+    : 0;
+  const segStart = NODE_CUM_LEN[currentPhaseIndex * 2] ?? 0;
+  const nextPhaseNodeIdx = (currentPhaseIndex + 1) * 2;
+  const segEnd = nextPhaseNodeIdx < NODE_CUM_LEN.length ? (NODE_CUM_LEN[nextPhaseNodeIdx] ?? ROAD_TOTAL) : ROAD_TOTAL;
+  const traveledLen = segStart + (segEnd - segStart) * phaseCompletion;
 
   function togglePhase(index: number): void {
     setSelectedPhaseIndex((prev) => (prev === index ? null : index));

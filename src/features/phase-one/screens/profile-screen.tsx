@@ -500,14 +500,12 @@ export function ProfileScreen({
           isFirst
           label="Concerns"
           onTap={() => setActiveScreen("concerns")}
-          value={concernsLabel}
         />
         <SettingsRow
           bg="#228C22"
           icon={<IconZap />}
           label="Sensitivities"
           onTap={() => setActiveScreen("sensitivities")}
-          value={sensLabel}
         />
         <SettingsRow
           bg="#3d6b3d"
