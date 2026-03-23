@@ -2774,10 +2774,19 @@ select {
   border-radius: 999px;
   color: #b5e19b;
   cursor: pointer;
+  flex: 1;
   font-size: 0.9rem;
   font-weight: 600;
   min-height: 46px;
   padding: 10px 24px;
+}
+
+.hr-onb-actions > div {
+  flex: 1;
+}
+
+.hr-onb-actions .hr-button {
+  flex: 1;
   width: 100%;
 }
 
