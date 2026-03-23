@@ -98,8 +98,8 @@ select {
   display: grid;
   gap: var(--hr-space-4);
   grid-template-columns: 1fr auto 1fr;
-  min-height: 112px;
-  padding: 8px var(--hr-space-5);
+  min-height: 78px;
+  padding: 4px var(--hr-space-5);
 }
 
 .hr-shell-header-left {
@@ -116,10 +116,10 @@ select {
 
 .hr-shell-logo {
   display: block;
-  height: 82px;
+  height: 58px;
   margin-left: -6px;
   object-fit: contain;
-  width: 82px;
+  width: 58px;
 }
 
 .hr-shell-title-wrap {
@@ -744,7 +744,8 @@ select {
   gap: 8px;
   flex-wrap: nowrap;
   justify-content: flex-end;
-  margin-top: 14px;
+  margin-bottom: 0;
+  margin-top: 8px;
 }
 
 .hr-action-button {
@@ -771,7 +772,7 @@ select {
 .hr-action-card {
   border-radius: 16px;
   gap: 10px;
-  padding: 14px 18px;
+  padding: 14px 18px 10px;
 }
 
 .hr-action-list-row {
@@ -785,9 +786,9 @@ select {
 }
 
 .hr-action-list-heading {
-  align-items: center;
+  align-items: flex-start;
   display: flex;
-  gap: var(--hr-space-2);
+  gap: 10px;
   justify-content: space-between;
 }
 
@@ -1449,15 +1450,19 @@ select {
   border-radius: 10px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  padding: 10px 12px;
+  gap: 4px;
+  padding: 8px 10px;
 }
 
 .hr-roadmap-stat-value {
   color: #1a3d1a;
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 700;
-  line-height: 1.15;
+  line-height: 1.2;
+}
+
+.hr-roadmap-stat-cell .hr-kpi-label {
+  font-size: 0.6rem;
 }
 
 .hr-roadmap-map-wrap {
@@ -1533,7 +1538,13 @@ select {
   align-items: center;
   display: flex;
   justify-content: center;
+  margin: 2px 0;
   padding: 0;
+}
+
+.hr-quiz-overview-card-new .hr-copy {
+  font-size: 0.81rem;
+  line-height: 1.4;
 }
 
 .hr-donut-svg {
@@ -1953,7 +1964,125 @@ select {
 /* ── Profile ────────────────────────────────────────────────────────────── */
 
 .hr-profile-screen {
-  gap: var(--hr-space-6);
+  gap: var(--hr-space-3);
+}
+
+/* iOS-style settings list ------------------------------------------------- */
+
+.hr-profile-stats-bar {
+  color: var(--hr-text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  padding: 2px 4px 4px;
+  text-align: center;
+}
+
+.hr-settings-section-label {
+  color: #8fba8f;
+  font-size: 0.69rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin: 10px 0 4px 4px;
+  text-transform: uppercase;
+}
+
+.hr-settings-card {
+  gap: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+.hr-setting-row-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.hr-setting-row-wrap.has-divider {
+  border-top: 1px solid rgba(26, 61, 26, 0.1);
+}
+
+.hr-setting-row {
+  align-items: center;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  display: flex;
+  gap: 12px;
+  min-height: 52px;
+  padding: 10px 16px;
+  text-align: left;
+  width: 100%;
+}
+
+.hr-setting-row:disabled {
+  cursor: default;
+}
+
+.hr-setting-icon {
+  align-items: center;
+  border-radius: 7px;
+  display: inline-flex;
+  flex-shrink: 0;
+  height: 28px;
+  justify-content: center;
+  width: 28px;
+}
+
+.hr-setting-row-label {
+  color: #1a3d1a;
+  flex: 1;
+  font-size: 0.9rem;
+  font-weight: 550;
+  min-width: 0;
+}
+
+.hr-setting-row-right {
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  gap: 6px;
+  max-width: 140px;
+}
+
+.hr-setting-row-value {
+  color: #3d6b3d;
+  font-size: 0.82rem;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hr-setting-row-value--truncate {
+  max-width: 110px;
+}
+
+.hr-setting-row-value--danger {
+  color: #c0392b;
+}
+
+.hr-setting-chevron {
+  color: rgba(26, 61, 26, 0.35);
+  flex-shrink: 0;
+}
+
+.hr-setting-row-content {
+  background: rgba(26, 61, 26, 0.04);
+  border-top: 1px solid rgba(26, 61, 26, 0.08);
+  padding: 14px 16px;
+}
+
+.hr-setting-expand-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hr-setting-row-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .hr-profile-hero {
@@ -2753,13 +2882,13 @@ select {
   .hr-shell-header {
     gap: var(--hr-space-2);
     grid-template-columns: 1fr auto 1fr;
-    min-height: 104px;
-    padding: 8px 18px;
+    min-height: 64px;
+    padding: 4px 18px;
   }
 
   .hr-shell-logo {
-    height: 75px;
-    width: 75px;
+    height: 52px;
+    width: 52px;
   }
 
   .hr-icon-button {

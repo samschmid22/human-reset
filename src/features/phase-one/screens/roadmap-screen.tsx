@@ -33,49 +33,87 @@ type PhaseProgress = {
 type PhaseState = "complete" | "current" | "locked";
 
 // ---------------------------------------------------------------------------
-// Snake road SVG constants  (viewBox 0 0 360 650)
+// 10-stop visual map (5 engine phases × 2 visual nodes each)
+// viewBox 0 0 360 1200 — intentionally scrollable
 // ---------------------------------------------------------------------------
 const SVG_W = 360;
-const SVG_H = 650;
+const SVG_H = 1200;
 const ROAD_STROKE = 36;
 
-// The winding road path — 5 phase nodes at bezier endpoints
+// Road path: 9 bezier segments connecting 10 nodes
 const ROAD_D =
-  "M 270 75 C 270 148 80 148 80 215" +
-  " C 80 282 270 282 270 350" +
-  " C 270 418 80 418 80 485" +
-  " C 80 555 185 555 185 585";
+  "M 270 80 C 270 148 80 148 80 210" +
+  " C 80 272 270 272 270 335" +
+  " C 270 398 80 398 80 460" +
+  " C 80 522 270 522 270 585" +
+  " C 270 648 80 648 80 710" +
+  " C 80 772 270 772 270 835" +
+  " C 270 898 80 898 80 960" +
+  " C 80 1022 270 1022 270 1085" +
+  " C 270 1148 185 1148 185 1160";
 
-// Approximate cumulative path lengths (px) at each phase node
-const PHASE_CUM_LEN = [0, 258, 516, 774, 935];
-const ROAD_TOTAL = 935;
+// Approx cumulative path lengths at each of the 10 nodes (~250px per segment except last ~110px)
+const NODE_CUM_LEN = [0, 252, 504, 756, 1008, 1260, 1512, 1764, 2016, 2126];
+const ROAD_TOTAL = 2126;
 
-// Node center positions [x, y]
+// Node positions [x, y]
 const NODE_POS: [number, number][] = [
-  [270, 75],
-  [80, 215],
-  [270, 350],
-  [80, 485],
-  [185, 585],
+  [270, 80],
+  [80, 210],
+  [270, 335],
+  [80, 460],
+  [270, 585],
+  [80, 710],
+  [270, 835],
+  [80, 960],
+  [270, 1085],
+  [185, 1160],
 ];
 
-// Label side for each node
-const LABEL_ANCHOR: ("end" | "start")[] = ["end", "start", "end", "start", "start"];
+// Label anchor side
+const LABEL_ANCHOR: ("end" | "start")[] = [
+  "end", "start", "end", "start", "end",
+  "start", "end", "start", "end", "start",
+];
 const LABEL_X_OFFSET = 36;
 
-// Two-line phase labels
-const PHASE_LABEL_LINES: [string, string][] = [
-  ["Stop biggest", "exposures"],
-  ["Stabilize", "baseline"],
-  ["Swap", "defaults"],
-  ["Upgrade", "environment"],
-  ["Maintain", ""],
+// Two-line labels for the 10 visual stops
+const NODE_LABEL_LINES: [string, string][] = [
+  ["Stop Biggest", "Exposures"],
+  ["Clear", "the Air"],
+  ["Clean", "Your Water"],
+  ["Detox Your", "Kitchen"],
+  ["Reset Your", "Laundry"],
+  ["Purify", "Personal Care"],
+  ["Clean Your", "Cleaning"],
+  ["Upgrade", "Your Sleep"],
+  ["Mind +", "Stress Reset"],
+  ["Maintain", "Your Reset"],
 ];
 
-function getPhaseState(index: number, currentPhaseIndex: number): PhaseState {
-  if (index < currentPhaseIndex) return "complete";
-  if (index === currentPhaseIndex) return "current";
+// Map 10 visual nodes → 5 engine phase indices (2 nodes per phase)
+const NODE_TO_PHASE_INDEX = [0, 0, 1, 1, 2, 2, 3, 3, 4, 4];
+
+// Full labels for the tap-detail card (use the existing ROADMAP_PHASE_LABELS)
+const NODE_DISPLAY_LABELS = NODE_LABEL_LINES.map(([l1, l2]) => `${l1} ${l2}`.trim());
+
+function getNodeState(
+  nodeIndex: number,
+  currentPhaseIndex: number,
+): PhaseState {
+  const phaseIdx = NODE_TO_PHASE_INDEX[nodeIndex];
+  if (phaseIdx < currentPhaseIndex) return "complete";
+  if (phaseIdx === currentPhaseIndex) {
+    // First node of current phase = current, second = locked (sub-phase ahead)
+    const isFirstOfPhase = nodeIndex % 2 === 0;
+    return isFirstOfPhase ? "current" : "locked";
+  }
   return "locked";
+}
+
+// Alias so the rest of the component still compiles
+function getPhaseState(index: number, currentPhaseIndex: number): PhaseState {
+  return getNodeState(index, currentPhaseIndex);
 }
 
 export function RoadmapScreen({
@@ -118,15 +156,19 @@ export function RoadmapScreen({
   const overallPercent = totalActions > 0 ? Math.round((totalDone / totalActions) * 100) : 0;
   const currentPhaseLabel = ROADMAP_PHASE_LABELS[phaseProgress[currentPhaseIndex]?.phase] ?? "—";
 
-  const traveledLen = PHASE_CUM_LEN[currentPhaseIndex] ?? 0;
+  // Traveled = road up to the first visual node of the current phase
+  const currentNodeIndex = currentPhaseIndex * 2;
+  const traveledLen = NODE_CUM_LEN[currentNodeIndex] ?? 0;
 
   function togglePhase(index: number): void {
     setSelectedPhaseIndex((prev) => (prev === index ? null : index));
   }
 
   const selIdx = selectedPhaseIndex;
-  const selPhase = selIdx !== null ? phaseProgress[selIdx] : null;
-  const selState = selIdx !== null ? getPhaseState(selIdx, currentPhaseIndex) : null;
+  // selPhase uses the engine phase for the selected node
+  const selPhase = selIdx !== null ? phaseProgress[NODE_TO_PHASE_INDEX[selIdx]] ?? null : null;
+  const selState = selIdx !== null ? getNodeState(selIdx, currentPhaseIndex) : null;
+  const selLabel = selIdx !== null ? NODE_DISPLAY_LABELS[selIdx] : null;
 
   return (
     <ScreenContainer className="hr-roadmap-screen">
@@ -208,10 +250,9 @@ export function RoadmapScreen({
             strokeWidth="2.5"
           />
 
-          {/* Phase nodes */}
-          {phaseProgress.map((entry, i) => {
-            const [cx, cy] = NODE_POS[i];
-            const state = getPhaseState(i, currentPhaseIndex);
+          {/* 10 visual nodes */}
+          {NODE_POS.map(([cx, cy], i) => {
+            const state = getNodeState(i, currentPhaseIndex);
             const isComplete = state === "complete";
             const isCurrent = state === "current";
             const isLocked = state === "locked";
@@ -239,11 +280,11 @@ export function RoadmapScreen({
               : "#ffffff";
             const anchor = LABEL_ANCHOR[i];
             const lx = cx + (anchor === "end" ? -LABEL_X_OFFSET : LABEL_X_OFFSET);
-            const [l1, l2] = PHASE_LABEL_LINES[i];
+            const [l1, l2] = NODE_LABEL_LINES[i];
             const fontSize = isLocked ? "10" : "11.5";
 
             return (
-              <g key={entry.phase} onClick={() => togglePhase(i)} style={{ cursor: "pointer" }}>
+              <g key={i} onClick={() => togglePhase(i)} style={{ cursor: "pointer" }}>
                 {/* Animated pulse ring for current phase */}
                 {isCurrent ? (
                   <circle
@@ -345,7 +386,7 @@ export function RoadmapScreen({
       </div>
 
       {/* Tap-to-expand phase detail card */}
-      {selPhase !== null && selState !== null ? (
+      {selPhase !== null && selState !== null && selLabel !== null ? (
         <Card className="hr-roadmap-phase-detail" tone="soft">
           <div className="hr-roadmap-phase-detail-head">
             <div>
@@ -356,7 +397,7 @@ export function RoadmapScreen({
                   ? "Current phase"
                   : "Coming up"}
               </p>
-              <h3 className="hr-item-title">{ROADMAP_PHASE_LABELS[selPhase.phase]}</h3>
+              <h3 className="hr-item-title">{selLabel}</h3>
               {selPhase.count > 0 ? (
                 <p className="hr-roadmap-phase-detail-meta">
                   {selPhase.completed} of {selPhase.count} actions complete
