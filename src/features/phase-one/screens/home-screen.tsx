@@ -178,8 +178,9 @@ export function HomeScreen({
           <div className="hr-founder-quote-card">
             <p className="hr-founder-quote-body">
               "They spent billions making it easy to buy things that slowly harm you. The science
-              existed. The risk was known. You just weren't supposed to find out. Welcome to The
-              Human Reset. Now do something with it."
+              existed. The risk was known.{" "}
+              <strong>You just weren't supposed to find out.</strong>{" "}
+              Welcome to The Human Reset. Now do something with it."
             </p>
             <p className="hr-founder-quote-attr">— The Founder</p>
           </div>

@@ -168,6 +168,12 @@ export function RoadmapScreen({
     : ROAD_TOTAL;
   const traveledLen = segStart + (segEnd - segStart) * phaseCompletion;
 
+  // Pin follows the line: last node whose cumulative length the line has reached
+  const pinNodeIndex = NODE_CUM_LEN.reduce(
+    (best, cum, i) => (cum <= traveledLen ? i : best),
+    0,
+  );
+
   function togglePhase(index: number): void {
     setSelectedPhaseIndex((prev) => (prev === index ? null : index));
   }
@@ -262,26 +268,26 @@ export function RoadmapScreen({
           {NODE_POS.map(([cx, cy], i) => {
             const state = getNodeState(i, currentPhaseIndex);
             const isComplete = state === "complete";
-            const isCurrent = state === "current";
             const isLocked = state === "locked";
-            const outerR = isLocked ? 18 : 24;
-            const innerR = isLocked ? 10 : 16;
+            const isPin = i === pinNodeIndex;
+            const outerR = isLocked && !isPin ? 18 : 24;
+            const innerR = isLocked && !isPin ? 10 : 16;
             const dotFill = isComplete
               ? "#b5e19b"
-              : isCurrent
+              : isPin
               ? "#228C22"
               : "rgba(255,255,255,0.12)";
             const outerFill = isComplete
               ? "rgba(181,225,155,0.18)"
-              : isCurrent
+              : isPin
               ? "rgba(34,140,34,0.22)"
               : "rgba(255,255,255,0.06)";
             const outerStroke = isComplete
               ? "#b5e19b"
-              : isCurrent
+              : isPin
               ? "#228C22"
               : "rgba(255,255,255,0.22)";
-            const textFill = isLocked
+            const textFill = isLocked && !isPin
               ? "rgba(255,255,255,0.38)"
               : isComplete
               ? "#b5e19b"
@@ -289,12 +295,12 @@ export function RoadmapScreen({
             const anchor = LABEL_ANCHOR[i];
             const lx = cx + (anchor === "end" ? -LABEL_X_OFFSET : LABEL_X_OFFSET);
             const [l1, l2] = NODE_LABEL_LINES[i];
-            const fontSize = isLocked ? "10" : "11.5";
+            const fontSize = isLocked && !isPin ? "10" : "11.5";
 
             return (
               <g key={i} onClick={() => togglePhase(i)} style={{ cursor: "pointer" }}>
-                {/* Animated pulse ring for current phase */}
-                {isCurrent ? (
+                {/* Animated pulse ring — follows pin */}
+                {isPin ? (
                   <circle
                     className="hr-roadmap-node-ring-pulse"
                     cx={cx}
@@ -319,7 +325,7 @@ export function RoadmapScreen({
                 {/* Inner fill */}
                 <circle cx={cx} cy={cy} fill={dotFill} r={innerR} />
 
-                {/* Checkmark for completed phases */}
+                {/* Checkmark for completed nodes */}
                 {isComplete ? (
                   <path
                     d={`M ${cx - 7} ${cy + 1} l 5 5 l 9 -9`}
@@ -331,11 +337,11 @@ export function RoadmapScreen({
                   />
                 ) : null}
 
-                {/* White center dot for current */}
-                {isCurrent ? <circle cx={cx} cy={cy} fill="#ffffff" r="5" /> : null}
+                {/* White center dot — follows pin */}
+                {isPin ? <circle cx={cx} cy={cy} fill="#ffffff" r="5" /> : null}
 
-                {/* Step number for locked phases */}
-                {isLocked ? (
+                {/* Step number for locked nodes without pin */}
+                {isLocked && !isPin ? (
                   <text
                     dominantBaseline="middle"
                     fill="rgba(255,255,255,0.5)"
@@ -350,8 +356,8 @@ export function RoadmapScreen({
                   </text>
                 ) : null}
 
-                {/* Bouncing "you are here" pin */}
-                {isCurrent ? (
+                {/* Bouncing "you are here" pin — follows line */}
+                {isPin ? (
                   <g className="hr-roadmap-pin" transform={`translate(${cx}, ${cy - outerR - 18})`}>
                     <path d="M 0 -13 C -9 -13 -9 -1 0 9 C 9 -1 9 -13 0 -13 Z" fill="#228C22" />
                     <circle cx="0" cy="-5" fill="#ffffff" r="3.5" />
@@ -364,7 +370,7 @@ export function RoadmapScreen({
                   fill={textFill}
                   fontFamily="Avenir Next, Avenir, sans-serif"
                   fontSize={fontSize}
-                  fontWeight={isCurrent ? "700" : "500"}
+                  fontWeight={isPin ? "700" : "500"}
                   textAnchor={anchor}
                   x={lx}
                   y={l2 ? cy - 7 : cy}
