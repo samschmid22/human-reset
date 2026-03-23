@@ -2771,7 +2771,7 @@ select {
 .hr-onb-back-btn {
   background: transparent;
   border: 1.5px solid #b5e19b;
-  border-radius: 999px;
+  border-radius: 11px;
   color: #b5e19b;
   cursor: pointer;
   flex: 1;
