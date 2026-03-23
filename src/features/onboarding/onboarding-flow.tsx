@@ -62,6 +62,9 @@ export function OnboardingFlow({ initialState, onComplete, onStateChange }: Onbo
   const [state, setState] = useState<OnboardingState>(
     initialState ?? createDefaultOnboardingState(),
   );
+  const [showWelcome, setShowWelcome] = useState(
+    (initialState ?? createDefaultOnboardingState()).currentStep === 0,
+  );
 
   const currentStepIndex = Math.min(
     Math.max(state.currentStep, 0),
@@ -228,6 +231,24 @@ export function OnboardingFlow({ initialState, onComplete, onStateChange }: Onbo
       default:
         return null;
     }
+  }
+
+  if (showWelcome) {
+    return (
+      <div className="hr-welcome-screen">
+        <div className="hr-founder-quote-card">
+          <p className="hr-founder-quote-body">
+            "They spent billions making it easy to buy things that slowly harm you. The science
+            existed. The risk was known. You just weren't supposed to find out. Welcome to The
+            Human Reset. Now do something with it."
+          </p>
+          <p className="hr-founder-quote-attr">— The Founder</p>
+        </div>
+        <Button onClick={() => setShowWelcome(false)} size="md" variant="primary">
+          I'm ready →
+        </Button>
+      </div>
+    );
   }
 
   return (

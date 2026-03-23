@@ -1021,6 +1021,41 @@ select {
   gap: var(--hr-space-2);
 }
 
+/* Founder quote card — shared between home and onboarding welcome */
+.hr-founder-quote-card {
+  background: #e9e7df;
+  border-radius: 16px;
+  padding: 20px 22px;
+}
+
+.hr-founder-quote-body {
+  color: #1a3d1a;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 16px;
+  font-style: italic;
+  line-height: 1.6;
+  margin: 0 0 10px;
+}
+
+.hr-founder-quote-attr {
+  color: #3d6b3d;
+  font-size: 12px;
+  font-style: normal;
+  margin: 0;
+}
+
+/* Onboarding welcome screen */
+.hr-welcome-screen {
+  align-items: center;
+  background: #1a3d1a;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  justify-content: center;
+  min-height: 100%;
+  padding: 48px 28px 40px;
+}
+
 .hr-home-content-grid {
   display: grid;
   gap: 16px;
