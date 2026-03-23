@@ -1,6 +1,4 @@
 import { Card } from "@/components/ui/card";
-import { ContentStack } from "@/components/ui/layout";
-import { Pill } from "@/components/ui/pill";
 import { PACE_PRESET_CONFIG } from "@/features/onboarding/constants";
 import { PacePreset } from "@/features/onboarding/types";
 import { cn } from "@/lib/cn";
@@ -21,34 +19,28 @@ export function PaceStep({
   selectedPreset,
 }: PaceStepProps) {
   return (
-    <ContentStack>
-      <Card>
-        <p className="hr-field-label">Pace Presets</p>
-        <div className="hr-option-grid">
-          {pacePresets.map((preset) => {
-            const config = PACE_PRESET_CONFIG[preset];
-            const isSelected = preset === selectedPreset;
+    <div className="hr-onb-pace-wrap">
+      <div className="hr-onb-pace-chips">
+        {pacePresets.map((preset) => {
+          const config = PACE_PRESET_CONFIG[preset];
+          const isSelected = preset === selectedPreset;
+          return (
+            <button
+              className={cn("hr-onb-pace-chip", isSelected && "is-selected")}
+              key={preset}
+              onClick={() => onPresetSelect(preset)}
+              type="button"
+            >
+              <span className="hr-onb-pace-chip-label">{config.label}</span>
+              <span className="hr-onb-pace-chip-range">{config.rangeLabel}</span>
+              <span className="hr-onb-pace-chip-desc">{config.description}</span>
+            </button>
+          );
+        })}
+      </div>
 
-            return (
-              <button
-                className={cn("hr-option-card", isSelected && "is-selected")}
-                key={preset}
-                onClick={() => onPresetSelect(preset)}
-                type="button"
-              >
-                <div className="hr-option-header">
-                  <h3 className="hr-item-title">{config.label}</h3>
-                  <Pill tone={isSelected ? "accent" : "neutral"}>{config.rangeLabel}</Pill>
-                </div>
-                <p className="hr-item-description">{config.description}</p>
-              </button>
-            );
-          })}
-        </div>
-      </Card>
-
-      <Card tone="soft">
-        <p className="hr-field-label">Actions Per Day</p>
+      <Card tone="soft" className="hr-onb-slider-card-inner">
+        <p className="hr-onb-slider-section-label">Fine-tune</p>
         <div className="hr-range-row">
           <input
             className="hr-range"
@@ -58,10 +50,9 @@ export function PaceStep({
             type="range"
             value={actionsPerDay}
           />
-          <Pill tone="accent">{actionsPerDay} actions/day</Pill>
+          <span className="hr-onb-slider-value">{actionsPerDay}/day</span>
         </div>
-        <p className="hr-item-description">v1 range is capped at 1-10 actions/day.</p>
       </Card>
-    </ContentStack>
+    </div>
   );
 }

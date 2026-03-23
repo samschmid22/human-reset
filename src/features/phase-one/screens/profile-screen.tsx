@@ -1,4 +1,4 @@
-import { ReactNode, useMemo, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -188,6 +188,11 @@ export function ProfileScreen({
   const [activeScreen, setActiveScreen] = useState<SubScreen | null>(null);
   const [newSensitivity, setNewSensitivity] = useState("");
   const [resetConfirm, setResetConfirm] = useState(false);
+
+  useEffect(() => {
+    const el = document.querySelector(".hr-shell-body");
+    if (el) el.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+  }, [activeScreen]);
 
   const responses = onboardingState.responses;
   const maturity = getPlanMaturity(report.completedQuizCount, report.totalQuizCount);

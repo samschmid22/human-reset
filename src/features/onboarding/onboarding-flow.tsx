@@ -1,11 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { InlineGroup, ScreenContainer } from "@/components/ui/layout";
-import { Pill } from "@/components/ui/pill";
+import { ScreenContainer } from "@/components/ui/layout";
 import {
   clampActionsPerDay,
   CONCERN_OPTIONS,
@@ -28,33 +26,17 @@ type OnboardingFlowProps = {
   onStateChange: (state: OnboardingState) => void;
 };
 
-const stepContent: Record<
-  OnboardingStepId,
-  { subtitle: string; title: string }
-> = {
-  concerns: {
-    title: "Biggest Concerns",
-    subtitle: "Select outcomes you want to improve. You can choose multiple.",
-  },
-  pace: {
-    title: "Set Your Pace",
-    subtitle: "Choose how many actions per day feels realistic for your schedule.",
-  },
-  focus_style: {
-    title: "Choose Focus Style",
-    subtitle: "Pick whether you prefer one category/day or a mixed approach.",
-  },
-  sensitivities: {
-    title: "Sensitivities & Preferences",
-    subtitle: "Mark sensitivity context and optional reminder preference.",
-  },
+const stepContent: Record<OnboardingStepId, { title: string }> = {
+  concerns: { title: "What matters most to you?" },
+  pace: { title: "Set your pace" },
+  focus_style: { title: "Choose your focus style" },
+  sensitivities: { title: "Any sensitivities?" },
 };
 
 function toggleArrayValue(values: string[], value: string): string[] {
   if (values.includes(value)) {
     return values.filter((entry) => entry !== value);
   }
-
   return [...values, value];
 }
 
@@ -73,6 +55,12 @@ export function OnboardingFlow({ initialState, onComplete, onStateChange }: Onbo
   const currentStepId = ONBOARDING_STEPS[currentStepIndex];
   const metadata = stepContent[currentStepId];
 
+  // Scroll to top on every navigation
+  useEffect(() => {
+    const el = document.querySelector(".hr-shell-body");
+    if (el) el.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+  }, [currentStepIndex, showWelcome]);
+
   function commit(next: OnboardingState): void {
     setState(next);
     onStateChange(next);
@@ -86,7 +74,6 @@ export function OnboardingFlow({ initialState, onComplete, onStateChange }: Onbo
       responses: updater(state.responses),
       updatedAt: new Date().toISOString(),
     };
-
     commit(next);
   }
 
@@ -126,13 +113,6 @@ export function OnboardingFlow({ initialState, onComplete, onStateChange }: Onbo
         return (
           <ConcernsStep
             concerns={state.responses.concerns}
-            customConcern={state.responses.customConcern}
-            onCustomConcernChange={(value) =>
-              updateResponses((responses) => ({
-                ...responses,
-                customConcern: value.trimStart().slice(0, 180),
-              }))
-            }
             onToggleConcern={(concern) =>
               updateResponses((responses) => ({
                 ...responses,
@@ -150,7 +130,6 @@ export function OnboardingFlow({ initialState, onComplete, onStateChange }: Onbo
             onActionsPerDayChange={(value) =>
               updateResponses((responses) => {
                 const actionsPerDay = clampActionsPerDay(value);
-
                 return {
                   ...responses,
                   actionsPerDay,
@@ -185,38 +164,6 @@ export function OnboardingFlow({ initialState, onComplete, onStateChange }: Onbo
       case "sensitivities":
         return (
           <PreferencesStep
-            additionalSensitivities={state.responses.additionalSensitivities}
-            notificationsEnabled={state.responses.notificationsEnabled}
-            onAddSensitivity={(value) =>
-              updateResponses((responses) => {
-                if (responses.additionalSensitivities.includes(value)) {
-                  return responses;
-                }
-
-                return {
-                  ...responses,
-                  additionalSensitivities: [...responses.additionalSensitivities, value],
-                  sensitivities: responses.sensitivities.includes(value)
-                    ? responses.sensitivities
-                    : [...responses.sensitivities, value],
-                };
-              })
-            }
-            onNotificationPreferenceChange={(value) =>
-              updateResponses((responses) => ({
-                ...responses,
-                notificationsEnabled: value,
-              }))
-            }
-            onRemoveAdditionalSensitivity={(value) =>
-              updateResponses((responses) => ({
-                ...responses,
-                additionalSensitivities: responses.additionalSensitivities.filter(
-                  (entry) => entry !== value,
-                ),
-                sensitivities: responses.sensitivities.filter((entry) => entry !== value),
-              }))
-            }
             onToggleSensitivity={(value) =>
               updateResponses((responses) => ({
                 ...responses,
@@ -254,42 +201,28 @@ export function OnboardingFlow({ initialState, onComplete, onStateChange }: Onbo
 
   return (
     <ScreenContainer className="hr-onboarding-screen">
-      <Card className="hr-onboarding-header-card">
-        <InlineGroup>
-          <Pill tone="accent">
-            Step {currentStepIndex + 1} of {ONBOARDING_STEPS.length}
-          </Pill>
-          <Pill>Onboarding</Pill>
-        </InlineGroup>
-        <h2 className="hr-feature-title">{metadata.title}</h2>
-        <p className="hr-copy hr-onboarding-header-copy">{metadata.subtitle}</p>
-        <div className="hr-step-track hr-onboarding-step-track">
-          {ONBOARDING_STEPS.map((step, index) => (
-            <div
-              className={cn("hr-step-dot", index <= currentStepIndex && "is-active")}
-              key={step}
-            />
+      <div className="hr-onb-top">
+        <h2 className="hr-onb-title">{metadata.title}</h2>
+        <p className="hr-onb-step-counter">Step {currentStepIndex + 1} of {ONBOARDING_STEPS.length}</p>
+        <div className="hr-onb-step-dots">
+          {ONBOARDING_STEPS.map((step, i) => (
+            <div className={cn("hr-onb-dot", i <= currentStepIndex && "is-active")} key={step} />
           ))}
         </div>
-      </Card>
+      </div>
 
       {renderStep()}
 
-      <Card className="hr-onboarding-cta-card" tone="soft">
-        <InlineGroup className="hr-onboarding-nav">
-          <Button
-            disabled={currentStepIndex === 0}
-            onClick={handleBack}
-            size="md"
-            variant="quiet"
-          >
-            Back
-          </Button>
-          <Button onClick={handleContinue} size="md" variant="primary">
-            {currentStepIndex === ONBOARDING_STEPS.length - 1 ? "Finish Onboarding" : "Continue"}
-          </Button>
-        </InlineGroup>
-      </Card>
+      <div className="hr-onb-actions">
+        <Button onClick={handleContinue} size="md" variant="primary">
+          {currentStepIndex === ONBOARDING_STEPS.length - 1 ? "Finish →" : "Next →"}
+        </Button>
+        {currentStepIndex > 0 ? (
+          <button className="hr-onb-back-btn" onClick={handleBack} type="button">
+            ← Back
+          </button>
+        ) : null}
+      </div>
     </ScreenContainer>
   );
 }
