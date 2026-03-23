@@ -33,7 +33,7 @@ type ActionRow = {
 };
 
 function toStatusLabel(status: ActionStatus): string {
-  if (status === "done_today") return "Done today";
+  if (status === "done_today") return "Done";
   if (status === "done_permanent") return "Completed";
   if (status === "snoozed") return "Snoozed";
   if (status === "skipped") return "Skipped";
