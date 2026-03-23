@@ -32,6 +32,7 @@ export function QuizOverviewCard({
   const safe = totalCount > 0 ? totalCount : 1;
   const completedLen = (completedCount / safe) * CIRCUMFERENCE;
   const inProgressLen = (inProgressCount / safe) * CIRCUMFERENCE;
+  const isComplete = totalCount > 0 && completedCount >= totalCount;
 
   return (
     <Card className={cn("hr-quiz-overview-card-new", className)} tone="soft">
@@ -39,7 +40,7 @@ export function QuizOverviewCard({
       <h2 className="hr-feature-title">Calibrate your reset plan</h2>
       <p className="hr-copy">{maturitySummary}</p>
 
-      <div className="hr-donut-wrap">
+      {!isComplete ? <div className="hr-donut-wrap">
         <svg aria-hidden="true" className="hr-donut-svg" viewBox={`0 0 ${SIZE} ${SIZE}`}>
           <g transform={`rotate(-90 ${CX} ${CY})`}>
             {/* Track */}
@@ -108,7 +109,7 @@ export function QuizOverviewCard({
             CALIBRATED
           </text>
         </svg>
-      </div>
+      </div> : null}
 
       {action ? <div className="hr-shared-top-action">{action}</div> : null}
     </Card>
