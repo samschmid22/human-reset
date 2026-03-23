@@ -2760,8 +2760,10 @@ select {
 /* Actions bar */
 .hr-onb-actions {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   margin-top: auto;
   padding-top: 8px;
 }

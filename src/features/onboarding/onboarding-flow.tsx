@@ -214,14 +214,14 @@ export function OnboardingFlow({ initialState, onComplete, onStateChange }: Onbo
       {renderStep()}
 
       <div className="hr-onb-actions">
-        <Button onClick={handleContinue} size="md" variant="primary">
-          {currentStepIndex === ONBOARDING_STEPS.length - 1 ? "Finish →" : "Next →"}
-        </Button>
         {currentStepIndex > 0 ? (
           <button className="hr-onb-back-btn" onClick={handleBack} type="button">
             ← Back
           </button>
-        ) : null}
+        ) : <div />}
+        <Button onClick={handleContinue} size="md" variant="primary">
+          {currentStepIndex === ONBOARDING_STEPS.length - 1 ? "Finish →" : "Next →"}
+        </Button>
       </div>
     </ScreenContainer>
   );
