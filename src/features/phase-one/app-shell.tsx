@@ -287,6 +287,7 @@ export function PhaseOneAppShell() {
             onActionReset={handleActionReset}
             onActionSkip={handleActionSkip}
             onActionSnooze={handleActionSnooze}
+            onGoToHome={() => handleTabChange("home")}
             report={findingsRoadmap}
           />
         );

@@ -116,9 +116,10 @@ select {
 
 .hr-shell-logo {
   display: block;
-  height: 96px;
+  height: 82px;
+  margin-left: -6px;
   object-fit: contain;
-  width: 96px;
+  width: 82px;
 }
 
 .hr-shell-title-wrap {
@@ -132,7 +133,7 @@ select {
 .hr-shell-title {
   color: #ffffff;
   font-family: var(--font-display);
-  font-size: clamp(1.38rem, 2vw, 1.72rem);
+  font-size: clamp(1.5rem, 2.2vw, 1.88rem);
   font-style: italic;
   font-weight: 550;
   letter-spacing: 0.015em;
@@ -1429,6 +1430,92 @@ select {
   gap: var(--hr-space-2);
 }
 
+/* Roadmap map (snake road) ------------------------------------------------ */
+
+.hr-roadmap-stats-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hr-roadmap-stats-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.hr-roadmap-stat-cell {
+  background: #dedad0;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px 12px;
+}
+
+.hr-roadmap-stat-value {
+  color: #1a3d1a;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.hr-roadmap-map-wrap {
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.hr-roadmap-map-svg {
+  display: block;
+  width: 100%;
+}
+
+.hr-roadmap-node-ring-pulse {
+  animation: hr-ring-pulse-map 2.2s ease-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes hr-ring-pulse-map {
+  0% { opacity: 0.75; transform: scale(0.8); }
+  100% { opacity: 0; transform: scale(1.8); }
+}
+
+.hr-roadmap-pin {
+  animation: hr-pin-bounce-map 1.6s ease-in-out infinite;
+}
+
+@keyframes hr-pin-bounce-map {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.hr-roadmap-phase-detail-head {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.hr-roadmap-phase-detail-meta {
+  color: var(--hr-text-muted);
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
+.hr-roadmap-complete-badge {
+  color: #228C22;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.hr-roadmap-locked-note {
+  color: var(--hr-text-muted);
+  font-size: 0.8rem;
+  font-style: italic;
+  margin: 0;
+}
+
 .hr-quizzes-screen {
   gap: var(--hr-space-6);
 }
@@ -1439,14 +1526,14 @@ select {
 
 .hr-quiz-overview-card-new {
   border-left: 4px solid #228C22;
-  gap: 14px;
+  gap: 10px;
 }
 
 .hr-donut-wrap {
   align-items: center;
   display: flex;
   justify-content: center;
-  padding: 4px 0 2px;
+  padding: 0;
 }
 
 .hr-donut-svg {
@@ -2562,6 +2649,10 @@ select {
   width: 100%;
 }
 
+.hr-done-today-label {
+  margin-bottom: 14px;
+}
+
 .hr-snooze-summary-label {
   align-items: center;
   color: var(--hr-text-muted);
@@ -2667,8 +2758,8 @@ select {
   }
 
   .hr-shell-logo {
-    height: 88px;
-    width: 88px;
+    height: 75px;
+    width: 75px;
   }
 
   .hr-icon-button {

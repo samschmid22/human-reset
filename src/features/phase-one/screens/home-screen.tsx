@@ -217,7 +217,7 @@ export function HomeScreen({
 
         {doneTodayActions.length > 0 ? (
           <>
-            <div className="hr-snooze-summary-toggle">
+            <div className="hr-snooze-summary-toggle hr-done-today-label">
               <span className="hr-snooze-summary-label">
                 Done today
                 <span className="hr-snooze-summary-count">{doneTodayActions.length}</span>

@@ -122,7 +122,6 @@ export function QuizPlayer({ onBackToHub, onProgressChange, progress, quiz }: Qu
   return (
     <ScreenContainer>
       <SectionHeader
-        action={<Pill tone="accent">Question {questionIndex + 1} of {quiz.questions.length}</Pill>}
         subtitle="One question per screen. Responses save automatically."
         title={quiz.title}
       />
