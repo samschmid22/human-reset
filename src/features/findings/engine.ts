@@ -226,6 +226,7 @@ function createEmptyResult(input: GenerateFindingsInput): FindingsRoadmapResult 
     roadmapByPhase: buildEmptyRoadmapByPhase(),
     dailyPlan: createEmptyDailyPlan(input.onboarding),
     completedQuizCount: 0,
+    completedQuizIds: new Set<string>(),
     totalQuizCount: input.quizzes.length,
     nextBestQuizId: input.quizzes[0]?.id ?? null,
     highestPriorityCategory: null,
@@ -522,7 +523,7 @@ export function generateFindingsRoadmap(input: GenerateFindingsInput): FindingsR
   input.quizzes.forEach((quiz) => {
     const progress = input.quizState.quizzes[quiz.id];
 
-    if (!progress || !progress.completed) {
+    if (!progress) {
       return;
     }
 
@@ -613,7 +614,12 @@ export function generateFindingsRoadmap(input: GenerateFindingsInput): FindingsR
     roadmapByPhase[item.phase].push(item);
   });
 
-  const completedQuizCount = input.quizzes.filter((quiz) => input.quizState.quizzes[quiz.id]?.completed).length;
+  const completedQuizIds = new Set(
+    input.quizzes
+      .filter((quiz) => input.quizState.quizzes[quiz.id]?.completed)
+      .map((quiz) => quiz.id),
+  );
+  const completedQuizCount = completedQuizIds.size;
   const dailyPlan = buildDailyPlan(priorities, input.onboarding);
   const highestPriorityCategory = priorities[0]?.category ?? null;
   const nextBestQuizId = getNextBestQuizId(input.quizzes, input.quizState);
@@ -625,6 +631,7 @@ export function generateFindingsRoadmap(input: GenerateFindingsInput): FindingsR
     roadmapByPhase,
     dailyPlan,
     completedQuizCount,
+    completedQuizIds,
     totalQuizCount: input.quizzes.length,
     nextBestQuizId,
     highestPriorityCategory,

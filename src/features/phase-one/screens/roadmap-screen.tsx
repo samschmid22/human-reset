@@ -128,9 +128,13 @@ export function RoadmapScreen({
       const items = report.roadmapByPhase[entry.phase];
       const summary = items.reduce(
         (acc, item) => {
+          if (!report.completedQuizIds.has(item.quizId)) {
+            acc.pending += 1;
+            return acc;
+          }
           const status = getActionStatusView(actionState, item.id).status;
           if (status === "done_today" || status === "done_permanent") acc.done += 1;
-          else if (status === "pending") acc.pending += 1;
+          else acc.pending += 1;
           return acc;
         },
         { pending: 0, done: 0 },
@@ -142,7 +146,7 @@ export function RoadmapScreen({
         pending: summary.pending,
       };
     });
-  }, [actionState, report.roadmapByPhase]);
+  }, [actionState, report.completedQuizIds, report.roadmapByPhase]);
 
   const currentPhaseIndex = useMemo(() => {
     const idx = phaseProgress.findIndex((e) => e.pending > 0);

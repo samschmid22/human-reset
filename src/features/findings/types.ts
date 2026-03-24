@@ -87,6 +87,7 @@ export type FindingsRoadmapResult = {
   roadmapByPhase: Record<RoadmapPhaseId, RoadmapItem[]>;
   dailyPlan: DailyPlan;
   completedQuizCount: number;
+  completedQuizIds: Set<string>;
   totalQuizCount: number;
   nextBestQuizId: string | null;
   highestPriorityCategory: string | null;
