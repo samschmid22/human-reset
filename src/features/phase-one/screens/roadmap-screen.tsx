@@ -155,10 +155,13 @@ export function RoadmapScreen({
   }, [actionState, report.completedQuizIds, report.roadmapByPhase]);
 
   const currentPhaseIndex = useMemo(() => {
-    const idx = phaseProgress.findIndex((e) => e.pending > 0);
-    if (idx >= 0) return idx;
-    const withItems = phaseProgress.findIndex((e) => e.count > 0);
-    return withItems >= 0 ? withItems : 0;
+    const firstPendingPhase = phaseProgress.findIndex((p) => p.pending > 0);
+    const firstActivePhase = phaseProgress.findIndex((p) => (p.completed + p.pending) > 0);
+    return firstPendingPhase === -1
+      ? phaseProgress.length - 1
+      : firstPendingPhase === firstActivePhase
+        ? firstPendingPhase
+        : firstActivePhase;
   }, [phaseProgress]);
 
   const totalActions = phaseProgress.reduce((s, e) => s + e.count, 0);
