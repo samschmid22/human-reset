@@ -100,9 +100,15 @@ const NODE_DISPLAY_LABELS = NODE_LABEL_LINES.map(([l1, l2]) => `${l1} ${l2}`.tri
 function getNodeState(
   nodeIndex: number,
   currentPhaseIndex: number,
+  phaseProgress: PhaseProgress[],
 ): PhaseState {
   const phaseIdx = NODE_TO_PHASE_INDEX[nodeIndex];
-  if (phaseIdx < currentPhaseIndex) return "complete";
+  if (
+    phaseIdx < currentPhaseIndex &&
+    phaseProgress[phaseIdx] &&
+    phaseProgress[phaseIdx].completed > 0 &&
+    phaseProgress[phaseIdx].pending === 0
+  ) return "complete";
   if (phaseIdx === currentPhaseIndex) {
     // First node of current phase = current, second = locked (sub-phase ahead)
     const isFirstOfPhase = nodeIndex % 2 === 0;
@@ -112,8 +118,8 @@ function getNodeState(
 }
 
 // Alias so the rest of the component still compiles
-function getPhaseState(index: number, currentPhaseIndex: number): PhaseState {
-  return getNodeState(index, currentPhaseIndex);
+function getPhaseState(index: number, currentPhaseIndex: number, phaseProgress: PhaseProgress[]): PhaseState {
+  return getNodeState(index, currentPhaseIndex, phaseProgress);
 }
 
 export function RoadmapScreen({
@@ -188,19 +194,23 @@ export function RoadmapScreen({
     0,
   );
 
-  // Debug: verify phase progress values
-  console.log('PHASE DEBUG', {
+  console.log('ROADMAP STATE', {
+    completedQuizIds: Array.from(report.completedQuizIds),
+    actionState: Object.entries(actionState.actions).map(([id, s]) => ({ id, status: s.status })),
+    roadmapByPhase: Object.entries(report.roadmapByPhase).map(([name, items], i) => ({
+      index: i,
+      name,
+      actionCount: (items as { id: string }[]).length,
+      actionIds: (items as { id: string }[]).map((a) => a.id),
+    })),
     phaseProgress: phaseProgress.map((p, i) => ({
       index: i,
       done: p.completed,
       pending: p.pending,
-      total: p.completed + p.pending,
     })),
     currentPhaseIndex,
     totalDone,
     totalActions,
-    traveledLen,
-    pinTraveledLen,
   });
 
 
@@ -211,7 +221,7 @@ export function RoadmapScreen({
   const selIdx = selectedPhaseIndex;
   // selPhase uses the engine phase for the selected node
   const selPhase = selIdx !== null ? phaseProgress[NODE_TO_PHASE_INDEX[selIdx]] ?? null : null;
-  const selState = selIdx !== null ? getNodeState(selIdx, currentPhaseIndex) : null;
+  const selState = selIdx !== null ? getNodeState(selIdx, currentPhaseIndex, phaseProgress) : null;
   const selLabel = selIdx !== null ? NODE_DISPLAY_LABELS[selIdx] : null;
 
   return (
@@ -296,7 +306,7 @@ export function RoadmapScreen({
 
           {/* 10 visual nodes */}
           {NODE_POS.map(([cx, cy], i) => {
-            const state = getNodeState(i, currentPhaseIndex);
+            const state = getNodeState(i, currentPhaseIndex, phaseProgress);
             const isComplete = state === "complete";
             const isLocked = state === "locked";
             const isPin = i === pinNodeIndex;
