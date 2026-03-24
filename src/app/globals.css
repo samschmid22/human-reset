@@ -3443,8 +3443,11 @@ select {
   }
 
   .hr-shell-body {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 680px;
     order: 2;
-    padding: var(--hr-space-6) var(--hr-space-7);
+    padding: var(--hr-space-6) 32px;
   }
 
   .hr-home-content-grid {
