@@ -3409,6 +3409,10 @@ select {
     max-width: none;
   }
 
+  .hr-tab-pill {
+    display: none;
+  }
+
   .hr-tab-button {
     background: transparent;
     border: none;
