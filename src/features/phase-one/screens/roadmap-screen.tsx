@@ -155,10 +155,10 @@ export function RoadmapScreen({
   }, [actionState, report.completedQuizIds, report.roadmapByPhase]);
 
   const currentPhaseIndex = useMemo(() => {
-    const total = phaseProgress.reduce((s, e) => s + e.count, 0);
+    const totalDone = phaseProgress.reduce((s, e) => s + e.completed, 0);
 
-    if (total === 0) {
-      // No quizzes done, no actions exist yet — dot sits at phase 0, always
+    if (totalDone === 0) {
+      // User hasn't completed any tasks yet — dot sits at phase 0, always
       return 0;
     }
 
