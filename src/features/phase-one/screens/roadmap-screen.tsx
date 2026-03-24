@@ -160,7 +160,11 @@ export function RoadmapScreen({
   const overallPercent = totalActions > 0 ? Math.round((totalDone / totalActions) * 100) : 0;
   const currentPhaseLabel = ROADMAP_PHASE_LABELS[phaseProgress[currentPhaseIndex]?.phase] ?? "—";
 
-  // Traveled = all completed phases fill their segment + current phase interpolated within its segment
+  // Road fill: 0 until the user has actually completed tasks.
+  // segStart is the road position at the START of the current phase, but only
+  // counts if prior phases were genuinely completed (not just empty). To avoid
+  // a non-zero road when early phases have 0 actions, we gate traveledLen on
+  // totalDone > 0.
   const currentPhase = phaseProgress[currentPhaseIndex];
   const phaseCompletion = currentPhase && currentPhase.count > 0
     ? currentPhase.completed / currentPhase.count
@@ -170,13 +174,25 @@ export function RoadmapScreen({
   const segEnd = nextPhaseNodeIdx < NODE_CUM_LEN.length
     ? (NODE_CUM_LEN[nextPhaseNodeIdx] ?? ROAD_TOTAL)
     : ROAD_TOTAL;
-  const traveledLen = segStart + (segEnd - segStart) * phaseCompletion;
+  // If no tasks are done yet the road must show 0% regardless of which phase is
+  // current (prevents empty early phases from inflating segStart).
+  const traveledLen = totalDone === 0 ? 0 : segStart + (segEnd - segStart) * phaseCompletion;
 
-  // Pin follows the line: last node whose cumulative length the line has reached
+  // Pin position: follows the road fill when tasks are done; otherwise sits at
+  // the first node of the current phase so the pulsing dot shows where you start.
+  const pinTraveledLen = totalDone === 0
+    ? (NODE_CUM_LEN[currentPhaseIndex * 2] ?? 0)
+    : traveledLen;
   const pinNodeIndex = NODE_CUM_LEN.reduce(
-    (best, cum, i) => (cum <= traveledLen ? i : best),
+    (best, cum, i) => (cum <= pinTraveledLen ? i : best),
     0,
   );
+
+  // Debug: verify done/total and completedQuizIds are correct
+  console.log("[Roadmap] totalDone:", totalDone, "totalActions:", totalActions,
+    "completedQuizIds:", report.completedQuizIds,
+    "phaseProgress:", phaseProgress.map(p => ({ phase: p.phase, done: p.completed, total: p.count })));
+
 
   function togglePhase(index: number): void {
     setSelectedPhaseIndex((prev) => (prev === index ? null : index));
