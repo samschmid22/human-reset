@@ -155,13 +155,28 @@ export function RoadmapScreen({
   }, [actionState, report.completedQuizIds, report.roadmapByPhase]);
 
   const currentPhaseIndex = useMemo(() => {
-    const firstPendingPhase = phaseProgress.findIndex((p) => p.pending > 0);
-    const firstActivePhase = phaseProgress.findIndex((p) => (p.completed + p.pending) > 0);
-    return firstPendingPhase === -1
-      ? phaseProgress.length - 1
-      : firstPendingPhase === firstActivePhase
-        ? firstPendingPhase
-        : firstActivePhase;
+    const total = phaseProgress.reduce((s, e) => s + e.count, 0);
+
+    if (total === 0) {
+      // No quizzes done, no actions exist yet — dot sits at phase 0, always
+      return 0;
+    }
+
+    // Find the first phase that has actions AND still has pending tasks
+    const firstInProgress = phaseProgress.findIndex(
+      (p) => p.completed + p.pending > 0 && p.pending > 0,
+    );
+
+    if (firstInProgress !== -1) {
+      // Dot sits at the first phase with real actions that isn't finished yet
+      return firstInProgress;
+    }
+
+    // Every phase with actions is fully done — dot sits at last phase with actions
+    return phaseProgress.reduce(
+      (last, p, i) => (p.completed + p.pending > 0 ? i : last),
+      0,
+    );
   }, [phaseProgress]);
 
   const totalActions = phaseProgress.reduce((s, e) => s + e.count, 0);
