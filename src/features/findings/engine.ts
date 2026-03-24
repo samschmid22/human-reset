@@ -269,24 +269,21 @@ function toPriorityBand(priorityScore: number): PriorityBand {
   return "low";
 }
 
-function toRoadmapPhase(priorityScore: number): RoadmapPhaseId {
-  if (priorityScore >= 9) {
-    return "stop_biggest_exposures";
-  }
+const CATEGORY_TO_PHASE: Record<string, RoadmapPhaseId> = {
+  "air + fragrance": "stop_biggest_exposures",
+  "cleaning sprays": "stop_biggest_exposures",
+  "pest control": "stop_biggest_exposures",
+  water: "stabilize_baseline",
+  "cookware + food storage": "stabilize_baseline",
+  laundry: "stabilize_baseline",
+  "food reset": "swap_defaults",
+  "personal care": "swap_defaults",
+  "sleep environment": "upgrade_environment",
+  "mind + stress": "upgrade_environment",
+};
 
-  if (priorityScore >= 6) {
-    return "stabilize_baseline";
-  }
-
-  if (priorityScore >= 4) {
-    return "swap_defaults";
-  }
-
-  if (priorityScore >= 2.5) {
-    return "upgrade_environment";
-  }
-
-  return "maintain";
+function toCategoryPhase(category: string): RoadmapPhaseId {
+  return CATEGORY_TO_PHASE[category.toLowerCase()] ?? "maintain";
 }
 
 function findConcernOverlap(onboarding: OnboardingResponses, category: string): number {
@@ -599,7 +596,7 @@ export function generateFindingsRoadmap(input: GenerateFindingsInput): FindingsR
         minimumStep: template.minimumStep,
         lowCostUpgrade: template.lowCostUpgrade,
         premiumUpgrade: template.premiumUpgrade,
-        phase: toRoadmapPhase(priorityScore),
+        phase: toCategoryPhase(quiz.category),
         priorityBand: toPriorityBand(priorityScore),
         priorityScore,
         trigger,
