@@ -3334,6 +3334,11 @@ select {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .hr-vault-category-grid,
+  .hr-vault-entry-grid {
+    grid-template-columns: 1fr;
+  }
+
   .hr-home-content-grid {
     align-items: start;
     grid-template-columns: minmax(0, 1.3fr) minmax(260px, 0.9fr);
@@ -3461,7 +3466,7 @@ select {
 
 @media (min-width: 1220px) {
   .hr-vault-category-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: 1fr;
   }
 
   .hr-profile-grid {
