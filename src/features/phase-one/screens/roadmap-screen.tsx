@@ -188,10 +188,20 @@ export function RoadmapScreen({
     0,
   );
 
-  // Debug: verify done/total and completedQuizIds are correct
-  console.log("[Roadmap] totalDone:", totalDone, "totalActions:", totalActions,
-    "completedQuizIds:", report.completedQuizIds,
-    "phaseProgress:", phaseProgress.map(p => ({ phase: p.phase, done: p.completed, total: p.count })));
+  // Debug: verify phase progress values
+  console.log('PHASE DEBUG', {
+    phaseProgress: phaseProgress.map((p, i) => ({
+      index: i,
+      done: p.completed,
+      pending: p.pending,
+      total: p.completed + p.pending,
+    })),
+    currentPhaseIndex,
+    totalDone,
+    totalActions,
+    traveledLen,
+    pinTraveledLen,
+  });
 
 
   function togglePhase(index: number): void {
